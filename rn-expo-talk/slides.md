@@ -393,10 +393,10 @@ Hybrid：原生壳管系统能力，WebView 跑页面，中间 JSBridge 通道�
 layout: section
 ---
 
-# React 只负责计算界面，不负责渲染
+# RN 的原理：JS 负责决定，原生负责呈现
 
 <!--
-答卷就是 React Native，全场最重的一章：先看它从哪来，再拆它怎么工作。
+答卷就是 React Native，全场最重的一章。章首这句话现在还只是个断言，这一章把它拆成两个问题来证明：谁在「决定」界面怎么变？「决定」又怎么变成屏幕上的真控件？开拆之前，先花一分钟看它从哪来。
 -->
 
 ---
@@ -447,6 +447,22 @@ layout: section
 
 ---
 
+## 锚点句拆开，是两个要回答的问题
+
+<div class="dg" style="flex-direction:column;gap:.9rem">
+  <div class="drow" style="gap:1.6rem">
+    <div class="dbox js" style="min-width:14rem;padding:.9rem 1rem"><b>① 谁在决定界面怎么变</b><small>React 的 diff · Yoga 布局</small></div>
+    <div class="dbox nat" style="min-width:14rem;padding:.9rem 1rem"><b>② 决定怎么变成真控件</b><small>从桥到 JSI · Hermes</small></div>
+  </div>
+  <div class="dbox rn ghost" style="padding:.4rem .9rem;font-size:.74rem">最后验货：视图树里没有一个 div</div>
+</div>
+
+<!--
+回到锚点句——RN 用 JS 描述界面，渲染出来的是真原生控件。把它拆开，其实就两个问题：第一，谁在决定界面该怎么变；第二，这个决定怎么穿过 JS 和原生的边界、变成屏幕上的真控件。这一章就按这两个问题走，最后用系统工具验货。
+-->
+
+---
+
 ## React 的输出不是画面，是一份最小差异清单
 
 <div class="dg" style="gap:1.1rem">
@@ -463,7 +479,7 @@ layout: section
 <p class="dnote">到这为止全是内存计算——真正「画」，是下游渲染后端的事</p>
 
 <!--
-原理开讲，先把 React 说清楚，非前端同学给我一分钟。React 是描述界面的库：你声明数据长这样时界面该长那样；数据一变，它把新旧描述一比，算出最小差异清单。关键：到这为止全是内存计算，一个像素没画。画是下游「渲染后端」的事——而渲染后端，是可以整个换掉的。这就是 RN 的钥匙。
+第一个问题开拆：谁在决定界面怎么变？答案是 React，非前端同学给我一分钟。它是描述界面的库：你声明数据长这样时界面该长那样；数据一变，它把新旧描述一比，算出最小差异清单。关键：到这为止全是内存计算，一个像素没画。画是下游「渲染后端」的事——而渲染后端，是可以整个换掉的。这就是 RN 的钥匙。
 -->
 
 ---
@@ -511,7 +527,8 @@ layout: section
 <p class="dnote">同一份实现，两端结果一致</p>
 
 <!--
-布局谁算？原生控件不认识 CSS。RN 内置 Yoga——C++ 重新实现的 Flexbox，前端写惯的 flex 原样生效。C++ 算得快，而且两端跑同一份实现，布局结果完全一致。
+「决定」的最后一块：位置谁算？原生控件不认识 CSS。RN 内置 Yoga——C++ 重新实现的 Flexbox，前端写惯的 flex 原样生效。C++ 算得快，而且两端跑同一份实现，布局结果完全一致。到这，第一个问题答完了：React 决定变什么，Yoga 决定摆哪里。
+
 -->
 
 ---
@@ -535,7 +552,7 @@ layout: section
 </div>
 
 <!--
-指令怎么送到原生侧？先讲 2015 年的初代架构，三个线程：JS 线程跑业务和 diff，Shadow 线程算布局，UI 主线程上屏。中间那座桥是唯一通道，规矩很怪：所有数据序列化成 JSON、全异步、攒批发。每次对话都要打包、排队、解包——什么场景会出事？
+进入第二个问题：这份差异清单怎么穿过 JS 和原生的边界，变成真控件？先看 2015 年初代架构的答案。三个线程：JS 线程跑业务和 diff，Shadow 线程算布局，UI 主线程上屏。中间那座桥是唯一通道，规矩很怪：所有数据序列化成 JSON、全异步、攒批发。每次对话都要打包、排队、解包——什么场景会出事？
 -->
 
 ---
@@ -607,7 +624,7 @@ layout: section
 <p class="dnote">启动快，内存省</p>
 
 <!--
-时间线上 2019 年那一格：JS 引擎本身。一般引擎在用户打开 App 那刻现场解析编译，白屏就耗在这。Hermes 把编译挪到构建时，字节码直接打进包，启动加载即执行——启动快、内存省。RN 的运行时是为手机量身做的，不是把网页那套搬过来凑合。
+第二个问题还剩一块配套：JS 本身在哪跑？这就是时间线上 2019 年那格。一般引擎在用户打开 App 那刻现场解析编译，白屏就耗在这。Hermes 把编译挪到构建时，字节码直接打进包，启动加载即执行——启动快、内存省。RN 的运行时是为手机量身做的，不是把网页那套搬过来凑合。
 -->
 
 ---
@@ -631,7 +648,7 @@ layout: section
 <p class="dnote">Xcode View Hierarchy / Android Layout Inspector：直接查看运行中 App 的真实视图层级</p>
 
 <!--
-来点实证。（现场演示，控制在两分钟内）Xcode 掀开视图层级：RCTViewComponentView、RCTParagraphComponentView，全是 UIView 子类，找不到一个 div；Hybrid App 掀开就是一个大 WebView 节点。眼见为实。（演示前在自己 demo 里核对类名，老架构显示的是 RCTView、RCTText。）
+两个问题都答完了，验货。（现场演示，控制在两分钟内）Xcode 掀开视图层级：RCTViewComponentView、RCTParagraphComponentView，全是 UIView 子类，找不到一个 div；Hybrid App 掀开就是一个大 WebView 节点。眼见为实。（演示前在自己 demo 里核对类名，老架构显示的是 RCTView、RCTText。）
 -->
 
 ---
@@ -651,7 +668,7 @@ layout: section
 <p class="dnote">体验是原生的，开发是 JS 的</p>
 
 <!--
-串一遍：JS 决定界面怎么变，JSI 同步送达，Yoga 定位置，系统控件呈现。体验拿到原生，开发拿到 JS——原理成立。但原理成立到生产可用还差一堆脏活：RN 项目里躺着的两个原生工程谁维护？原生依赖怎么配？答案在 Expo。
+章首立的那句话，现在证完了。两个问题串成一条链：JS 决定界面怎么变，JSI 同步送达，Yoga 定位置，系统控件呈现。体验拿到原生，开发拿到 JS——原理成立。但原理成立到生产可用还差一堆脏活：RN 项目里躺着的两个原生工程谁维护？原生依赖怎么配？答案在 Expo。
 -->
 
 ---
