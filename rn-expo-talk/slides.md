@@ -403,35 +403,41 @@ layout: section
 
 ## RN 不是新技术：它已经演进了十年
 
-<div class="dg" style="gap:.55rem">
-  <div class="dcol" style="align-items:center;gap:3px">
+<div class="dg" style="gap:.45rem;zoom:1.05">
+  <div class="dcol" style="align-items:center;gap:4px">
     <small style="color:#6b7280">2012</small>
-    <div class="dbox js" style="padding:.3rem .55rem;font-size:.68rem">Facebook 弃用 HTML5</div>
+    <logos-facebook style="width:1.3rem;height:1.3rem" />
+    <div class="dbox js" style="padding:.3rem .55rem;font-size:.66rem;white-space:nowrap">Facebook 弃用 HTML5</div>
   </div>
-  <span class="darr">→</span>
-  <div class="dcol" style="align-items:center;gap:3px">
+  <span class="darr" v-click="1">→</span>
+  <div class="dcol" style="align-items:center;gap:4px" v-click="1">
     <small style="color:#6b7280">2015</small>
-    <div class="dbox rn" style="padding:.3rem .55rem;font-size:.68rem">React Native 开源</div>
+    <logos-react style="width:1.3rem;height:1.3rem" />
+    <div class="dbox rn" style="padding:.3rem .55rem;font-size:.66rem;white-space:nowrap">React Native 开源</div>
   </div>
-  <span class="darr">→</span>
-  <div class="dcol" style="align-items:center;gap:3px">
+  <span class="darr" v-click="2">→</span>
+  <div class="dcol" style="align-items:center;gap:4px" v-click="2">
     <small style="color:#6b7280">2018</small>
-    <div class="dbox" style="padding:.3rem .55rem;font-size:.68rem">启动架构重写</div>
+    <carbon-tools style="width:1.3rem;height:1.3rem;color:#6b7280" />
+    <div class="dbox" style="padding:.3rem .55rem;font-size:.66rem;white-space:nowrap">启动架构重写</div>
   </div>
-  <span class="darr">→</span>
-  <div class="dcol" style="align-items:center;gap:3px">
+  <span class="darr" v-click="3">→</span>
+  <div class="dcol" style="align-items:center;gap:4px" v-click="3">
     <small style="color:#6b7280">2019</small>
-    <div class="dbox" style="padding:.3rem .55rem;font-size:.68rem">Hermes 引擎</div>
+    <carbon-flash style="width:1.3rem;height:1.3rem;color:#b45309" />
+    <div class="dbox" style="padding:.3rem .55rem;font-size:.66rem;white-space:nowrap">Hermes 引擎</div>
   </div>
-  <span class="darr">→</span>
-  <div class="dcol" style="align-items:center;gap:3px">
+  <span class="darr" v-click="4">→</span>
+  <div class="dcol" style="align-items:center;gap:4px" v-click="4">
     <small style="color:#6b7280">2024</small>
-    <div class="dbox rn" style="padding:.3rem .55rem;font-size:.68rem">0.76 新架构默认</div>
+    <carbon-checkmark-filled style="width:1.3rem;height:1.3rem;color:#047857" />
+    <div class="dbox rn" style="padding:.3rem .55rem;font-size:.66rem;white-space:nowrap">0.76 新架构默认</div>
   </div>
-  <span class="darr">→</span>
-  <div class="dcol" style="align-items:center;gap:3px">
+  <span class="darr" v-click="5">→</span>
+  <div class="dcol" style="align-items:center;gap:4px" v-click="5">
     <small style="color:#6b7280">未来</small>
-    <div class="dbox ghost" style="padding:.3rem .55rem;font-size:.68rem">Static Hermes · React Compiler</div>
+    <carbon-rocket style="width:1.3rem;height:1.3rem;color:#6b7280" />
+    <div class="dbox ghost" style="padding:.3rem .55rem;font-size:.66rem;white-space:nowrap">Static Hermes 等</div>
   </div>
 </div>
 
