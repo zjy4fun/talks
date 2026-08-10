@@ -58,7 +58,7 @@ layout: section
 
 ---
 
-## 三条路线在这个坐标系里各占一角
+## 两条老路各占一角，左上角一直空着
 
 <div class="dg">
   <div style="position:relative;width:560px;height:310px">
@@ -68,33 +68,14 @@ layout: section
     <div style="position:absolute;left:0;bottom:40px;width:64px;text-align:right;font-size:.68rem;color:#6b7280">UI：<br>网页引擎</div>
     <div style="position:absolute;left:90px;bottom:0;font-size:.68rem;color:#6b7280">逻辑：JS 运行时</div>
     <div style="position:absolute;right:6px;bottom:0;font-size:.68rem;color:#6b7280">逻辑：原生运行时</div>
-    <div class="dbox rn" style="position:absolute;left:110px;top:30px"><b>React Native</b><small>系统控件 · JS 逻辑</small></div>
+    <div class="dbox ghost" style="position:absolute;left:110px;top:30px"><b>？</b><small>系统控件 · JS 逻辑</small></div>
     <div class="dbox nat" style="position:absolute;right:30px;top:30px"><b>纯原生</b><small>系统控件 · 原生逻辑</small></div>
     <div class="dbox js" style="position:absolute;left:110px;bottom:60px"><b>H5 / WebView</b><small>网页引擎 · JS 逻辑</small></div>
   </div>
 </div>
 
 <!--
-纯原生在右上角，两个答案都是原生，体验天花板，代价下一章算。H5 在左下角，都选网页，成本最低，天花板第三章推导。左上角的 RN 最有意思：UI 用系统控件，逻辑用 JS——明摆着想两头占便宜。今天全场就在论证这个「两头占」成不成立。
--->
-
----
-layout: center
-class: text-center
----
-
-## RN 用 JS 描述界面，渲染出来的是<span style="color:#047857">真原生控件</span>
-
-<div class="dg" style="gap:.8rem;margin-top:2.2rem">
-  <div class="dbox js"><b>JS</b><small>描述界面</small></div>
-  <span class="darr">→</span>
-  <div class="dbox rn"><b>React Native</b></div>
-  <span class="darr">→</span>
-  <div class="dbox nat"><b>原生控件</b><small>系统渲染</small></div>
-</div>
-
-<!--
-今天记住这一句就够本：RN 里没有网页，屏幕上每个按钮都是货真价实的原生控件，JS 只是发号施令的人。「JS 写的就是网页套壳」是今天要拆掉的最大误解——RN 那章拆给你看，最后还用系统工具现场验货。
+把两个问题画成坐标系。右上角是纯原生：两个答案都选原生，体验顶格，代价下一章算。左下角是 H5：都选网页，成本最低，天花板第三章推导。注意左上角：系统控件的体验，配 JS 的逻辑——这个组合长期没人真正做到，一直空着。记住这个空角，故事讲到一半它会被填上。
 -->
 
 ---
@@ -386,7 +367,7 @@ Hybrid：原生壳管系统能力，WebView 跑页面，中间 JSBridge 通道�
 </div>
 
 <!--
-把两章的账合起来，需求清单自己浮出来：原生的体验、一套 JS 代码、尽量保住 Web 的开发效率。听着像既要又要——2015 年，Facebook 交出了一份答卷。
+把两章的账合起来，需求清单自己浮出来：原生的体验、一套 JS 代码、尽量保住 Web 的开发效率——说白了，就是要填上开场坐标系里那个空角。听着像既要又要——2015 年，Facebook 交出了一份答卷。
 -->
 
 ---
@@ -396,7 +377,26 @@ layout: section
 # RN 的原理：JS 负责决定，原生负责呈现
 
 <!--
-答卷就是 React Native，全场最重的一章。章首这句话现在还只是个断言，这一章把它拆成两个问题来证明：谁在「决定」界面怎么变？「决定」又怎么变成屏幕上的真控件？开拆之前，先花一分钟看它从哪来。
+答卷就是 React Native，全场最重的一章。先用一句话说清它是什么、看它从哪来，再把它拆开证明。
+-->
+
+---
+layout: center
+class: text-center
+---
+
+## RN 用 JS 描述界面，渲染出来的是<span style="color:#047857">真原生控件</span>
+
+<div class="dg" style="gap:.8rem;margin-top:2.2rem">
+  <div class="dbox js"><b>JS</b><small>描述界面</small></div>
+  <span class="darr">→</span>
+  <div class="dbox rn"><b>React Native</b></div>
+  <span class="darr">→</span>
+  <div class="dbox nat"><b>原生控件</b><small>系统渲染</small></div>
+</div>
+
+<!--
+RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实的原生控件——开场坐标系里那个空角，它站进去了。注意，没有网页、没有套壳，屏幕上每个按钮都是系统亲手画的，JS 只是发号施令的人。这句话现在还是个断言，这一章把它拆开证明，最后用系统工具现场验货。
 -->
 
 ---
