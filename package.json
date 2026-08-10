@@ -1,0 +1,9 @@
+{
+  "name": "talks",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.34.4",
+  "scripts": {
+    "build": "node scripts/build.mjs"
+  }
+}
