@@ -20,7 +20,7 @@ mdc: true
 
 ## 今天的六章，串成一条论证链
 
-<div class="dg" style="flex-wrap:wrap;max-width:38rem;margin:3rem auto 0">
+<div class="dg" style="flex-wrap:wrap;max-width:30rem;margin:auto">
   <span class="dbox">问题的本质</span><span class="darr">→</span>
   <span class="dbox js">H5 的天花板</span><span class="darr">→</span>
   <span class="dbox nat">原生的成本</span><span class="darr">→</span>
@@ -47,7 +47,7 @@ layout: section
 
 ## 所有界面技术都在回答同样两个问题
 
-<div class="dg" style="flex-direction:column;gap:1rem;margin-top:2.5rem">
+<div class="dg" style="flex-direction:column;gap:1rem">
   <div class="dbox" style="min-width:24rem"><b>① UI 由谁渲染</b><small>系统原生控件，还是网页引擎</small></div>
   <div class="dbox" style="min-width:24rem"><b>② 逻辑跑在哪个运行时</b><small>原生运行时，还是 JS 运行时</small></div>
 </div>
@@ -139,7 +139,7 @@ layout: section
 
 ## H5 的界面一变，就要重走浏览器渲染管线
 
-```mermaid {scale: 0.62}
+```mermaid {scale: 0.75}
 flowchart LR
   A[HTML / CSS / JS] --> B[解析]
   B --> C[DOM / 样式树]
@@ -362,7 +362,7 @@ layout: section
 
 ## 我们想要的是：原生的体验，Web 的迭代速度
 
-<div class="dg" style="gap:.8rem;margin-top:2rem">
+<div class="dg" style="gap:.8rem">
   <div class="dbox nat">原生的体验</div>
   <span style="color:#6b7280;font-weight:700">+</span>
   <div class="dbox js">一套 JS 代码</div>
@@ -579,7 +579,7 @@ React 是描述界面的库：你声明数据长这样时界面该长那样；�
 
 ## 小结：JS 负责决定，原生负责呈现
 
-<div class="dg" style="gap:.7rem;margin-top:2rem">
+<div class="dg" style="gap:.7rem">
   <div class="dbox js"><b>JS</b><small>决定界面怎么变</small></div>
   <span class="darr">→</span>
   <div class="dbox rn"><b>JSI</b><small>同步送达</small></div>
@@ -656,7 +656,7 @@ RN 官网现在的入门指南，裸建已被挪进单独的 Without a Framework
 
 ## 原生工程是生成产物，不是手写资产
 
-```mermaid {scale: 0.9}
+```mermaid {scale: 1.05}
 flowchart LR
   A[app.json<br>+ config plugins] --> B[npx expo prebuild]
   B --> C[ios/ 工程]
@@ -760,7 +760,7 @@ RN App 的安装包分两部分：原生壳——控件、模块、JS 引擎，�
 
 ## 小结：RN 负责渲染，Expo 负责其余的工程化
 
-<div class="dg" style="gap:1rem;margin-top:2rem">
+<div class="dg" style="gap:1rem">
   <div class="dbox rn" style="min-width:12rem"><b>RN</b><small>JS 渲染原生 UI</small></div>
   <span style="color:#6b7280;font-weight:700">+</span>
   <div class="dbox nat" style="min-width:12rem"><b>Expo</b><small>SDK · CNG · EAS · OTA</small></div>

@@ -35,6 +35,21 @@
   opacity: 1 !important;
 }
 
+/* ===== 内容页布局：标题在上，内容块在剩余空间垂直居中 ===== */
+.slidev-layout.default {
+  display: flex;
+  flex-direction: column;
+}
+.slidev-layout.default > h2 + * {
+  margin-top: auto;
+}
+.slidev-layout.default > *:last-child {
+  margin-bottom: auto;
+}
+.slidev-layout.default > p {
+  font-size: 1.08em;
+}
+
 /* ===== 全套原理图统一设计系统 =====
    三个主色 + 灰：琥珀=JS/Web 侧，蓝=原生/系统侧，绿=RN/通道/结论 */
 :root {
@@ -58,6 +73,7 @@
   line-height: 1.35;
   color: var(--dg-ink);
   margin-top: 1.4rem;
+  zoom: 1.32;
 }
 .dg * { box-sizing: border-box; }
 
@@ -86,6 +102,7 @@
   color: var(--dg-gray);
   font-size: 0.72rem;
   margin-top: 0.9rem;
+  zoom: 1.12;
 }
 .dcap {
   text-align: center;

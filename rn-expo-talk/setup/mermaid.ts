@@ -11,6 +11,6 @@ export default () => ({
     tertiaryBorderColor: '#6b7280',
     lineColor: '#6b7280',
     textColor: '#1f2937',
-    fontSize: '15px',
+    fontSize: '17px',
   },
 })
