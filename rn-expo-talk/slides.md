@@ -13,7 +13,7 @@ mdc: true
 移动端技术选型：原理与取舍
 
 <!--
-今天讲一个选型问题：移动端为什么选 React Native 加 Expo，而不是 H5 或纯原生。重点讲原理，不教写代码；非前端同学也能跟上，用到的行话我都会现场解释。正文四十五分钟左右，最后留五分钟提问。
+今天讲一个选型问题：移动端为什么选 React Native 加 Expo，而不是 H5 或纯原生。重点讲原理，不教写代码；非前端同学也能跟上，用到的行话我都会现场解释。全场四十五分钟左右。
 -->
 
 ---
@@ -989,41 +989,14 @@ layout: section
     <div class="dbox" style="background:#fff;min-width:8rem;padding:.8rem .9rem"><logos-microsoft-icon style="width:1.9rem;height:1.9rem" /><small style="font-size:.72rem">微软 Office · Outlook</small></div>
   </div>
   <div class="drow" style="gap:.9rem">
-    <div class="dbox" style="background:#e1251b;border-color:#b81c14;min-width:8rem;padding:1rem .9rem"><b style="color:#fff;font-size:1.05rem;letter-spacing:.15em">京东</b><small style="color:#ffd9d6">JDReact</small></div>
-    <div class="dbox" style="background:#ffd100;border-color:#d9b200;min-width:8rem;padding:1rem .9rem"><b style="color:#222;font-size:1.05rem;letter-spacing:.15em">美团</b><small style="color:#6b5b00">MRN</small></div>
-    <div class="dbox" style="background:#2577e3;border-color:#1b5cb8;min-width:8rem;padding:1rem .9rem"><b style="color:#fff;font-size:1.05rem;letter-spacing:.15em">携程</b><small style="color:#cfe1fa">CRN</small></div>
+    <div class="dbox" style="background:#fff;min-width:8rem;padding:.8rem .9rem"><img src="./images/jd.jpg" style="width:1.9rem;height:1.9rem;border-radius:6px;display:inline-block" /><small style="font-size:.72rem">京东 · JDReact</small></div>
+    <div class="dbox" style="background:#fff;min-width:8rem;padding:.8rem .9rem"><span style="display:inline-flex;align-items:center;justify-content:center;width:1.9rem;height:1.9rem;background:#ffd100;border-radius:6px"><simple-icons-meituan style="width:1.35rem;height:1.35rem;color:#222222" /></span><small style="font-size:.72rem">美团 · MRN</small></div>
+    <div class="dbox" style="background:#fff;min-width:8rem;padding:.8rem .9rem"><simple-icons-tripdotcom style="width:1.9rem;height:1.9rem;color:#287dfa" /><small style="font-size:.72rem">携程 · CRN</small></div>
   </div>
 </div>
 
 <!--
 谁在用：Shopify 的移动端整体构建在 RN 上；Discord、Coinbase 的主 App；微软的 Office、Outlook 移动端大量使用 RN，还维护着 RN 的 Windows/macOS 版本。国内京东、美团、携程各有自研 RN 基建——JDReact、MRN、CRN，愿意投基建说明极端体量下扛得住。顺带说清一个问题：他们走自研，是因为存量嵌入加极端体量；像我们这样从零开始的新项目，官方推荐路径就是 Expo，不冲突。共同画像：业务界面占大头、迭代压力大，跟我们一样。
--->
-
----
-
-## Flutter 逐像素自绘，Dart 与前端技能栈不重叠
-
-<div class="dg" style="gap:2.5rem">
-  <div class="dcol" style="align-items:center">
-    <div class="dbox js" style="min-width:10rem"><b>JS + React</b></div>
-    <div class="darr">↓</div>
-    <div class="dbox rn" style="min-width:10rem"><b>React Native</b><small>指挥系统控件</small></div>
-    <div class="darr">↓</div>
-    <div class="dbox nat" style="min-width:10rem"><b>系统原生控件</b></div>
-    <div class="dcap">React 心智 · 技能延续前端</div>
-  </div>
-  <div class="dcol" style="align-items:center">
-    <div class="dbox js" style="min-width:10rem"><b>Dart</b></div>
-    <div class="darr">↓</div>
-    <div class="dbox" style="min-width:10rem"><b>Flutter 引擎</b><small>自带渲染器</small></div>
-    <div class="darr">↓</div>
-    <div class="dbox" style="min-width:10rem"><b>自绘画布</b><small>每个像素自己画</small></div>
-    <div class="dcap">Dart 语言 · 生态另起炉灶</div>
-  </div>
-</div>
-
-<!--
-为什么不是 Flutter？路线相反：RN 指挥系统控件，Flutter 自带引擎逐像素自绘，好处是两端像素级一致。对我们决定性的代价是技能栈：Dart 跟前端团队的 JS、React 几乎零重叠，等于全员重学、生态另起炉灶；而 RN 这边组件、状态管理的心智直接平移。团队技能复用是我们最看重的一条，所以选 RN。
 -->
 
 ---
@@ -1041,18 +1014,5 @@ class: text-center
 </div>
 
 <!--
-回到开场那两个问题，也回顾这一路：纯原生都答原生，体验顶但成本翻倍、节奏被审核锁死；H5 都答网页，省钱但撞上体验和能力两个天花板；RN 把问题拆开答：渲染给系统控件，逻辑留 JS，用十年演进把中间那层通信做扎实，Expo 兜住工程化。后两行是一路走下来新加的两问，答案也在图上。一句话：用前端团队驾驭得了的一套代码，交付接近原生的体验，保住接近 Web 的开发效率。
--->
-
----
-layout: center
-class: text-center
----
-
-# Q&A
-
-谢谢，欢迎提问与讨论
-
-<!--
-预答三个：性能——新架构后链路同步，热点走下沉；Meta 弃坑——Meta、微软、Shopify、Expo 多方共建，十年了还在活跃迭代；上手成本——主要是适应没有 DOM。其他现场聊。
+回到开场那两个问题，也回顾这一路：纯原生都答原生，体验顶但成本翻倍、节奏被审核锁死；H5 都答网页，省钱但撞上体验和能力两个天花板；RN 把问题拆开答：渲染给系统控件，逻辑留 JS，用十年演进把中间那层通信做扎实，Expo 兜住工程化。后两行是一路走下来新加的两问，答案也在图上。一句话收尾：用前端团队驾驭得了的一套代码，交付接近原生的体验，保住接近 Web 的开发效率。谢谢大家。
 -->
