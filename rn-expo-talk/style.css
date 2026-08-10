@@ -50,6 +50,37 @@
   font-size: 1.08em;
 }
 
+/* ===== 章节页演进导航条（深色底上使用） ===== */
+.evo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 2.4rem;
+  font-size: 0.8rem;
+}
+.evo .estep {
+  border: 1.5px solid rgba(255, 255, 255, 0.28);
+  color: rgba(255, 255, 255, 0.45);
+  border-radius: 999px;
+  padding: 0.28rem 0.85rem;
+  white-space: nowrap;
+}
+.evo .estep.done {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.08);
+}
+.evo .estep.now {
+  background: #ffffff;
+  color: #17324d;
+  border-color: #ffffff;
+  font-weight: 700;
+}
+.evo .earr {
+  color: rgba(255, 255, 255, 0.35);
+}
+
 /* ===== 全套原理图统一设计系统 =====
    三个主色 + 灰：琥珀=JS/Web 侧，蓝=原生/系统侧，绿=RN/通道/结论 */
 :root {

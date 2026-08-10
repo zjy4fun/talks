@@ -84,8 +84,16 @@ layout: section
 
 # 同一个功能，永远要写两遍
 
+<div class="evo">
+  <span class="estep now">原生</span><span class="earr">→</span>
+  <span class="estep">H5 / Hybrid</span><span class="earr">→</span>
+  <span class="estep">React Native</span><span class="earr">→</span>
+  <span class="estep">Expo</span><span class="earr">→</span>
+  <span class="estep">边界与结论</span>
+</div>
+
 <!--
-从起点讲起。智能手机头几年，App 只有一种写法：纯原生。体验没得挑，问题出在账上——这章短，就两笔账。
+故事从起点讲起。智能手机头几年，App 只有一种写法：纯原生。体验没得挑，问题出在账上——这章短，就两笔账。
 -->
 
 ---
@@ -139,8 +147,16 @@ layout: section
 
 # H5 的优点真实存在
 
+<div class="evo">
+  <span class="estep done">原生</span><span class="earr">→</span>
+  <span class="estep now">H5 / Hybrid</span><span class="earr">→</span>
+  <span class="estep">React Native</span><span class="earr">→</span>
+  <span class="estep">Expo</span><span class="earr">→</span>
+  <span class="estep">边界与结论</span>
+</div>
+
 <!--
-于是有了 H5 和 Hybrid 的浪潮。公平起见先把优点说足——它们实打实省钱，这也是这条路当年席卷行业的原因；把优点看清楚，才能准确说出它输在哪。
+原生的账算完了：太贵、太慢。于是行业往下一站走——把已经会的 Web 搬进 App，这就是 H5 和 Hybrid 的浪潮。公平起见先把优点说足——它们实打实省钱，这也是这条路当年席卷行业的原因；把优点看清楚，才能准确说出它输在哪。
 -->
 
 ---
@@ -376,8 +392,16 @@ layout: section
 
 # RN 的原理：JS 负责决定，原生负责呈现
 
+<div class="evo">
+  <span class="estep done">原生</span><span class="earr">→</span>
+  <span class="estep done">H5 / Hybrid</span><span class="earr">→</span>
+  <span class="estep now">React Native</span><span class="earr">→</span>
+  <span class="estep">Expo</span><span class="earr">→</span>
+  <span class="estep">边界与结论</span>
+</div>
+
 <!--
-答卷就是 React Native，全场最重的一章。先用一句话说清它是什么、看它从哪来，再把它拆开证明。
+原生太贵，H5 撞了天花板——演进到第三站，Facebook 交的答卷：React Native。全场最重的一章，先用一句话说清它是什么、看它从哪来，再把它拆开证明。
 -->
 
 ---
@@ -679,8 +703,16 @@ layout: section
 
 Expo 之于 RN，相当于 Next.js 之于 React
 
+<div class="evo">
+  <span class="estep done">原生</span><span class="earr">→</span>
+  <span class="estep done">H5 / Hybrid</span><span class="earr">→</span>
+  <span class="estep done">React Native</span><span class="earr">→</span>
+  <span class="estep now">Expo</span><span class="earr">→</span>
+  <span class="estep">边界与结论</span>
+</div>
+
 <!--
-RN 官网现在的入门指南，裸建已被挪进单独的 Without a Framework 页面，首页开篇就推荐通过框架用 RN，点名 Expo。类比前端：React 只管渲染，工程问题 Next.js 兜底——RN 和 Expo 同理。这一章结构简单：先看裸用的三个麻烦，再看 Expo 一层层怎么解。
+RN 的原理成立了，但要把它用在生产里，还差工程化这一站——这就是演进的第四步：Expo。RN 官网现在的入门指南，裸建已被挪进单独的 Without a Framework 页面，首页开篇就推荐通过框架用 RN，点名 Expo。类比前端：React 只管渲染，工程问题 Next.js 兜底。这一章结构简单：先看裸用的三个麻烦，再看 Expo 一层层怎么解。
 -->
 
 ---
@@ -814,8 +846,16 @@ layout: section
 
 # 既然 RN 渲染原生控件，为什么有些功能仍要用原生写？
 
+<div class="evo">
+  <span class="estep done">原生</span><span class="earr">→</span>
+  <span class="estep done">H5 / Hybrid</span><span class="earr">→</span>
+  <span class="estep done">React Native</span><span class="earr">→</span>
+  <span class="estep done">Expo</span><span class="earr">→</span>
+  <span class="estep now">边界与结论</span>
+</div>
+
 <!--
-最后一章讲边界，这也是选型汇报最重要的一块：RN 不是银弹，有几类场景注定要原生上——把它们讲透，前面的结论才站得住。先剧透：这不是 RN 的缺陷，而是它设计里就包含的分工。
+演进走完了，最后一站：边界，也是选型汇报最重要的一块。RN 不是银弹，有几类场景注定要原生上——把它们讲透，前面的结论才站得住。先剧透：这不是 RN 的缺陷，而是它设计里就包含的分工。
 -->
 
 ---
