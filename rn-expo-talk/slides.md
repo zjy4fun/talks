@@ -20,17 +20,16 @@ mdc: true
 
 ## 这场分享，沿行业走过的路展开
 
-<div class="dg" style="flex-wrap:wrap;max-width:34rem;margin:auto">
-  <span class="dbox">分析框架</span><span class="darr">→</span>
-  <span class="dbox nat">纯原生时代</span><span class="darr">→</span>
-  <span class="dbox js">H5 / Hybrid 浪潮</span><span class="darr">→</span>
-  <span class="dbox rn">RN 诞生与演进</span><span class="darr">→</span>
-  <span class="dbox rn">Expo 工程化</span><span class="darr">→</span>
+<div class="dg" style="margin:auto">
+  <span class="dbox nat">原生</span><span class="darr">→</span>
+  <span class="dbox js">H5 / Hybrid</span><span class="darr">→</span>
+  <span class="dbox rn">React Native</span><span class="darr">→</span>
+  <span class="dbox rn">Expo</span><span class="darr">→</span>
   <span class="dbox">边界与结论</span>
 </div>
 
 <!--
-今天不按功能清单讲，按行业走过的路讲：最早大家都写纯原生，太贵；然后是 H5 和 Hybrid 的降本浪潮，撞了天花板；2015 年 RN 作为第三条路诞生，十年间把自己的架构重写了一遍；Expo 把它工程化到能落地；最后划清边界、给出结论。开讲前，先立一个贯穿全场的分析框架。
+今天不按功能清单讲，按行业走过的路讲，一共五站：最早只有纯原生，太贵；然后是 H5 和 Hybrid 的降本浪潮，撞了天花板；2015 年 RN 诞生，十年把架构重写了一遍；Expo 把它工程化到能落地；最后划边界、给结论。这条线每一章开头都会再出现，走到哪一站一看便知。开讲之前，先立一个贯穿全场的分析框架。
 -->
 
 ---
