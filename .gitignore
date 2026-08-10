@@ -4,3 +4,4 @@ site
 .slidev
 *.local
 .DS_Store
+.idea
