@@ -680,7 +680,7 @@ layout: section
 Expo 之于 RN，相当于 Next.js 之于 React
 
 <!--
-RN 官网现在的入门指南，裸建已被挪进单独的 Without a Framework 页面，首页开篇就推荐通过框架用 RN，点名 Expo。类比前端：React 只管渲染，工程问题 Next.js 兜底——RN 和 Expo 同理。裸用会遇到什么？下页清单。
+RN 官网现在的入门指南，裸建已被挪进单独的 Without a Framework 页面，首页开篇就推荐通过框架用 RN，点名 Expo。类比前端：React 只管渲染，工程问题 Next.js 兜底——RN 和 Expo 同理。这一章结构简单：先看裸用的三个麻烦，再看 Expo 一层层怎么解。
 -->
 
 ---
@@ -702,7 +702,33 @@ RN 官网现在的入门指南，裸建已被挪进单独的 Without a Framework
 </div>
 
 <!--
-裸 RN 仓库里躺着完整的 Xcode 和 Gradle 工程，从生成那天起归你养：装库改 Podfile、原生配置手改工程文件、升级对着模板 diff 手动 merge——这活没人想干两遍。我们选 RN 图的就是不养原生团队，矛盾来了。Expo 的解法挨个拆。
+裸 RN 仓库里躺着完整的 Xcode 和 Gradle 工程，从生成那天起归你养：装库改 Podfile、原生配置手改工程文件、升级对着模板 diff 手动 merge——这活没人想干两遍。我们选 RN 图的就是不养原生团队，矛盾来了。Expo 怎么解？下一页先看全景。
+-->
+
+---
+
+## 三个麻烦，Expo 给出三层对应的解法
+
+<div class="dg" style="flex-direction:column;gap:.7rem">
+  <div class="drow" style="align-items:center">
+    <div class="dbox js" style="min-width:13rem">装原生库，怕版本冲突</div>
+    <span class="darr">→</span>
+    <div class="dbox rn" style="min-width:13rem"><b>Expo SDK</b><small>模块与 RN 版本配套测试</small></div>
+  </div>
+  <div class="drow" style="align-items:center">
+    <div class="dbox js" style="min-width:13rem">两个原生工程，要人养</div>
+    <span class="darr">→</span>
+    <div class="dbox rn" style="min-width:13rem"><b>CNG</b><small>原生工程按配置生成</small></div>
+  </div>
+  <div class="drow" style="align-items:center">
+    <div class="dbox js" style="min-width:13rem">原生配置，要手改</div>
+    <span class="darr">→</span>
+    <div class="dbox rn" style="min-width:13rem"><b>Config Plugins</b><small>声明式自动注入</small></div>
+  </div>
+</div>
+
+<!--
+一页看全：三个麻烦，三层解法，一一对应。版本冲突交给 Expo SDK 的配套测试；原生工程维护交给 CNG 生成；原生配置交给插件注入。接下来三页把每层拆开讲，讲完你会发现一个共同点：Expo 在把「碰原生」这件事，一层层从日常工作里挪走。
 -->
 
 ---
@@ -786,10 +812,10 @@ flowchart LR
 layout: section
 ---
 
-# 既然 RN 渲染原生控件，为什么大厂仍有原生团队？
+# 既然 RN 渲染原生控件，为什么有些功能仍要用原生写？
 
 <!--
-最后一章从必然被问的问题开始：都是真原生控件了，为什么美团京东还有一大把原生工程师？剧透结论：不是 RN 不行，而是 RN 的设计从第一天就包含和原生共存。
+最后一章讲边界，这也是选型汇报最重要的一块：RN 不是银弹，有几类场景注定要原生上——把它们讲透，前面的结论才站得住。先剧透：这不是 RN 的缺陷，而是它设计里就包含的分工。
 -->
 
 ---
@@ -877,7 +903,7 @@ layout: section
 <div class="dg" style="gap:2.2rem">
   <div class="dcol" style="align-items:center">
     <div class="dbox" style="padding:.6rem .8rem">
-      <b>大厂 App</b>
+      <b>成熟原生 App</b>
       <div class="drow" style="margin-top:.4rem;flex-wrap:wrap;max-width:11rem">
         <div class="dbox nat" style="padding:.25rem .5rem;font-size:.68rem">原生页</div>
         <div class="dbox rn" style="padding:.25rem .5rem;font-size:.68rem">RN 页</div>
@@ -900,7 +926,7 @@ layout: section
 </div>
 
 <!--
-历史和物理。大厂 App 是十年原生存量，没理由推倒重写，RN 是嵌进去的：这几页 RN、旁边那页原生，美团 MRN、携程 CRN 都是这形态——「大厂有原生团队」是存量决定的，不是 RN 不行。物理：点图标到 JS 就绪之间只能是原生代码在跑，极致的启动优化最终都在原生层。
+历史和物理。已有成熟原生 App 的团队不会推倒重写，RN 是嵌进去的：这几页 RN、旁边那页原生，美团 MRN、携程 CRN 都是这个形态——所以「某公司还养着原生团队」说明的是存量结构，不是 RN 不行。物理：点图标到 JS 就绪之间只能是原生代码在跑，极致的启动优化最终都在原生层。
 -->
 
 ---
@@ -970,7 +996,7 @@ layout: section
 </div>
 
 <!--
-谁在用：Shopify 的移动端整体构建在 RN 上；Discord、Coinbase 的主 App；微软的 Office、Outlook 移动端大量使用 RN，还维护着 RN 的 Windows/macOS 版本。国内京东、美团、携程各有自研 RN 基建——JDReact、MRN、CRN，愿意投基建说明极端体量下扛得住。共同画像：业务界面占大头、迭代压力大，跟我们一样。
+谁在用：Shopify 的移动端整体构建在 RN 上；Discord、Coinbase 的主 App；微软的 Office、Outlook 移动端大量使用 RN，还维护着 RN 的 Windows/macOS 版本。国内京东、美团、携程各有自研 RN 基建——JDReact、MRN、CRN，愿意投基建说明极端体量下扛得住。顺带说清一个问题：他们走自研，是因为存量嵌入加极端体量；像我们这样从零开始的新项目，官方推荐路径就是 Expo，不冲突。共同画像：业务界面占大头、迭代压力大，跟我们一样。
 -->
 
 ---
