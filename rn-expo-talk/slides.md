@@ -389,7 +389,7 @@ Hybrid：原生壳管系统能力，WebView 跑页面，中间 JSBridge 通道�
 layout: section
 ---
 
-# RN 的原理：JS 负责决定，原生负责呈现
+# RN 的原理：JS 负责计算，原生负责渲染
 
 <div class="evo">
   <span class="estep done">原生</span><span class="earr">→</span>
@@ -474,14 +474,14 @@ RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实�
 
 <div class="dg" style="flex-direction:column;gap:.9rem">
   <div class="drow" style="gap:1.6rem">
-    <div class="dbox js" style="min-width:14rem;padding:.9rem 1rem"><b>① 谁在决定界面怎么变</b><small>React 的 diff · Yoga 布局</small></div>
-    <div class="dbox nat" style="min-width:14rem;padding:.9rem 1rem"><b>② 决定怎么变成真控件</b><small>从桥到 JSI · Hermes</small></div>
+    <div class="dbox js" style="min-width:14rem;padding:.9rem 1rem"><b>① 界面的变化，由谁计算</b><small>React 的 diff · Yoga 布局</small></div>
+    <div class="dbox nat" style="min-width:14rem;padding:.9rem 1rem"><b>② 计算结果，如何成为控件</b><small>从桥到 JSI · Hermes</small></div>
   </div>
   <div class="dbox rn ghost" style="padding:.4rem .9rem;font-size:.74rem">最后验货：视图树里没有一个 div</div>
 </div>
 
 <!--
-回到锚点句——RN 用 JS 描述界面，渲染出来的是真原生控件。把它拆开，其实就两个问题：第一，谁在决定界面该怎么变；第二，这个决定怎么穿过 JS 和原生的边界、变成屏幕上的真控件。这一章就按这两个问题走，最后用系统工具验货。
+回到锚点句——RN 用 JS 描述界面，渲染出来的是真原生控件。把它拆开，其实就两个问题：第一，界面的变化由谁计算；第二，计算结果怎么穿过 JS 和原生的边界、成为屏幕上的真控件。这一章就按这两个问题走，最后用系统工具验货。
 -->
 
 ---
@@ -502,7 +502,7 @@ RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实�
 <p class="dnote">到这为止全是内存计算——真正「画」，是下游渲染后端的事</p>
 
 <!--
-第一个问题开拆：谁在决定界面怎么变？答案是 React，非前端同学给我一分钟。它是描述界面的库：你声明数据长这样时界面该长那样；数据一变，它把新旧描述一比，算出最小差异清单。关键：到这为止全是内存计算，一个像素没画。画是下游「渲染后端」的事——而渲染后端，是可以整个换掉的。这就是 RN 的钥匙。
+第一个问题开拆：界面的变化由谁计算？答案是 React，非前端同学给我一分钟。它是描述界面的库：你声明数据长这样时界面该长那样；数据一变，它把新旧描述一比，算出最小差异清单。关键：到这为止全是内存计算，一个像素没画。画是下游「渲染后端」的事——而渲染后端，是可以整个换掉的。这就是 RN 的钥匙。
 -->
 
 ---
@@ -550,7 +550,7 @@ RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实�
 <p class="dnote">同一份实现，两端结果一致</p>
 
 <!--
-「决定」的最后一块：位置谁算？原生控件不认识 CSS。RN 内置 Yoga——C++ 重新实现的 Flexbox，前端写惯的 flex 原样生效。C++ 算得快，而且两端跑同一份实现，布局结果完全一致。到这，第一个问题答完了：React 决定变什么，Yoga 决定摆哪里。
+「计算」的最后一块：位置。原生控件不认识 CSS。RN 内置 Yoga——C++ 重新实现的 Flexbox，前端写惯的 flex 原样生效。C++ 算得快，而且两端跑同一份实现，布局结果完全一致。到这，第一个问题答完了：React 算出变什么，Yoga 算出摆哪里。
 
 -->
 
@@ -676,22 +676,22 @@ RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实�
 
 ---
 
-## 小结：JS 负责决定，原生负责呈现
+## 小结：JS 负责计算，原生负责渲染
 
 <div class="dg" style="gap:.7rem">
-  <div class="dbox js"><b>JS</b><small>决定界面怎么变</small></div>
+  <div class="dbox js"><b>JS</b><small>计算界面变化</small></div>
   <span class="darr">→</span>
   <div class="dbox rn"><b>JSI</b><small>同步送达</small></div>
   <span class="darr">→</span>
-  <div class="dbox"><b>Yoga</b><small>定位置</small></div>
+  <div class="dbox"><b>Yoga</b><small>计算位置</small></div>
   <span class="darr">→</span>
-  <div class="dbox nat"><b>系统控件</b><small>呈现</small></div>
+  <div class="dbox nat"><b>系统控件</b><small>渲染上屏</small></div>
 </div>
 
 <p class="dnote">体验是原生的，开发是 JS 的</p>
 
 <!--
-章首立的那句话，现在证完了。两个问题串成一条链：JS 决定界面怎么变，JSI 同步送达，Yoga 定位置，系统控件呈现。体验拿到原生，开发拿到 JS——原理成立。但原理成立到生产可用还差一堆脏活：RN 项目里躺着的两个原生工程谁维护？原生依赖怎么配？答案在 Expo。
+章首立的那句话，现在证完了。两个问题串成一条链：JS 算出界面怎么变，JSI 同步送达，Yoga 算出位置，系统控件渲染上屏。体验拿到原生，开发拿到 JS——原理成立。但原理成立到生产可用还差一堆脏活：RN 项目里躺着的两个原生工程谁维护？原生依赖怎么配？答案在 Expo。
 -->
 
 ---
