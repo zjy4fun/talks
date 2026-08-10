@@ -1,0 +1,98 @@
+/* ===== 整体配色：暖纸底 + 藏青标题，章节页深蓝渐变 ===== */
+:root {
+  --brand: #0f4c81;
+  --brand-ink: #17324d;
+  --paper: #faf9f7;
+}
+
+.slidev-layout {
+  background: var(--paper);
+  color: #334155;
+  font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+}
+.slidev-layout h1,
+.slidev-layout h2,
+.slidev-layout h3 {
+  color: var(--brand-ink);
+  font-family: "Songti SC", "STSong", "Noto Serif SC", "SimSun", serif;
+  font-weight: 700;
+}
+
+/* 封面与章节页：深蓝渐变底，形成节奏对比 */
+.slidev-layout.cover,
+.slidev-layout.section {
+  background: linear-gradient(135deg, #17324d 0%, #0f4c81 100%) !important;
+  background-image: linear-gradient(135deg, #17324d 0%, #0f4c81 100%) !important;
+  color: #dbe6f1 !important;
+}
+.slidev-layout.cover h1,
+.slidev-layout.section h1 {
+  color: #ffffff !important;
+}
+.slidev-layout.cover p,
+.slidev-layout.section p {
+  color: #a9bfd6 !important;
+  opacity: 1 !important;
+}
+
+/* ===== 全套原理图统一设计系统 =====
+   三个主色 + 灰：琥珀=JS/Web 侧，蓝=原生/系统侧，绿=RN/通道/结论 */
+:root {
+  --dg-amber: #b45309;
+  --dg-amber-bg: #fef3c7;
+  --dg-blue: #1d4ed8;
+  --dg-blue-bg: #dbeafe;
+  --dg-green: #047857;
+  --dg-green-bg: #d1fae5;
+  --dg-gray: #6b7280;
+  --dg-gray-bg: #f3f4f6;
+  --dg-ink: #1f2937;
+}
+
+.dg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: var(--dg-ink);
+  margin-top: 1.4rem;
+}
+.dg * { box-sizing: border-box; }
+
+.dbox {
+  border: 2px solid var(--dg-gray);
+  background: var(--dg-gray-bg);
+  border-radius: 10px;
+  padding: 0.5rem 0.9rem;
+  text-align: center;
+  color: var(--dg-ink);
+}
+.dbox.js { border-color: var(--dg-amber); background: var(--dg-amber-bg); }
+.dbox.nat { border-color: var(--dg-blue); background: var(--dg-blue-bg); }
+.dbox.rn { border-color: var(--dg-green); background: var(--dg-green-bg); }
+.dbox.ghost { border-style: dashed; background: transparent; }
+
+.dbox b { display: block; font-size: 0.86rem; }
+.dbox small { display: block; color: #4b5563; font-size: 0.68rem; margin-top: 0.15rem; }
+
+.darr { color: var(--dg-gray); font-weight: 700; font-size: 1.1rem; }
+.dcol { display: flex; flex-direction: column; gap: 0.5rem; justify-content: center; }
+.drow { display: flex; gap: 0.5rem; align-items: stretch; justify-content: center; }
+
+.dnote {
+  text-align: center;
+  color: var(--dg-gray);
+  font-size: 0.72rem;
+  margin-top: 0.9rem;
+}
+.dcap {
+  text-align: center;
+  color: var(--dg-gray);
+  font-size: 0.72rem;
+  margin-top: 0.35rem;
+}
+
+/* 正文行距稍紧，给图留空间 */
+.slidev-layout p { line-height: 1.65; }
