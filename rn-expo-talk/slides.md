@@ -18,19 +18,19 @@ mdc: true
 
 ---
 
-## 今天的六章，串成一条论证链
+## 这场分享，沿行业走过的路展开
 
-<div class="dg" style="flex-wrap:wrap;max-width:30rem;margin:auto">
-  <span class="dbox">问题的本质</span><span class="darr">→</span>
-  <span class="dbox js">H5 的天花板</span><span class="darr">→</span>
-  <span class="dbox nat">原生的成本</span><span class="darr">→</span>
-  <span class="dbox rn">RN 的原理</span><span class="darr">→</span>
-  <span class="dbox rn">Expo 的价值</span><span class="darr">→</span>
-  <span class="dbox">RN 的边界</span>
+<div class="dg" style="flex-wrap:wrap;max-width:34rem;margin:auto">
+  <span class="dbox">分析框架</span><span class="darr">→</span>
+  <span class="dbox nat">纯原生时代</span><span class="darr">→</span>
+  <span class="dbox js">H5 / Hybrid 浪潮</span><span class="darr">→</span>
+  <span class="dbox rn">RN 诞生与演进</span><span class="darr">→</span>
+  <span class="dbox rn">Expo 工程化</span><span class="darr">→</span>
+  <span class="dbox">边界与结论</span>
 </div>
 
 <!--
-路线：先定义问题，然后排除两个方案——H5 为什么不够、纯原生为什么太贵；中间最重的一章讲 RN 凭什么两头占便宜；再讲 Expo 兜住哪些工程麻烦；最后讲边界。每章结尾我会收一句结论，中途走神了也能跟上。
+今天不按功能清单讲，按行业走过的路讲：最早大家都写纯原生，太贵；然后是 H5 和 Hybrid 的降本浪潮，撞了天花板；2015 年 RN 作为第三条路诞生，十年间把自己的架构重写了一遍；Expo 把它工程化到能落地；最后划清边界、给出结论。开讲前，先立一个贯穿全场的分析框架。
 -->
 
 ---
@@ -75,7 +75,7 @@ layout: section
 </div>
 
 <!--
-纯原生在右上角，两个答案都是原生，体验天花板，代价第三章算。H5 在左下角，都选网页，成本最低，天花板下一章推。左上角的 RN 最有意思：UI 用系统控件，逻辑用 JS——明摆着想两头占便宜。今天全场就在论证这个「两头占」成不成立。
+纯原生在右上角，两个答案都是原生，体验天花板，代价下一章算。H5 在左下角，都选网页，成本最低，天花板第三章推导。左上角的 RN 最有意思：UI 用系统控件，逻辑用 JS——明摆着想两头占便宜。今天全场就在论证这个「两头占」成不成立。
 -->
 
 ---
@@ -94,7 +94,62 @@ class: text-center
 </div>
 
 <!--
-今天记住这一句就够本：RN 里没有网页，屏幕上每个按钮都是货真价实的原生控件，JS 只是发号施令的人。「JS 写的就是网页套壳」是今天要拆掉的最大误解——第四章拆给你看，最后还用系统工具现场验货。
+今天记住这一句就够本：RN 里没有网页，屏幕上每个按钮都是货真价实的原生控件，JS 只是发号施令的人。「JS 写的就是网页套壳」是今天要拆掉的最大误解——RN 那章拆给你看，最后还用系统工具现场验货。
+-->
+
+---
+layout: section
+---
+
+# 同一个功能，永远要写两遍
+
+<!--
+从起点讲起。智能手机头几年，App 只有一种写法：纯原生。体验没得挑，问题出在账上——这章短，就两笔账。
+-->
+
+---
+
+## 双份代码、双份团队、双份测试，还会互相漂移
+
+<div class="dg" style="gap:1.4rem">
+  <div class="dbox nat"><b>iOS</b><small>Swift · 团队 A · QA 一遍</small></div>
+  <div class="dcol" style="align-items:center;gap:2px">
+    <div style="font-size:.7rem;color:#6b7280">同一个需求</div>
+    <div class="darr">⇄</div>
+    <div style="font-size:.7rem;color:#b45309">行为漂移</div>
+  </div>
+  <div class="dbox nat"><b>Android</b><small>Kotlin · 团队 B · QA 再一遍</small></div>
+</div>
+
+<!--
+第一笔账：同一个需求 Swift 写一遍 Kotlin 再写一遍，两拨工程师、两套招聘、QA 各回归一遍。还有对齐漂移：两边各自实现必然长歪，产品某天发现 iOS 有的功能 Android 没有，再补排期。人力乘二，速度除二。
+-->
+
+---
+
+## 改一行代码，也要等商店审核
+
+<div class="dg" style="flex-direction:column;gap:.9rem">
+  <div class="drow" style="align-items:center">
+    <div class="dcap" style="width:3.5rem;margin:0;text-align:right">原生</div>
+    <div class="dbox" style="padding:.35rem .7rem">打包</div>
+    <span class="darr">→</span>
+    <div class="dbox nat"><b>商店审核</b><small>iOS 通常 1~3 天</small></div>
+    <span class="darr">→</span>
+    <div class="dbox" style="padding:.35rem .7rem">放量</div>
+    <span class="darr">→</span>
+    <div class="dbox" style="padding:.35rem .7rem">等用户升级</div>
+  </div>
+  <div class="drow" style="align-items:center">
+    <div class="dcap" style="width:3.5rem;margin:0;text-align:right">Web</div>
+    <div class="dbox js" style="padding:.35rem .7rem">部署</div>
+    <span class="darr">→</span>
+    <div class="dbox rn" style="padding:.35rem .7rem">分钟级全量</div>
+  </div>
+</div>
+
+<!--
+第二笔账：节奏被商店锁死。打包、提审——iOS 通常一到三天，被拒重排——再分批放量、等用户升级。原生团队都攒版本，两周一班车，线上 bug 最快也是天级响应。太贵、太慢，怎么办？行业的第一反应：把已经会的 Web 搬进 App。
 -->
 
 ---
@@ -104,7 +159,7 @@ layout: section
 # H5 的优点真实存在
 
 <!--
-先说 H5。很多人印象是「卡、假」，但它的好处实打实省钱，先把优点说足，才能准确说出它输在哪。
+于是有了 H5 和 Hybrid 的浪潮。公平起见先把优点说足——它们实打实省钱，这也是这条路当年席卷行业的原因；把优点看清楚，才能准确说出它输在哪。
 -->
 
 ---
@@ -132,7 +187,20 @@ layout: section
 </div>
 
 <!--
-两大优点。真跨平台：一份代码处处能跑，今天讲的方案里唯一做到的。发版零成本：部署完用户打开就是新版，没有审核、没有「用户不肯升级」。运营活动页用它是碾压级优势。那为什么主流 App 的主体都不是 H5？答案在渲染链路里。
+两大优点。真跨平台：一份代码处处能跑，今天讲的方案里唯一做到的。发版零成本：部署完用户打开就是新版——正好治上一章「等审核」的痛。运营活动页用它是碾压级优势。那为什么主流 App 的主体都不是 H5？因为它头上有两个天花板。
+-->
+
+---
+
+## H5 的头上有两个天花板：体验，和能力
+
+<div class="dg" style="gap:2.5rem">
+  <div class="dbox js" style="min-width:13rem;padding:.9rem 1rem"><b>体验天花板</b><small>渲染管线 · 帧预算 · 手感</small></div>
+  <div class="dbox nat" style="min-width:13rem;padding:.9rem 1rem"><b>能力天花板</b><small>沙箱隔离 · 依赖原生救场</small></div>
+</div>
+
+<!--
+两个天花板，分开论证，这一章的结构就这两块。体验：为什么 H5 摸起来总差一口气——接下来三页讲清来源。能力：为什么纯 H5 连很多功能都做不了——两页推到 Hybrid，再算一笔账。最后收一个分工结论。
 -->
 
 ---
@@ -152,7 +220,7 @@ flowchart LR
 <p class="dnote">WebView = 嵌在 App 里的浏览器；这条流水线为「渲染任意网页」设计——极通用，也极长</p>
 
 <!--
-WebView 就是嵌在 App 里的浏览器。它干活的流程：解析成 DOM 和样式树、合成渲染树、算布局、绘制像素、合成上屏。这条流水线是为「渲染任意网页」设计的，极通用也极长；界面一变就要重走相应环节，每一步都有开销。
+先拆体验天花板，第一个来源：渲染链路。WebView 就是嵌在 App 里的浏览器，它干活的流程：解析成 DOM 和样式树、合成渲染树、算布局、绘制像素、合成上屏。这条流水线为「渲染任意网页」设计，极通用也极长；界面一变就要重走相应环节，每一步都有开销。
 -->
 
 ---
@@ -183,7 +251,7 @@ WebView 就是嵌在 App 里的浏览器。它干活的流程：解析成 DOM �
 </div>
 
 <!--
-屏幕一秒刷六十次，一帧预算十六点七毫秒，超时就丢帧，肉眼看到的就是卡顿。而且浏览器里 JS 和渲染挤同一个主线程，JS 一跑久整条管线跟着迟到。手机芯片弱还要省电，这条长管线经常踩线——「网页在手机上卡」是有物理来源的。
+第二个来源：帧预算。屏幕一秒刷六十次，一帧预算十六点七毫秒，超时就丢帧，肉眼看到的就是卡顿。浏览器里 JS 和渲染还挤同一个主线程，JS 一跑久整条管线跟着迟到。手机芯片弱、要省电，这条长管线经常踩线——「网页在手机上卡」是有物理来源的。
 -->
 
 ---
@@ -209,7 +277,7 @@ WebView 就是嵌在 App 里的浏览器。它干活的流程：解析成 DOM �
 </div>
 
 <!--
-你在原生 App 里划列表，惯性和回弹是系统物理引擎在跑。H5 整页滚动系统也管，但交互一复杂——下拉刷新、嵌套滚动——就得 JS 自己模拟；键盘遮输入框是 WebView 经典 bug；iOS 边缘右滑返回那个跟手感，模拟出来总慢半拍。用户说不出所以然，但一上手就觉得「不像个 App」。
+第三个来源最直观：手感。原生列表的惯性和回弹是系统物理引擎在跑；H5 整页滚动系统也管，但交互一复杂——下拉刷新、嵌套滚动——就得 JS 自己模拟；键盘遮输入框是 WebView 经典 bug；iOS 边缘右滑返回的跟手感，模拟出来总慢半拍。用户说不出所以然，但一上手就觉得「不像个 App」。体验天花板说完，换第二个。
 -->
 
 ---
@@ -230,7 +298,7 @@ WebView 就是嵌在 App 里的浏览器。它干活的流程：解析成 DOM �
 <p class="dnote">墙是浏览器安全模型砌的——所以纯 H5 的 App 并不存在</p>
 
 <!--
-更硬的一堵墙：浏览器天生不信任网页，把它关在沙箱里——摄像头、推送、蓝牙都碰不到。但正经 App 离不开这些。所以只要一个「H5 App」能扫码、能收推送，它就一定不是纯 H5，原生代码一定在场。这就是 Hybrid。
+能力天花板。浏览器天生不信任网页，把它关在沙箱里——摄像头、推送、蓝牙都碰不到。但正经 App 离不开这些。所以只要一个「H5 App」能扫码、能收推送，它就一定不是纯 H5，原生代码一定在场。这就是 Hybrid。
 -->
 
 ---
@@ -300,80 +368,25 @@ Hybrid：原生壳管系统能力，WebView 跑页面，中间 JSBridge 通道�
 </div>
 
 <!--
-结论是分工：低频、重展示、天天改的页面给 H5，发版优势用在刀刃上；主体验——首页、核心流程、高频交互——管线开销、模拟不出的手感、隔桥的能力，三座山决定了不该是 H5。那纯原生呢？下一章算账。
--->
-
----
-layout: section
----
-
-# 同一个功能，永远要写两遍
-
-<!--
-纯原生这章短：不是技术问题，是经济问题。体验和能力都是天花板，账不划算。
+两个天花板都到底了，结论是分工：低频、重展示、天天改的页面给 H5，发版优势用在刀刃上；主体验——首页、核心流程、高频交互——被体验和能力两个天花板压着，不该是 H5。行业在这条路上摸了好几年，最大的一跤是 Facebook 摔的，这个故事马上讲。
 -->
 
 ---
 
-## 双份代码、双份团队、双份测试，还会互相漂移
-
-<div class="dg" style="gap:1.4rem">
-  <div class="dbox nat"><b>iOS</b><small>Swift · 团队 A · QA 一遍</small></div>
-  <div class="dcol" style="align-items:center;gap:2px">
-    <div style="font-size:.7rem;color:#6b7280">同一个需求</div>
-    <div class="darr">⇄</div>
-    <div style="font-size:.7rem;color:#b45309">行为漂移</div>
-  </div>
-  <div class="dbox nat"><b>Android</b><small>Kotlin · 团队 B · QA 再一遍</small></div>
-</div>
-
-<!--
-同一个需求 Swift 写一遍 Kotlin 再写一遍：两拨工程师、两套招聘、QA 各回归一遍。还有对齐漂移：两边各自实现必然长歪，产品某天发现 iOS 有的功能 Android 没有，再补排期。人力乘二，速度除二。
--->
-
----
-
-## 改一行代码，也要等商店审核
-
-<div class="dg" style="flex-direction:column;gap:.9rem">
-  <div class="drow" style="align-items:center">
-    <div class="dcap" style="width:3.5rem;margin:0;text-align:right">原生</div>
-    <div class="dbox" style="padding:.35rem .7rem">打包</div>
-    <span class="darr">→</span>
-    <div class="dbox nat"><b>商店审核</b><small>iOS 通常 1~3 天</small></div>
-    <span class="darr">→</span>
-    <div class="dbox" style="padding:.35rem .7rem">放量</div>
-    <span class="darr">→</span>
-    <div class="dbox" style="padding:.35rem .7rem">等用户升级</div>
-  </div>
-  <div class="drow" style="align-items:center">
-    <div class="dcap" style="width:3.5rem;margin:0;text-align:right">Web</div>
-    <div class="dbox js" style="padding:.35rem .7rem">部署</div>
-    <span class="darr">→</span>
-    <div class="dbox rn" style="padding:.35rem .7rem">分钟级全量</div>
-  </div>
-</div>
-
-<!--
-更要命的是节奏被商店锁死：打包、提审——iOS 通常一到三天，被拒重排——再分批放量、等用户升级。所以原生团队都攒版本，两周一班车，线上 bug 最快也是天级响应。记住这个「天」级基线，第五章拿它对照。
--->
-
----
-
-## 我们想要的是：原生的体验，Web 的迭代速度
+## 我们想要的是：原生的体验，Web 的开发效率
 
 <div class="dg" style="gap:.8rem">
   <div class="dbox nat">原生的体验</div>
   <span style="color:#6b7280;font-weight:700">+</span>
   <div class="dbox js">一套 JS 代码</div>
   <span style="color:#6b7280;font-weight:700">+</span>
-  <div class="dbox rn">随时发布</div>
+  <div class="dbox rn">Web 的开发效率</div>
   <span class="darr">→</span>
   <div class="dbox ghost"><b>React Native？</b></div>
 </div>
 
 <!--
-需求清单浮出来了：原生的体验、一套 JS 代码、最好还能随时发布。听着像既要又要还要——RN 的设计目标就是这张清单。前两条下一章看原理，第三条第五章揭晓。
+把两章的账合起来，需求清单自己浮出来：原生的体验、一套 JS 代码、尽量保住 Web 的开发效率。听着像既要又要——2015 年，Facebook 交出了一份答卷。
 -->
 
 ---
@@ -383,7 +396,47 @@ layout: section
 # React 只负责计算界面，不负责渲染
 
 <!--
-全场最重的一章。讲 RN 前先把 React 说清楚，非前端同学给我一分钟。
+答卷就是 React Native，全场最重的一章：先看它从哪来，再拆它怎么工作。
+-->
+
+---
+
+## RN 不是新技术：它已经演进了十年
+
+<div class="dg" style="gap:.55rem">
+  <div class="dcol" style="align-items:center;gap:3px">
+    <small style="color:#6b7280">2012</small>
+    <div class="dbox js" style="padding:.3rem .55rem;font-size:.68rem">Facebook 弃用 HTML5</div>
+  </div>
+  <span class="darr">→</span>
+  <div class="dcol" style="align-items:center;gap:3px">
+    <small style="color:#6b7280">2015</small>
+    <div class="dbox rn" style="padding:.3rem .55rem;font-size:.68rem">React Native 开源</div>
+  </div>
+  <span class="darr">→</span>
+  <div class="dcol" style="align-items:center;gap:3px">
+    <small style="color:#6b7280">2018</small>
+    <div class="dbox" style="padding:.3rem .55rem;font-size:.68rem">启动架构重写</div>
+  </div>
+  <span class="darr">→</span>
+  <div class="dcol" style="align-items:center;gap:3px">
+    <small style="color:#6b7280">2019</small>
+    <div class="dbox" style="padding:.3rem .55rem;font-size:.68rem">Hermes 引擎</div>
+  </div>
+  <span class="darr">→</span>
+  <div class="dcol" style="align-items:center;gap:3px">
+    <small style="color:#6b7280">2024</small>
+    <div class="dbox rn" style="padding:.3rem .55rem;font-size:.68rem">0.76 新架构默认</div>
+  </div>
+  <span class="darr">→</span>
+  <div class="dcol" style="align-items:center;gap:3px">
+    <small style="color:#6b7280">未来</small>
+    <div class="dbox ghost" style="padding:.3rem .55rem;font-size:.68rem">Static Hermes · React Compiler</div>
+  </div>
+</div>
+
+<!--
+上一章说行业在 H5 上摔的最大一跤：2012 年扎克伯格公开承认「押注 HTML5 是我们犯过的最大错误」，Facebook App 全线退回原生。但成本问题还在，2013 年内部 Hackathon 里长出一个实验：用 JS 指挥原生控件——2015 年开源，就是 React Native。之后是一部架构自我革命史：2018 年启动重写，2019 年自研 Hermes 引擎，2024 年 10 月起新架构成为默认。今天由 Meta、微软、Expo 等多方共建，路线图上还有 Static Hermes、React Compiler 这些性能项目。一句话：它不是新玩具，是演进了十年、还在活跃进化的成熟技术。
 -->
 
 ---
@@ -404,7 +457,7 @@ layout: section
 <p class="dnote">到这为止全是内存计算——真正「画」，是下游渲染后端的事</p>
 
 <!--
-React 是描述界面的库：你声明数据长这样时界面该长那样；数据一变，它把新旧描述一比，算出最小差异清单。关键：到这为止全是内存计算，一个像素没画。画是下游「渲染后端」的事——而渲染后端，是可以整个换掉的。这就是 RN 的钥匙。
+原理开讲，先把 React 说清楚，非前端同学给我一分钟。React 是描述界面的库：你声明数据长这样时界面该长那样；数据一变，它把新旧描述一比，算出最小差异清单。关键：到这为止全是内存计算，一个像素没画。画是下游「渲染后端」的事——而渲染后端，是可以整个换掉的。这就是 RN 的钥匙。
 -->
 
 ---
@@ -476,7 +529,7 @@ React 是描述界面的库：你声明数据长这样时界面该长那样；�
 </div>
 
 <!--
-指令怎么送到原生侧？老架构三个线程：JS 线程跑业务和 diff，Shadow 线程算布局，UI 主线程上屏。中间那座桥是唯一通道，规矩很怪：所有数据序列化成 JSON、全异步、攒批发。每次对话都要打包、排队、解包——什么场景会出事？
+指令怎么送到原生侧？先讲 2015 年的初代架构，三个线程：JS 线程跑业务和 diff，Shadow 线程算布局，UI 主线程上屏。中间那座桥是唯一通道，规矩很怪：所有数据序列化成 JSON、全异步、攒批发。每次对话都要打包、排队、解包——什么场景会出事？
 -->
 
 ---
@@ -496,7 +549,7 @@ React 是描述界面的库：你声明数据长这样时界面该长那样；�
 <p class="dnote">桥一堵，画面跟不上手指——老 RN「卡」的技术根源</p>
 
 <!--
-高频交互。手指拖拽：触摸事件过桥给 JS，JS 算完过桥回原生，每秒几十个来回，每次都序列化排队。桥一堵画面跟不上手指——早年「RN 卡」的传闻就是这座桥。Meta 后来直接动手术，把桥拆了。
+高频交互。手指拖拽：触摸事件过桥给 JS，JS 算完过桥回原生，每秒几十个来回，每次都序列化排队。桥一堵画面跟不上手指——早年「RN 卡」的传闻就是这座桥。这也是时间线上 2018 年那次手术的动机：Meta 直接把桥拆了。
 -->
 
 ---
@@ -548,7 +601,7 @@ React 是描述界面的库：你声明数据长这样时界面该长那样；�
 <p class="dnote">启动快，内存省</p>
 
 <!--
-还有 JS 引擎本身。一般引擎在用户打开 App 那刻现场解析编译，白屏就耗在这。Hermes 把编译挪到构建时，字节码直接打进包，启动加载即执行——启动快、内存省。RN 的运行时是为手机量身做的，不是把网页那套搬过来凑合。
+时间线上 2019 年那一格：JS 引擎本身。一般引擎在用户打开 App 那刻现场解析编译，白屏就耗在这。Hermes 把编译挪到构建时，字节码直接打进包，启动加载即执行——启动快、内存省。RN 的运行时是为手机量身做的，不是把网页那套搬过来凑合。
 -->
 
 ---
@@ -592,7 +645,7 @@ React 是描述界面的库：你声明数据长这样时界面该长那样；�
 <p class="dnote">体验是原生的，开发是 JS 的</p>
 
 <!--
-串一遍：JS 决定界面怎么变，JSI 同步送达，Yoga 定位置，系统控件呈现。体验拿到原生，开发拿到 JS——原理成立。但原理成立到生产可用还差一堆脏活：RN 项目里躺着的两个原生工程谁维护？包在哪打？答案在 Expo。
+串一遍：JS 决定界面怎么变，JSI 同步送达，Yoga 定位置，系统控件呈现。体验拿到原生，开发拿到 JS——原理成立。但原理成立到生产可用还差一堆脏活：RN 项目里躺着的两个原生工程谁维护？原生依赖怎么配？答案在 Expo。
 -->
 
 ---
@@ -621,12 +674,12 @@ RN 官网现在的入门指南，裸建已被挪进单独的 Without a Framework
   <div class="dcol">
     <div class="dbox js" style="padding:.35rem .7rem;font-size:.72rem">装库要改 Podfile / Gradle</div>
     <div class="dbox js" style="padding:.35rem .7rem;font-size:.72rem">升级要手动 merge 模板 diff</div>
-    <div class="dbox js" style="padding:.35rem .7rem;font-size:.72rem">打 iOS 包必须有 Mac</div>
+    <div class="dbox js" style="padding:.35rem .7rem;font-size:.72rem">原生配置要手改工程文件</div>
   </div>
 </div>
 
 <!--
-裸 RN 仓库里躺着完整的 Xcode 和 Gradle 工程，从生成那天起归你养：装库改 Podfile、升级对着模板 diff 手动 merge——这活没人想干两遍——打 iOS 包必须有 Mac。我们选 RN 图的就是不养原生团队，矛盾来了。Expo 用三层方案挨个拆。
+裸 RN 仓库里躺着完整的 Xcode 和 Gradle 工程，从生成那天起归你养：装库改 Podfile、原生配置手改工程文件、升级对着模板 diff 手动 merge——这活没人想干两遍。我们选 RN 图的就是不养原生团队，矛盾来了。Expo 的解法挨个拆。
 -->
 
 ---
@@ -694,80 +747,16 @@ flowchart LR
 
 ---
 
-## 构建和签名交给云端，打 iOS 包不再需要 Mac
-
-<div class="dg" style="gap:.9rem">
-  <div class="dbox js" style="font-family:monospace">eas build</div>
-  <span class="darr">→</span>
-  <div class="dbox nat"><b>云端 Mac</b><small>prebuild · 编译 · 签名（证书托管）</small></div>
-  <span class="darr">→</span>
-  <div class="dbox rn"><b>可提审的安装包</b></div>
-</div>
-
-<p class="dnote">团队里不再有「唯一能打包的那台电脑」</p>
-
-<!--
-第三层：打包上云。一行命令，云端 Mac 替你生成工程、编译、签名，吐出可提审的包；证书托管。商业服务有免费额度，生产强度要付费——对比自己维护打包机和签名体系，这笔账好算。还剩一个大招：收第三章的伏笔。
--->
-
----
-
-## App = 原生壳 + JS 包，两条独立的版本线
-
-<div class="dg" style="gap:2rem">
-  <div class="dbox" style="padding:.8rem 1rem">
-    <b style="margin-bottom:.4rem">手机上的 App</b>
-    <div class="dcol" style="margin-top:.5rem">
-      <div class="dbox nat"><b>原生壳 v3</b><small>控件 · 模块 · JS 引擎 —— 走商店审核</small></div>
-      <div class="dbox js"><b>JS bundle v7</b><small>业务逻辑 + 界面描述 —— 只是个文件</small></div>
-    </div>
-  </div>
-</div>
-
-<!--
-RN App 的安装包分两部分：原生壳——控件、模块、JS 引擎，机器码必须走商店；JS bundle——业务代码，壳启动后加载执行。注意：改业务改界面，动的只是 bundle，而 bundle 本质是个文件。文件，是可以从服务器下载的。
--->
-
----
-
-## OTA：启动检查、后台下载、下次启动生效
-
-<div class="dg" style="gap:1.2rem">
-  <div class="dbox" style="padding:.7rem .9rem">
-    <b style="margin-bottom:.3rem">手机</b>
-    <div class="dcol" style="margin-top:.4rem">
-      <div class="dbox nat" style="padding:.35rem .7rem">原生壳 · runtime v3</div>
-      <div class="dbox js" style="padding:.35rem .7rem">JS bundle v7</div>
-    </div>
-  </div>
-  <div class="dcol" style="align-items:center;gap:2px">
-    <div class="dbox rn" style="padding:.3rem .7rem;font-size:.7rem">runtimeVersion 匹配才下发</div>
-    <div class="darr">←</div>
-  </div>
-  <div class="dbox" style="padding:.7rem .9rem">
-    <b style="margin-bottom:.3rem">更新服务</b>
-    <div class="dbox js ghost" style="margin-top:.4rem;padding:.35rem .7rem">新 bundle v8<small>要求 runtime v3</small></div>
-  </div>
-</div>
-
-<p class="dnote">纯 JS 改动走 OTA，分钟级；动了原生的更新，老实走商店</p>
-
-<!--
-流程三步：启动时问服务器有没有新 bundle，有就后台下载，下次启动生效。安全阀 runtimeVersion：新 bundle 若用到壳里没有的模块会闪退，所以版本匹配才下发——纯 JS 走 OTA 分钟级，动了原生老实走商店。对照第三章：线上 bug 从「天」级到分钟级。合规：苹果允许 JS 层更新，前提不改变 App 核心用途，微软、Shopify 都在用。
--->
-
----
-
 ## 小结：RN 负责渲染，Expo 负责其余的工程化
 
 <div class="dg" style="gap:1rem">
   <div class="dbox rn" style="min-width:12rem"><b>RN</b><small>JS 渲染原生 UI</small></div>
   <span style="color:#6b7280;font-weight:700">+</span>
-  <div class="dbox nat" style="min-width:12rem"><b>Expo</b><small>SDK · CNG · EAS · OTA</small></div>
+  <div class="dbox nat" style="min-width:12rem"><b>Expo</b><small>SDK · CNG · Config Plugins</small></div>
 </div>
 
 <!--
-分工一句话：RN 管「JS 渲染原生 UI」，Expo 管其余一切工程化。引擎和整车的关系——光有引擎开不上路，官方劝你别裸用就是这个原因。正面论证到此完成，还差最后一块：边界。
+分工一句话：RN 管「JS 渲染原生 UI」，Expo 管围绕它的工程化——SDK 版本配套、CNG 生成原生工程、插件注入配置。引擎和整车的关系——光有引擎开不上路，官方劝你别裸用就是这个原因。正面论证到此完成，还差最后一块：边界。
 -->
 
 ---
@@ -943,29 +932,27 @@ layout: section
 
 ## 这些公司正在生产环境使用 RN
 
-<div class="dg" style="flex-direction:column;gap:.8rem">
-  <div class="drow" style="flex-wrap:wrap;max-width:36rem">
-    <div class="dbox rn">Shopify<small>全线押注</small></div>
-    <div class="dbox rn">Discord</div>
-    <div class="dbox rn">Coinbase</div>
-    <div class="dbox rn">微软 Office / Outlook</div>
+<div class="dg" style="flex-direction:column;gap:.9rem">
+  <div class="drow" style="gap:.9rem">
+    <div class="dbox" style="background:#fff;min-width:8rem;padding:.8rem .9rem"><logos-shopify style="width:1.9rem;height:1.9rem" /><small style="font-size:.72rem">Shopify</small></div>
+    <div class="dbox" style="background:#fff;min-width:8rem;padding:.8rem .9rem"><logos-discord-icon style="width:1.9rem;height:1.9rem" /><small style="font-size:.72rem">Discord</small></div>
+    <div class="dbox" style="background:#fff;min-width:8rem;padding:.8rem .9rem"><simple-icons-coinbase style="width:1.9rem;height:1.9rem;color:#0052ff" /><small style="font-size:.72rem">Coinbase</small></div>
+    <div class="dbox" style="background:#fff;min-width:8rem;padding:.8rem .9rem"><logos-microsoft-icon style="width:1.9rem;height:1.9rem" /><small style="font-size:.72rem">微软 Office · Outlook</small></div>
   </div>
-  <div class="drow">
-    <div class="dbox nat">京东</div>
-    <div class="dbox nat">美团<small>MRN</small></div>
-    <div class="dbox nat">携程<small>CRN</small></div>
+  <div class="drow" style="gap:.9rem">
+    <div class="dbox" style="background:#e1251b;border-color:#b81c14;min-width:8rem;padding:1rem .9rem"><b style="color:#fff;font-size:1.05rem;letter-spacing:.15em">京东</b><small style="color:#ffd9d6">JDReact</small></div>
+    <div class="dbox" style="background:#ffd100;border-color:#d9b200;min-width:8rem;padding:1rem .9rem"><b style="color:#222;font-size:1.05rem;letter-spacing:.15em">美团</b><small style="color:#6b5b00">MRN</small></div>
+    <div class="dbox" style="background:#2577e3;border-color:#1b5cb8;min-width:8rem;padding:1rem .9rem"><b style="color:#fff;font-size:1.05rem;letter-spacing:.15em">携程</b><small style="color:#cfe1fa">CRN</small></div>
   </div>
 </div>
 
-<p class="dnote">国内三家都有自研 RN 基建体系</p>
-
 <!--
-谁在用：Shopify 全线押注，Discord、Coinbase，微软 Office、Outlook 移动端大量用 RN、还维护着 RN 的 Windows/macOS 版本。国内京东、美团、携程各有自研基建——愿意投基建，说明极端体量下扛得住。共同画像：业务界面占大头、迭代压力大，跟我们一样。
+谁在用：Shopify 的移动端整体构建在 RN 上；Discord、Coinbase 的主 App；微软的 Office、Outlook 移动端大量使用 RN，还维护着 RN 的 Windows/macOS 版本。国内京东、美团、携程各有自研 RN 基建——JDReact、MRN、CRN，愿意投基建说明极端体量下扛得住。共同画像：业务界面占大头、迭代压力大，跟我们一样。
 -->
 
 ---
 
-## Flutter 逐像素自绘，且官方不提供热更新
+## Flutter 逐像素自绘，Dart 与前端技能栈不重叠
 
 <div class="dg" style="gap:2.5rem">
   <div class="dcol" style="align-items:center">
@@ -974,7 +961,7 @@ layout: section
     <div class="dbox rn" style="min-width:10rem"><b>React Native</b><small>指挥系统控件</small></div>
     <div class="darr">↓</div>
     <div class="dbox nat" style="min-width:10rem"><b>系统原生控件</b></div>
-    <div class="dcap">技能重叠前端 · 可 OTA</div>
+    <div class="dcap">React 心智 · 技能延续前端</div>
   </div>
   <div class="dcol" style="align-items:center">
     <div class="dbox js" style="min-width:10rem"><b>Dart</b></div>
@@ -982,12 +969,12 @@ layout: section
     <div class="dbox" style="min-width:10rem"><b>Flutter 引擎</b><small>自带渲染器</small></div>
     <div class="darr">↓</div>
     <div class="dbox" style="min-width:10rem"><b>自绘画布</b><small>每个像素自己画</small></div>
-    <div class="dcap">Dart 生态 · iOS AOT · 官方无热更新</div>
+    <div class="dcap">Dart 语言 · 生态另起炉灶</div>
   </div>
 </div>
 
 <!--
-为什么不是 Flutter？路线相反：RN 指挥系统控件，Flutter 自带引擎逐像素自绘，好处是两端像素级一致。两个代价对我们是决定性的：Dart 和前端技能栈零重叠；iOS 上 AOT 成机器码，官方不提供热更新——第三方 Shorebird 靠塞解释器绕，属少数派。技能复用和发布速度，恰是我们最看重的两条。
+为什么不是 Flutter？路线相反：RN 指挥系统控件，Flutter 自带引擎逐像素自绘，好处是两端像素级一致。对我们决定性的代价是技能栈：Dart 跟前端团队的 JS、React 几乎零重叠，等于全员重学、生态另起炉灶；而 RN 这边组件、状态管理的心智直接平移。团队技能复用是我们最看重的一条，所以选 RN。
 -->
 
 ---
@@ -1000,12 +987,12 @@ class: text-center
 <div class="dg" style="flex-direction:column;gap:.6rem;margin-top:1.6rem;font-size:.82rem">
   <div class="drow"><div class="dbox" style="min-width:13rem">UI 由谁渲染</div><span class="darr">→</span><div class="dbox nat" style="min-width:13rem">系统原生控件</div></div>
   <div class="drow"><div class="dbox" style="min-width:13rem">逻辑跑在哪个运行时</div><span class="darr">→</span><div class="dbox js" style="min-width:13rem">JS，一套代码</div></div>
-  <div class="drow"><div class="dbox" style="min-width:13rem">工程脏活谁兜底</div><span class="darr">→</span><div class="dbox rn" style="min-width:13rem">Expo（CNG · EAS · OTA）</div></div>
+  <div class="drow"><div class="dbox" style="min-width:13rem">工程脏活谁兜底</div><span class="darr">→</span><div class="dbox rn" style="min-width:13rem">Expo（SDK · CNG）</div></div>
   <div class="drow"><div class="dbox" style="min-width:13rem">链路罩不住的地方</div><span class="darr">→</span><div class="dbox rn" style="min-width:13rem">下沉原生，挂回 RN</div></div>
 </div>
 
 <!--
-回到开场。H5 都答网页，省钱但天花板低；纯原生都答原生，体验顶但成本翻倍、被审核锁死；RN 拆开答：渲染给系统控件，逻辑留 JS，Expo 兜工程，OTA 找回速度。后两行是一路走下来新加的两问，答案也在图上。一句话：用前端团队驾驭得了的一套代码，交付接近原生的体验，保住接近 Web 的迭代速度。
+回到开场那两个问题，也回顾这一路：纯原生都答原生，体验顶但成本翻倍、节奏被审核锁死；H5 都答网页，省钱但撞上体验和能力两个天花板；RN 把问题拆开答：渲染给系统控件，逻辑留 JS，用十年演进把中间那层通信做扎实，Expo 兜住工程化。后两行是一路走下来新加的两问，答案也在图上。一句话：用前端团队驾驭得了的一套代码，交付接近原生的体验，保住接近 Web 的开发效率。
 -->
 
 ---
@@ -1018,5 +1005,5 @@ class: text-center
 谢谢，欢迎提问与讨论
 
 <!--
-预答三个：性能——新架构后链路同步，热点走下沉；Meta 弃坑——Meta、微软、Shopify、Expo 多方共建；上手成本——主要是适应没有 DOM。其他现场聊。
+预答三个：性能——新架构后链路同步，热点走下沉；Meta 弃坑——Meta、微软、Shopify、Expo 多方共建，十年了还在活跃迭代；上手成本——主要是适应没有 DOM。其他现场聊。
 -->
