@@ -55,9 +55,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.55rem;
   margin-top: 2.4rem;
-  font-size: 0.8rem;
+  font-size: 0.86rem;
 }
 .evo .estep {
   border: 1.5px solid rgba(255, 255, 255, 0.28);
@@ -104,7 +104,7 @@
   line-height: 1.35;
   color: var(--dg-ink);
   margin-top: 1.4rem;
-  zoom: 1.32;
+  zoom: 1.45;
 }
 .dg * { box-sizing: border-box; }
 
@@ -112,7 +112,7 @@
   border: 2px solid var(--dg-gray);
   background: var(--dg-gray-bg);
   border-radius: 10px;
-  padding: 0.5rem 0.9rem;
+  padding: 0.55rem 1rem;
   text-align: center;
   color: var(--dg-ink);
 }
@@ -133,7 +133,7 @@
   color: var(--dg-gray);
   font-size: 0.72rem;
   margin-top: 0.9rem;
-  zoom: 1.12;
+  zoom: 1.28;
 }
 .dcap {
   text-align: center;
@@ -141,6 +141,126 @@
   font-size: 0.72rem;
   margin-top: 0.35rem;
 }
+
+/* ===== 演进时间线（大图版） ===== */
+.tl {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 1.4rem;
+}
+.tl::before {
+  content: "";
+  position: absolute;
+  left: 8.33%;
+  right: 8.33%;
+  top: calc(4.06rem - 1px);
+  height: 2px;
+  background: linear-gradient(90deg, #cbd5e1 0%, var(--brand) 55%, #cbd5e1 100%);
+}
+.tl-node {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  text-align: center;
+}
+.tl-year {
+  font-size: 1.15rem;
+  line-height: 1.4;
+  font-weight: 700;
+  color: var(--brand-ink);
+  letter-spacing: 0.03em;
+}
+.tl-dot {
+  width: 3.8rem;
+  height: 3.8rem;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2.5px solid var(--dg-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(23, 50, 77, 0.09);
+}
+.tl-dot.js { border-color: var(--dg-amber); }
+.tl-dot.rn { border-color: var(--dg-green); }
+.tl-dot.nat { border-color: var(--dg-blue); }
+.tl-dot.ghost { border-style: dashed; background: transparent; box-shadow: none; }
+.tl-label {
+  font-size: 0.92rem;
+  line-height: 1.4;
+  font-weight: 600;
+  color: var(--dg-ink);
+  padding: 0 0.2rem;
+}
+.tl-label small {
+  display: block;
+  font-weight: 400;
+  font-size: 0.74rem;
+  color: var(--dg-gray);
+  margin-top: 0.22rem;
+  line-height: 1.35;
+}
+
+/* ===== 三个根源 × 三种方案：对照矩阵 ===== */
+.mx {
+  border-collapse: separate;
+  border-spacing: 0 0.3rem;
+  margin: 0.9rem auto 0;
+  font-size: 0.76rem;
+  color: var(--dg-ink);
+  zoom: 1.16;
+}
+.mx thead th {
+  font-size: 0.72rem;
+  color: var(--dg-gray);
+  font-weight: 700;
+  padding: 0 0.3rem 0.2rem;
+  text-align: center;
+}
+.mx thead th span {
+  display: block;
+  height: 3px;
+  border-radius: 2px;
+  margin-top: 0.22rem;
+}
+.mx thead th.h-nat span { background: var(--dg-blue); }
+.mx thead th.h-rn span { background: var(--dg-green); }
+.mx thead th.h-js span { background: var(--dg-amber); }
+.mx tbody th {
+  text-align: left;
+  font-weight: 600;
+  padding: 0.3rem 0.9rem 0.3rem 0;
+  max-width: 15rem;
+}
+.mx tbody th small {
+  display: block;
+  color: var(--dg-gray);
+  font-weight: 400;
+  font-size: 0.66rem;
+  margin-top: 0.1rem;
+}
+.mx tbody td { padding: 0 0.22rem; }
+.mx .cell {
+  display: block;
+  min-width: 7.2rem;
+  border: 2px solid var(--dg-gray);
+  background: var(--dg-gray-bg);
+  border-radius: 9px;
+  padding: 0.3rem 0.45rem;
+  text-align: center;
+}
+.mx .cell b { display: block; font-size: 0.78rem; }
+.mx .cell small { display: block; font-size: 0.62rem; color: #4b5563; margin-top: 0.05rem; }
+.mx .win { border-color: var(--dg-green); background: var(--dg-green-bg); }
+.mx .near { border-color: var(--dg-green); background: var(--dg-green-bg); border-style: dashed; }
+.mx .lose { border-color: var(--dg-amber); background: var(--dg-amber-bg); }
 
 /* 正文行距稍紧，给图留空间 */
 .slidev-layout p { line-height: 1.65; }

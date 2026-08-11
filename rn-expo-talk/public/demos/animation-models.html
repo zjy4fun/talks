@@ -1,0 +1,301 @@
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>动画模型对比：一次性提交曲线 vs 每帧回问 JS</title>
+<style>
+  :root {
+    --paper: #faf9f7;
+    --ink: #1f2937;
+    --gray: #6b7280;
+    --gray-bg: #f3f4f6;
+    --line: #e5e7eb;
+    --amber: #b45309;
+    --blue: #1d4ed8;
+    --blue-bg: #dbeafe;
+    --green: #047857;
+    --green-bg: #d1fae5;
+    --red: #b91c1c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  /* 嵌进幻灯片时不显示滚动条（独立打开时仍可滚动） */
+  html { scrollbar-width: none; }
+  html::-webkit-scrollbar { display: none; }
+  html, body { height: 100%; }
+  body {
+    font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .wrap { width: 100%; max-width: 900px; padding: 6px 14px; }
+
+  .lane { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .lane .lbl { width: 176px; flex: none; }
+  .lane .lbl b { display: block; font-size: .78rem; }
+  .lane .lbl small { display: block; font-size: .63rem; color: var(--gray); margin-top: 1px; }
+  .lane .track {
+    position: relative; flex: 1 1 auto; height: 34px;
+    border-radius: 8px; background: var(--gray-bg); overflow: hidden;
+  }
+  .lane .box {
+    position: absolute; top: 5px; left: 0; width: 24px; height: 24px;
+    border-radius: 6px; will-change: transform;
+  }
+  .lane .box.top { background: var(--blue-bg); border: 2px solid var(--blue); }
+  .lane .box.bot { background: #fef3c7; border: 2px solid var(--amber); }
+  .lane .badge {
+    width: 116px; flex: none; text-align: right;
+    font-size: .66rem; color: var(--gray); font-variant-numeric: tabular-nums;
+  }
+  .lane .badge b { font-size: .82rem; color: var(--ink); }
+  .lane .badge em { display: block; font-style: normal; font-size: .6rem; color: var(--red); min-height: 1em; }
+
+  canvas { display: block; width: 100%; height: 156px; margin-top: 2px; }
+
+  .foot {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 6px; font-size: .68rem; color: var(--gray);
+  }
+  label { display: inline-flex; align-items: center; gap: .35rem; cursor: pointer; color: var(--ink); }
+  button {
+    font: inherit; font-size: .7rem;
+    padding: .28rem .85rem; border-radius: 999px;
+    border: 2px solid var(--gray); background: #fff; color: var(--ink); cursor: pointer;
+  }
+  button:hover { background: var(--gray-bg); }
+</style>
+
+<div class="wrap">
+  <div class="lane">
+    <div class="lbl">
+      <b>一次提交 · 声明式</b>
+      <small>把整条曲线一次性交给合成器</small>
+    </div>
+    <div class="track"><div class="box top" id="boxTop"></div></div>
+    <div class="badge">跨层通信<b id="cntTop">×0</b><em id="expTop"></em></div>
+  </div>
+
+  <div class="lane">
+    <div class="lbl">
+      <b>每帧回问 · 命令式</b>
+      <small>每帧回到 JS 问一次「现在该在哪」</small>
+    </div>
+    <div class="track"><div class="box bot" id="boxBot"></div></div>
+    <div class="badge">跨层通信<b id="cntBot">×0</b><em id="expBot"></em></div>
+  </div>
+
+  <canvas id="mech"></canvas>
+
+  <div class="foot">
+    <label><input type="checkbox" id="blk" checked /> 让应用线程卡住 200ms</label>
+    <span>同一个 0.3 秒的动画，循环播放</span>
+    <button id="replay">重放</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var DUR = 300;        // 动画时长 ms
+  var HOLD = 1100;      // 播完后停留
+  var LOOP = DUR + HOLD;
+  var BLOCK_FROM = 60;  // 应用线程被堵住的窗口
+  var BLOCK_TO = 260;
+  var AXIS_MS = 340;    // 时间轴总长度
+
+  var boxTop = document.getElementById('boxTop');
+  var boxBot = document.getElementById('boxBot');
+  var cntTop = document.getElementById('cntTop');
+  var cntBot = document.getElementById('cntBot');
+  var expBot = document.getElementById('expBot');
+  var blk = document.getElementById('blk');
+  var canvas = document.getElementById('mech');
+  var ctx, CW, CH;
+
+  var t0 = null;
+  var cycle = -1;
+  var dotsBot = [];      // 下路：每帧一次跨层通信
+  var deliveredBot = []; // 下路：合成器上真正拿到新值的时间段
+  var nTop = 0, nBot = 0, nBotExp = 0;
+  var lastBotU = 0;
+
+  function fit() {
+    var r = canvas.getBoundingClientRect();
+    var dpr = window.devicePixelRatio || 1;
+    CW = Math.max(1, Math.round(r.width));
+    CH = Math.max(1, Math.round(r.height));
+    canvas.width = Math.round(CW * dpr);
+    canvas.height = Math.round(CH * dpr);
+    ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  var PAD_L = 118, PAD_R = 16;
+  function x(ms) { return PAD_L + (ms / AXIS_MS) * (CW - PAD_L - PAD_R); }
+
+  function ease(u) { return u < 0.5 ? 2 * u * u : 1 - 2 * (1 - u) * (1 - u); }
+
+  function blocked(ms) { return blk.checked && ms >= BLOCK_FROM && ms < BLOCK_TO; }
+
+  function resetCycle() {
+    dotsBot = [];
+    deliveredBot = [];
+    nTop = 0;
+    nBot = 0;
+    nBotExp = 0;
+    lastBotU = 0;
+    boxTop.style.transform = 'translateX(0px)';
+    boxBot.style.transform = 'translateX(0px)';
+    cntTop.textContent = '×0';
+    cntBot.textContent = '×0';
+    expBot.textContent = '';
+  }
+
+  function roundRect(c, rx, ry, w, h, r) {
+    c.beginPath();
+    c.moveTo(rx + r, ry);
+    c.arcTo(rx + w, ry, rx + w, ry + h, r);
+    c.arcTo(rx + w, ry + h, rx, ry + h, r);
+    c.arcTo(rx, ry + h, rx, ry, r);
+    c.arcTo(rx, ry, rx + w, ry, r);
+    c.closePath();
+  }
+
+  function strip(oy, title, dots, delivered, oneShot) {
+    var appY = oy + 14, compY = oy + 44, barH = 14, midY = oy + 36;
+    var x0 = x(0), x1 = x(AXIS_MS);
+
+    ctx.font = '600 11px "PingFang SC", system-ui, sans-serif';
+    ctx.fillStyle = '#1f2937';
+    ctx.textAlign = 'left';
+    ctx.fillText(title, 0, oy + 4);
+
+    ctx.font = '10px "PingFang SC", system-ui, sans-serif';
+    ctx.fillStyle = '#6b7280';
+    ctx.textAlign = 'right';
+    ctx.fillText('应用线程（JS）', PAD_L - 10, appY + 11);
+    ctx.fillText('合成器 / 系统', PAD_L - 10, compY + 11);
+
+    // 应用线程：正常段 + 阻塞段
+    ctx.fillStyle = '#e5e7eb';
+    roundRect(ctx, x0, appY, x1 - x0, barH, 4); ctx.fill();
+    if (blk.checked) {
+      ctx.fillStyle = '#fecaca';
+      ctx.fillRect(x(BLOCK_FROM), appY, x(BLOCK_TO) - x(BLOCK_FROM), barH);
+      ctx.strokeStyle = '#b91c1c'; ctx.lineWidth = 1.5;
+      ctx.strokeRect(x(BLOCK_FROM) + 0.5, appY + 0.5, x(BLOCK_TO) - x(BLOCK_FROM) - 1, barH - 1);
+      ctx.fillStyle = '#b91c1c';
+      ctx.font = '600 9.5px "PingFang SC", system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('阻塞 200ms', (x(BLOCK_FROM) + x(BLOCK_TO)) / 2, appY + 10.5);
+    }
+
+    // 合成器：底色 + 真正在动的时间段
+    ctx.fillStyle = '#e5e7eb';
+    roundRect(ctx, x0, compY, x1 - x0, barH, 4); ctx.fill();
+    ctx.fillStyle = '#a7f3d0';
+    for (var i = 0; i < delivered.length; i++) {
+      var seg = delivered[i];
+      ctx.fillRect(x(seg[0]), compY, Math.max(1.5, x(seg[1]) - x(seg[0])), barH);
+    }
+    ctx.strokeStyle = '#047857'; ctx.lineWidth = 1.2;
+    for (i = 0; i < delivered.length; i++) {
+      var s = delivered[i];
+      ctx.strokeRect(x(s[0]) + 0.5, compY + 0.5, Math.max(1, x(s[1]) - x(s[0]) - 1), barH - 1);
+    }
+
+    // 跨层边界
+    ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = '#9ca3af'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x0, midY + 0.5); ctx.lineTo(x1, midY + 0.5); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 每一次跨层通信：一条穿过边界的连线 + 一个点
+    for (i = 0; i < dots.length; i++) {
+      var dx = x(dots[i]);
+      ctx.strokeStyle = oneShot ? '#1d4ed8' : '#b45309';
+      ctx.lineWidth = oneShot ? 2 : 1.2;
+      ctx.beginPath(); ctx.moveTo(dx, appY + barH); ctx.lineTo(dx, compY); ctx.stroke();
+      ctx.fillStyle = oneShot ? '#1d4ed8' : '#b45309';
+      ctx.beginPath(); ctx.arc(dx, midY, oneShot ? 4 : 2.6, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
+  function draw(ms) {
+    if (!ctx) return;
+    ctx.clearRect(0, 0, CW, CH);
+
+    // 时间刻度
+    ctx.font = '9.5px "PingFang SC", system-ui, sans-serif';
+    ctx.fillStyle = '#9ca3af';
+    ctx.textAlign = 'center';
+    [0, 100, 200, 300].forEach(function (v) {
+      ctx.fillText(v + 'ms', x(v), 8);
+    });
+
+    strip(18, '一次提交：曲线交出去之后，不再跨层', [0], [[0, Math.min(ms, DUR)]], true);
+    strip(90, '每帧回问：每一帧都要跨层一次', dotsBot, deliveredBot, false);
+
+    // 播放头
+    if (ms <= AXIS_MS) {
+      ctx.strokeStyle = '#17324d'; ctx.lineWidth = 1;
+      ctx.setLineDash([2, 3]);
+      ctx.beginPath(); ctx.moveTo(x(ms), 12); ctx.lineTo(x(ms), CH - 2); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  }
+
+  function loop(t) {
+    requestAnimationFrame(loop);
+    if (t0 === null) { t0 = t; fit(); }
+
+    var elapsed = t - t0;
+    var c = Math.floor(elapsed / LOOP);
+    if (c !== cycle) { cycle = c; resetCycle(); }
+
+    var ms = elapsed % LOOP;
+    var animMs = Math.min(ms, DUR);
+    var u = ease(animMs / DUR);
+
+    var trackW = boxTop.parentElement.clientWidth - 24;
+
+    // 上路：曲线已经交给合成器，应用线程卡不卡都照放
+    boxTop.style.transform = 'translateX(' + (u * trackW).toFixed(2) + 'px)';
+    if (ms <= DUR) nTop = 1;
+    cntTop.textContent = '×' + nTop;
+
+    // 每帧回问：只有应用线程空着的那些帧，才能把新位置送过去
+    if (ms <= DUR) {
+      nBotExp++;
+      if (!blocked(ms)) {
+        nBot++;
+        dotsBot.push(animMs);
+        var prev = deliveredBot[deliveredBot.length - 1];
+        if (prev && animMs - prev[1] < 24) prev[1] = animMs;
+        else deliveredBot.push([animMs, animMs]);
+        lastBotU = u;
+      }
+      boxBot.style.transform = 'translateX(' + (lastBotU * trackW).toFixed(2) + 'px)';
+      cntBot.textContent = '×' + nBot;
+      expBot.textContent = nBotExp > nBot ? '被堵掉 ' + (nBotExp - nBot) + ' 次' : '';
+    }
+
+    draw(ms);
+  }
+
+  window.addEventListener('resize', fit);
+  // 标签页挂起后切回来，从头放一遍，避免停在半截
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) { t0 = null; cycle = -1; }
+  });
+  document.getElementById('replay').addEventListener('click', function () {
+    t0 = null; cycle = -1;
+  });
+  blk.addEventListener('change', function () {
+    t0 = null; cycle = -1;
+  });
+
+  fit();
+  requestAnimationFrame(loop);
+})();
+</script>

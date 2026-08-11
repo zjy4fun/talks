@@ -1,0 +1,287 @@
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>帧时间方差对比：稳定 30fps vs 平均更高但有长尾</title>
+<style>
+  :root {
+    --paper: #faf9f7;
+    --ink: #1f2937;
+    --gray: #6b7280;
+    --gray-bg: #f3f4f6;
+    --line: #e5e7eb;
+    --amber: #b45309;
+    --amber-bg: #fef3c7;
+    --blue: #1d4ed8;
+    --blue-bg: #dbeafe;
+    --green: #047857;
+    --green-bg: #d1fae5;
+    --red: #b91c1c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  /* 嵌进幻灯片时不显示滚动条（独立打开时仍可滚动） */
+  html { scrollbar-width: none; }
+  html::-webkit-scrollbar { display: none; }
+  html, body { height: 100%; }
+  body {
+    font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .wrap { width: 100%; max-width: 920px; padding: 5px 14px; }
+
+  .hint { font-size: .76rem; text-align: center; margin-bottom: 6px; color: var(--gray); }
+  .hint b { color: var(--red); }
+
+  .panels { display: flex; gap: 14px; }
+  .panel {
+    flex: 1 1 0;
+    min-width: 0;
+    border: 2px solid var(--line);
+    border-radius: 12px;
+    background: #fff;
+    padding: 8px 12px 9px;
+  }
+  .panel h2 { font-size: .84rem; font-weight: 700; }
+  .panel .sub { font-size: .66rem; color: var(--gray); margin-top: 2px; }
+
+  .track {
+    position: relative;
+    height: 48px;
+    margin: 7px 0 6px;
+    border-radius: 8px;
+    background: var(--gray-bg);
+    overflow: hidden;
+  }
+  .box {
+    position: absolute;
+    top: 9px;
+    left: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
+    will-change: transform;
+  }
+  .box.l { background: var(--blue-bg); border: 2px solid var(--blue); }
+  .box.r { background: var(--green-bg); border: 2px solid var(--green); }
+
+  .stats { display: flex; gap: 12px; font-size: .66rem; color: var(--gray); margin-bottom: 5px; }
+  .stats b { color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  canvas { display: block; width: 100%; height: 74px; }
+
+  .foot {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 7px; font-size: .66rem; color: var(--gray);
+  }
+  button {
+    font: inherit; font-size: .7rem;
+    padding: .28rem .85rem; border-radius: 999px;
+    border: 2px solid var(--gray); background: #fff; color: var(--ink); cursor: pointer;
+  }
+  button:hover { background: var(--gray-bg); }
+</style>
+
+<div class="wrap">
+  <p class="hint">盯着<b>方块</b>看，不要看平均帧率 —— 右边的平均帧率高得多</p>
+
+  <div class="panels">
+    <div class="panel">
+      <h2>稳定 30fps</h2>
+      <p class="sub">每一帧都是 33.3ms，方差趋近于零</p>
+      <div class="track" id="trackL"><div class="box l" id="boxL"></div></div>
+      <div class="stats">
+        <span>平均 <b id="fpsL">–</b> fps</span>
+        <span>P99 <b id="p99L">–</b> ms</span>
+        <span>最长 <b id="maxL">–</b> ms</span>
+      </div>
+      <canvas id="chartL"></canvas>
+    </div>
+
+    <div class="panel">
+      <h2>平均帧率高得多，但有长尾</h2>
+      <p class="sub">大部分帧 16.7ms，每 1~2 秒随机插入一次 200ms 停顿</p>
+      <div class="track" id="trackR"><div class="box r" id="boxR"></div></div>
+      <div class="stats">
+        <span>平均 <b id="fpsR">–</b> fps</span>
+        <span>P99 <b id="p99R">–</b> ms</span>
+        <span>最长 <b id="maxR">–</b> ms</span>
+      </div>
+      <canvas id="chartR"></canvas>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>柱状图 = 每一帧的实际耗时（新的在右）；虚线自下而上为 16.7ms 与 33.3ms</span>
+    <button id="reset">重新开始</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var CYCLE = 2400;   // 方块走一个来回的时长
+  var BOX = 30;
+  var HIST = 64;      // 柱状图保留的帧数
+  var CAP = 100;      // 柱状图满格对应的帧耗时(ms)
+
+  function $(id) { return document.getElementById(id); }
+
+  var panels = [
+    {
+      box: $('boxL'), track: $('trackL'), canvas: $('chartL'),
+      fps: $('fpsL'), p99: $('p99L'), max: $('maxL'),
+      interval: 33.0, stall: null
+    },
+    {
+      box: $('boxR'), track: $('trackR'), canvas: $('chartR'),
+      fps: $('fpsR'), p99: $('p99R'), max: $('maxR'),
+      interval: 16.0, stall: { dur: 200, min: 900, max: 1900 }
+    }
+  ];
+
+  function fitCanvas(p) {
+    var r = p.canvas.getBoundingClientRect();
+    var dpr = window.devicePixelRatio || 1;
+    p.cw = Math.max(1, Math.round(r.width));
+    p.ch = Math.max(1, Math.round(r.height));
+    p.canvas.width = Math.round(p.cw * dpr);
+    p.canvas.height = Math.round(p.ch * dpr);
+    p.ctx = p.canvas.getContext('2d');
+    p.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function rand(a, b) { return a + Math.random() * (b - a); }
+
+  function resetPanel(p, t) {
+    p.last = t;
+    p.hist = [];
+    p.all = [];
+    p.stallEnd = 0;
+    p.nextStall = p.stall ? t + rand(p.stall.min, p.stall.max) : Infinity;
+    p.box.style.transform = 'translateX(0px)';
+  }
+
+  var t0 = null;
+  var statsAt = 0;
+
+  function reset() {
+    t0 = null;
+    statsAt = 0;
+    panels.forEach(function (p) { fitCanvas(p); });
+  }
+
+  function positionAt(t) {
+    var phase = ((t - t0) % CYCLE) / CYCLE;
+    return (1 - Math.cos(phase * Math.PI * 2)) / 2;   // 0 → 1 → 0，两端平滑
+  }
+
+  function mean(a) { var s = 0; for (var i = 0; i < a.length; i++) s += a[i]; return s / a.length; }
+
+  function percentile(arr, q) {
+    if (!arr.length) return 0;
+    var s = arr.slice().sort(function (a, b) { return a - b; });
+    var i = Math.min(s.length - 1, Math.floor(q * s.length));
+    return s[i];
+  }
+
+  function drawChart(p) {
+    var ctx = p.ctx, W = p.cw, H = p.ch;
+    if (!ctx) return;
+    ctx.clearRect(0, 0, W, H);
+
+    function y(v) { return H - Math.min(1, v / CAP) * (H - 3); }
+
+    ctx.setLineDash([3, 3]);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = '#cbd5e1';
+    [16.7, 33.3].forEach(function (v) {
+      ctx.beginPath();
+      ctx.moveTo(0, Math.round(y(v)) + 0.5);
+      ctx.lineTo(W, Math.round(y(v)) + 0.5);
+      ctx.stroke();
+    });
+    ctx.setLineDash([]);
+
+    var bw = W / HIST;
+    for (var i = 0; i < p.hist.length; i++) {
+      var v = p.hist[i];
+      var x = W - (p.hist.length - i) * bw;
+      var top = y(v);
+      ctx.fillStyle = v > 34 ? '#b91c1c' : (v > 17.5 ? '#d97706' : '#047857');
+      ctx.fillRect(x + 0.5, top, Math.max(1, bw - 1.5), H - top);
+    }
+
+    ctx.strokeStyle = '#94a3b8';
+    ctx.beginPath();
+    ctx.moveTo(0, H - 0.5);
+    ctx.lineTo(W, H - 0.5);
+    ctx.stroke();
+  }
+
+  function present(p, t, dt) {
+    p.last = t;
+    p.hist.push(dt);
+    if (p.hist.length > HIST) p.hist.shift();
+    p.all.push(dt);
+    if (p.all.length > 400) p.all.shift();
+
+    var w = p.track.clientWidth - BOX;
+    p.box.style.transform = 'translateX(' + (positionAt(t) * w).toFixed(2) + 'px)';
+  }
+
+  function loop(t) {
+    requestAnimationFrame(loop);
+
+    if (t0 === null) {
+      t0 = t;
+      panels.forEach(function (p) { resetPanel(p, t); });
+      return;
+    }
+
+    for (var i = 0; i < panels.length; i++) {
+      var p = panels[i];
+
+      // 应用线程被堵住：这段时间里一帧也交不出去
+      if (p.stallEnd === 0 && t >= p.nextStall) {
+        p.stallEnd = t + p.stall.dur;
+      }
+      if (p.stallEnd) {
+        if (t < p.stallEnd) continue;
+        p.stallEnd = 0;
+        p.nextStall = t + rand(p.stall.min, p.stall.max);
+      }
+
+      var dt = t - p.last;
+      // 标签页被挂起/切走留下的巨大空档不是掉帧，丢掉，否则会永久污染 P99 和最长帧
+      if (dt > 600) { p.last = t; continue; }
+      if (dt < p.interval - 1) continue;
+      present(p, t, dt);
+      drawChart(p);
+    }
+
+    if (t - statsAt > 250) {
+      statsAt = t;
+      // 全部用滚动窗口统计，卡过一次不会永久留疤
+      panels.forEach(function (p) {
+        var n = p.all.length;
+        p.fps.textContent = n > 10 ? (1000 / mean(p.all)).toFixed(1) : '–';
+        p.p99.textContent = n > 20 ? percentile(p.all, 0.99).toFixed(0) : '–';
+        p.max.textContent = n > 10 ? Math.max.apply(null, p.all).toFixed(0) : '–';
+      });
+    }
+  }
+
+  window.addEventListener('resize', function () {
+    panels.forEach(function (p) { fitCanvas(p); });
+  });
+  $('reset').addEventListener('click', reset);
+  // 切回这一页时重新开始，避免带着挂起期间的脏数据
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) reset();
+  });
+
+  reset();
+  requestAnimationFrame(loop);
+})();
+</script>
