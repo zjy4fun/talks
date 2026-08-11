@@ -760,11 +760,11 @@ RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实�
 
 ---
 
-## 为什么②那格是黄的：同一个动画，你有两种写法
+## 为什么②那格是黄的：同一个动画有两种写法
 
-<DemoFrame src="animation-models.html" :height="292" />
+<DemoFrame src="animation-models.html" :height="316" />
 
-<p class="dnote" style="zoom:1.12">两种写法效果一模一样——直到 JS 线程忙起来<br><b style="color:#17324d">所以 <code>useNativeDriver: true</code> 不是「调优参数」，它换掉的是整个跑法</b></p>
+<p class="dnote" style="zoom:1.06">两种写法看起来完全一样——直到 JS 线程忙起来<br><b style="color:#17324d">在 RN 里，这两种写法的差别就是一个参数：<code>useNativeDriver</code> 设 true 还是 false</b></p>
 
 <!--
 （现场演示，两分钟）把第二条根源再挖一层。先说清楚一件事：接下来这两种写法，不是 H5 和 RN 的区别，也不是架构逼你选的——是同一个 RN 项目里，你自己写代码时的选择，有时候差别就一个参数。看演示：同一个 0.3 秒的动画，两种写法。上面这条是「开场交一次」：动画开始的那一刻，把整条曲线——从哪走到哪、用什么节奏、放多久——一次性交给原生，然后 JS 就撒手不管了。看右边的计数：1 次，整个动画期间就问这一次。下面这条是「每帧回来问」：每一帧都要回到 JS 问一次「现在该走到哪了」，问的次数等于帧数——这个 0.3 秒的动画有几十帧，就得问几十次。（注意：右边这些数字随现场屏幕的刷新率变，别念死，看着屏幕报就行。）只要线程不忙，这两条路看起来一模一样，所以平时你根本发现不了区别。现在我勾上「让应用线程卡住 200 毫秒」——盯着两个方块：上面那个完全不受影响，照常播完，因为播它的根本不是这条被卡住的线程；下面那个立刻僵住，等线程放开才跳到正确位置。右边的计数也变了：真正问到的只剩下一小部分，其余的全被堵掉了——「被堵掉 N 次」就是本该问、但 JS 正忙着根本没问上的帧数。下面两条时间轴是机制：红色是被阻塞的应用线程，绿色是合成器真正在动的时段——上面那条绿色是连续的，下面那条正好缺了一块，缺口和红色严丝合缝。所以呢？这解释了为什么表里②那一格 RN 是黄的：只要动画每帧还要回 JS 取一次值，它就吊在那条会被业务代码堵住的单线程上，这时候 RN 和 H5 是一样的。所以②那格不是「RN 不行」，是「取决于你怎么写」。而 RN 里那两个大家天天写的东西——useNativeDriver 设成 true、Reanimated 的 worklet 把动画代码放到 UI 线程跑——本质都不是「优化参数」，是把这个动画从「每帧回来问」整个换成「开场交一次」。这里有个边界必须说清楚，不然一定有人问「那全设成 true 不就完了」：useNativeDriver 只支持 transform 和 opacity 这类不影响布局的属性，一旦你要动的是宽高或位置这种会触发重新布局的属性，就设不了 true，只能每帧回 JS。这也正是②那格是黄的而不是绿的原因——能设的都该设，但有一类动画物理上设不了。Reanimated 的 worklet 是另一条路，覆盖面更广，代价是引一个第三方库。理解了这个模型，你就不用背规则了，你自己能判断：这个动画的每一帧还需要 JS 参与吗？需要，它就是脆的。原理讲到这儿完整了。但原理成立到生产可用还差一堆脏活：RN 项目里躺着的两个原生工程谁维护？原生依赖怎么配？答案在 Expo。
@@ -842,25 +842,28 @@ RN 的原理成立了，但要把它用在生产里，还差工程化这一站�
 
 ## Expo SDK 解决了原生模块的版本兼容问题
 
-<div class="dg">
-  <div class="dbox rn" style="padding:.9rem 1.1rem">
-    <b>Expo SDK 57</b>
-    <div class="drow" style="margin-top:.5rem;flex-wrap:wrap;max-width:22rem">
-      <div class="dbox nat" style="padding:.28rem .6rem;font-size:.7rem">相机</div>
-      <div class="dbox nat" style="padding:.28rem .6rem;font-size:.7rem">推送</div>
-      <div class="dbox nat" style="padding:.28rem .6rem;font-size:.7rem">定位</div>
-      <div class="dbox nat" style="padding:.28rem .6rem;font-size:.7rem">文件系统</div>
-      <div class="dbox nat" style="padding:.28rem .6rem;font-size:.7rem">传感器</div>
-      <div class="dbox" style="padding:.28rem .6rem;font-size:.7rem">……</div>
+<div class="dg" style="flex-direction:column;gap:1rem;zoom:1.04;align-items:stretch">
+  <div class="drow" style="align-items:center;gap:.7rem">
+    <div class="dcap" style="width:6.4rem;margin:0;text-align:right;font-size:.76rem">各自装社区库</div>
+    <div class="drow" style="gap:.45rem">
+      <div class="dbox" style="padding:.35rem .8rem;font-size:.72rem">相机库 <b style="display:inline;font-size:.72rem">v3.2</b></div>
+      <div class="dbox" style="padding:.35rem .8rem;font-size:.72rem">推送库 <b style="display:inline;font-size:.72rem">v1.8</b></div>
+      <div class="dbox" style="padding:.35rem .8rem;font-size:.72rem">定位库 <b style="display:inline;font-size:.72rem">v5.0</b></div>
     </div>
-    <small style="margin-top:.4rem">与 RN 0.86 整体配套测试——我们在用的组合</small>
+    <div class="dbox" style="padding:.4rem .9rem;background:#fee2e2;border-color:#b91c1c;font-size:.72rem">各自独立发版<small>和你的 RN 版本兼不兼容，自己试</small></div>
+  </div>
+  <div class="drow" style="align-items:center;gap:.7rem">
+    <div class="dcap" style="width:6.4rem;margin:0;text-align:right;font-size:.76rem">用 Expo SDK</div>
+    <div class="dbox rn" style="padding:.5rem 1.1rem"><b>Expo SDK 57</b><small>相机 · 推送 · 定位 · 文件系统 · 传感器 ……<br>全部随同一个 SDK 版本发布</small></div>
+    <div class="dbox rn" style="padding:.4rem .9rem;font-size:.72rem">整体对 RN 0.86 测过<small>官方保证这一组能一起跑</small></div>
   </div>
 </div>
 
-<!--
-第一层：把相机、推送这些常用原生能力做成官方模块库，和 RN 版本捆成一个 SDK 版本，整体测过再发。我们现在用的就是 SDK 57 配 RN 0.86 这一组。升级从「赌兼容性」变成「SDK 56 升 57」。不性感，但省的全是真实工时。
--->
+<p class="dnote">升级时只需要动一个版本号：SDK 57 → 58，里面几十个原生模块一起走<br><b style="color:#17324d">SDK 57 + RN 0.86，就是我们在用的组合</b></p>
 
+<!--
+第一层，Expo SDK。先说不用它是什么情况：相机、推送、定位这些能力，你从社区各装一个库，它们各自独立发版，谁也不保证和你手上这个 RN 版本兼容。RN 一升级，就得一个一个去试、去等作者跟进，这是很多团队在 RN 上踩的第一个坑。Expo SDK 的做法是把这几十个常用原生模块收进同一个 SDK，统一版本号统一发布，并且整体针对某个 RN 版本测过。所以升级的时候你只动一个数字：SDK 57 升到 58，里面所有模块一起走。我们现在用的就是 SDK 57 配 RN 0.86。
+-->
 ---
 
 ## 原生工程是生成产物，不是手写资产
@@ -874,7 +877,7 @@ flowchart LR
   D --> E
 ```
 
-<p class="dnote">原生目录不进仓库、也不手改——脏了就删掉重新生成<br><b style="color:#17324d">要加相机权限？在 app.json 里声明 expo-camera，prebuild 时自动写进 Info.plist 和 AndroidManifest</b></p>
+<p class="dnote">原生目录不进版本库，也不手工修改——需要时重新生成即可</p>
 
 <!--
 第二层是 Expo 最核心的设计，叫 CNG：原生工程根本不该由人来维护。仓库里只有 JS 和一份 app.json；需要原生工程的时候跑一次 prebuild 现场生成，它的地位等同于编译产物，脏了删掉重来。升级那个噩梦就直接消失了——换新模板重新生成一遍就完了。第三件麻烦事——库要改原生配置怎么办——用的是同一套机制：库作者把需要的原生改动写成一个 config plugin，你只要在 app.json 里声明一句，比如 expo-camera，prebuild 的时候自动把权限写进 Info.plist 和 AndroidManifest。全程不用打开 Xcode，甚至不用知道 Info.plist 是什么。三层到这儿讲完了——还记得第一章有笔账没还吗？
@@ -979,52 +982,34 @@ layout: section
 
 ---
 
-## 高刷是双刃剑：预算砍半，延迟下限也降低
+## 高刷屏先放大的，正是 RN 的②
 
-<div class="dg" style="gap:1.4rem;zoom:1.1;align-items:stretch">
-  <div class="dcol" style="gap:.4rem">
-    <div class="dbox" style="padding:.3rem .7rem;background:#fee2e2;border-color:#b91c1c"><b>坏消息：预算砍半</b></div>
-    <div class="dbox" style="padding:.34rem .7rem;font-size:.72rem;text-align:left">60Hz 上稳跑 12ms 一帧的代码<br>到 120Hz 就是<b>稳定掉帧</b></div>
-    <div class="dcap" style="margin:.1rem 0 0">硬件更好了，软件的容错空间反而更小</div>
+<div class="dg" style="flex-direction:column;gap:.7rem;zoom:1.06;align-items:stretch">
+  <div class="drow" style="align-items:center;gap:.7rem;justify-content:center">
+    <div class="dbox" style="padding:.4rem 1rem">60Hz：一帧 16.7ms</div>
+    <span class="darr">→</span>
+    <div class="dbox" style="padding:.4rem 1rem;background:#fee2e2;border-color:#b91c1c">120Hz：一帧只剩 8.3ms</div>
   </div>
-  <div class="dcol" style="gap:.4rem">
-    <div class="dbox rn" style="padding:.3rem .7rem"><b>好消息：延迟下限降低</b></div>
-    <div class="dbox" style="padding:.34rem .7rem;font-size:.72rem;text-align:left">即使同样只跑 60fps<br>帧的呈现时机对齐得更早<br>触摸采样率通常也更高</div>
-    <div class="dcap" style="margin:.1rem 0 0">跟手性是真的会变好</div>
-  </div>
-</div>
-
-<p class="dnote">现代高刷基本是可变刷新率（ProMotion 10–120Hz）<br>掉帧不一定直接掉到 60，台阶更细；反而老式固定 60Hz 屏一掉就是 30，落差更大</p>
-
-<!--
-回到第二章那条标尺最下面的 120Hz 刻度，现在结算。高刷是双刃剑，两面都要说。坏消息：预算砍半，从 16.7 毫秒变成 8.3 毫秒。这意味着你在 60Hz 上稳稳跑 12 毫秒一帧的代码，换到 120Hz 屏上是稳定掉帧——同一份代码，同一台更贵的手机，表现更差。硬件更好了，软件的容错空间反而更小，这一点很反直觉。好消息也是真的：延迟的下限降低了。即使你的页面同样只能跑 60fps，在 120Hz 屏上帧的呈现时机能对齐得更早，加上高刷设备的触摸采样率通常也更高，跟手性是真的会变好，不是心理作用。还有一个缓冲：现在的高刷基本都是可变刷新率，比如 ProMotion 支持 10 到 120Hz，掉帧不一定直接对折到 60，台阶更细。真正难受的反而是老式固定 60Hz 屏——一掉就是 30，落差更大。
--->
-
----
-
-## 落到三条技术线上：高刷会先惩罚结构问题
-
-<div class="dg" style="zoom:1.04">
-  <div class="dcol" style="gap:.5rem;align-items:flex-start">
+  <div class="dcol" style="gap:.45rem;margin-top:.3rem">
     <div class="drow" style="align-items:center;gap:.7rem">
-      <div class="dbox js" style="min-width:5.2rem;padding:.3rem .6rem"><b>H5</b><small>最尴尬</small></div>
-      <div class="dbox" style="padding:.34rem .7rem;text-align:left;font-size:.72rem">iOS WKWebView 长期锁 60Hz：旁边原生页 120Hz 丝滑，切进 H5 立刻「重了一档」<small>而且跟你优化得多好完全无关</small></div>
+      <div class="dbox nat" style="min-width:5.4rem;padding:.35rem .7rem"><b>原生</b></div>
+      <div class="dbox" style="padding:.4rem .8rem;text-align:left;font-size:.74rem;flex:1">动画在独立线程执行，8.3ms 的预算与主线程在做什么无关<small style="color:#047857">优势被放大</small></div>
     </div>
     <div class="drow" style="align-items:center;gap:.7rem">
-      <div class="dbox rn" style="min-width:5.2rem;padding:.3rem .6rem"><b>RN</b><small>压力陡增</small></div>
-      <div class="dbox" style="padding:.34rem .7rem;text-align:left;font-size:.72rem">8.3ms 里还要回一趟 JS 算出新值，基本不可能<small><code>useNativeDriver: true</code> 从「建议」变成「必须」；Reanimated worklet 的价值被放大</small></div>
+      <div class="dbox rn" style="min-width:5.4rem;padding:.35rem .7rem"><b>RN</b></div>
+      <div class="dbox" style="padding:.4rem .8rem;text-align:left;font-size:.74rem;flex:1">若动画每帧还要回 JS 取值，8.3ms 内完成基本不可能<small style="color:#b45309">②那格的问题被放大</small></div>
     </div>
     <div class="drow" style="align-items:center;gap:.7rem">
-      <div class="dbox nat" style="min-width:5.2rem;padding:.3rem .6rem"><b>原生</b><small>优势放大</small></div>
-      <div class="dbox" style="padding:.34rem .7rem;text-align:left;font-size:.72rem">Core Animation 跑在独立进程，8.3ms 的预算跟主线程在干什么无关<small>根源② 的红利，在高刷下加倍兑现</small></div>
+      <div class="dbox js" style="min-width:5.4rem;padding:.35rem .7rem"><b>H5</b></div>
+      <div class="dbox" style="padding:.4rem .8rem;text-align:left;font-size:.74rem;flex:1">iOS WKWebView 长期限制在 60Hz，与优化程度无关<small style="color:#b45309">天花板本身被压低</small></div>
     </div>
   </div>
 </div>
 
-<p class="dnote"><b style="color:#17324d">任何没有脱离 JS 线程的动画，在高刷设备上会比 60Hz 表现更差</b><br>高刷不是「同样的代码更顺」——它会先把你的结构问题放大</p>
+<p class="dnote">任何每帧还要回 JS 的动画，在高刷设备上会比 60Hz 表现更差<br><b style="color:#17324d">所以在高刷设备上，<code>useNativeDriver</code> 和 Reanimated 从「建议」变成「必须」</b></p>
 
 <!--
-预算砍半这件事，落到三条线上后果完全不同。H5 最尴尬，而且尴尬得很特别：iOS 的 WKWebView 长期锁在 60Hz。所以在一台 120Hz 的手机上，旁边的原生页面丝滑，用户点进 H5 页立刻感觉「重了一档」——注意，这跟你把这个 H5 优化得多好完全无关，是天花板本身被压低了。RN 是压力陡增：8.3 毫秒的预算里，还要回一趟 JS 把新值算出来，基本不可能。所以在高刷设备上，useNativeDriver 设成 true 从一条「建议」变成了「必须」，Reanimated 那种把动画代码搬到 UI 线程跑的 worklet，价值被放大——这正好呼应刚才那个演示：高刷逼着你从下路搬到上路。反过来说这句话更值得记：任何没有脱离 JS 线程的动画，在高刷设备上会比在 60Hz 上表现更差。原生则相反，优势被放大：Core Animation 在独立进程里跑，8.3 毫秒的预算跟你主线程在干什么无关——根源二那份红利，在高刷下加倍兑现。所以高刷不是「同样的代码更顺」，它是一台放大器，先放大你的结构问题。
+再看一个会放大②的场景：高刷屏。刷新率从 60 提到 120，一帧的预算就从 16.7 毫秒砍到 8.3 毫秒。同一份代码，换一台更贵的手机，反而更容易掉帧——这一点很反直觉。落到三条线上，后果完全不同。原生优势被放大：动画在独立线程上跑，8.3 毫秒的预算跟主线程在做什么无关。RN 是②那格的问题被放大：如果这个动画每帧还要回 JS 取一次值，8.3 毫秒里跑完基本不可能，所以在高刷设备上，前面说的 useNativeDriver 和 Reanimated 就从「建议」变成了「必须」。H5 最受限，而且受限得很特别：iOS 的 WKWebView 长期锁在 60Hz，旁边原生页 120Hz 丝滑，切进 H5 立刻感觉重了一档，这跟你优化得多好完全无关。一句话记住：任何每帧还要回 JS 的动画，在高刷设备上会比 60Hz 表现更差。
 -->
 
 ---
@@ -1096,6 +1081,8 @@ layout: section
 所以要不要因此否定 RN？不。RN 官方从一开始就留了这条通道：你写一个原生模块，把它挂回 JS 那边当普通接口用。绝大部分工作量——列表、表单、详情页、业务流程——仍然在 JS 这一侧；真正需要下沉的是那几块热点。所以「有些地方还得写原生」不是 RN 的短板，是它设计里本来就有的分工。这一点在汇报里很关键：你不是在说「RN 不行所以要补原生」，你是在说「RN 的边界在哪里，边界外该怎么接」。
 -->
 
+---
+
 ## 有几类 App，从一开始就不该选 RN
 
 <div class="dg" style="flex-direction:column;gap:.6rem">
@@ -1122,29 +1109,34 @@ layout: section
 
 ---
 
-## RN 的社区生态：从大厂主力 App 到国内自研基建
+## RN 生态
 
-<div class="dg" style="flex-direction:column;gap:.7rem;zoom:.96">
-  <div class="drow" style="gap:.7rem;align-items:center">
-    <div class="dbox" style="background:#fff;min-width:7.2rem;padding:.65rem .8rem"><logos-facebook style="width:1.7rem;height:1.7rem" /><small style="font-size:.68rem">Meta<br>Facebook · Instagram</small></div>
-    <div class="dbox" style="background:#fff;min-width:7.2rem;padding:.65rem .8rem"><logos-microsoft-icon style="width:1.7rem;height:1.7rem" /><small style="font-size:.68rem">微软<br>Office · Outlook · Teams</small></div>
-    <div class="dbox" style="background:#fff;min-width:7.2rem;padding:.65rem .8rem"><simple-icons-amazon style="width:1.7rem;height:1.7rem;color:#ff9900" /><small style="font-size:.68rem">Amazon<br>Shopping · Alexa · Kindle</small></div>
-    <div class="dbox" style="background:#fff;min-width:7.2rem;padding:.65rem .8rem"><logos-shopify style="width:1.7rem;height:1.7rem" /><small style="font-size:.68rem">Shopify<br>移动端整体</small></div>
+<div class="dg" style="flex-direction:column;gap:.6rem;zoom:.96">
+  <div class="drow" style="gap:.6rem;align-items:center">
+    <div class="dbox" style="background:#fff;min-width:6.6rem;padding:.6rem .7rem"><logos-facebook style="width:1.7rem;height:1.7rem;" /><small style="font-size:.66rem">Meta</small></div>
+    <div class="dbox" style="background:#fff;min-width:6.6rem;padding:.6rem .7rem"><logos-microsoft-icon style="width:1.7rem;height:1.7rem;" /><small style="font-size:.66rem">微软</small></div>
+    <div class="dbox" style="background:#fff;min-width:6.6rem;padding:.6rem .7rem"><simple-icons-amazon style="width:1.7rem;height:1.7rem;color:#ff9900" /><small style="font-size:.66rem">Amazon</small></div>
+    <div class="dbox" style="background:#fff;min-width:6.6rem;padding:.6rem .7rem"><logos-shopify style="width:1.7rem;height:1.7rem;" /><small style="font-size:.66rem">Shopify</small></div>
+    <div class="dbox" style="background:#fff;min-width:6.6rem;padding:.6rem .7rem"><logos-discord-icon style="width:1.7rem;height:1.7rem;" /><small style="font-size:.66rem">Discord</small></div>
+    <div class="dbox" style="background:#fff;min-width:6.6rem;padding:.6rem .7rem"><simple-icons-coinbase style="width:1.7rem;height:1.7rem;color:#0052ff" /><small style="font-size:.66rem">Coinbase</small></div>
   </div>
-  <div class="drow" style="gap:.7rem;align-items:center">
-    <div class="dbox" style="background:#fff;min-width:7.2rem;padding:.65rem .8rem"><logos-discord-icon style="width:1.7rem;height:1.7rem" /><small style="font-size:.68rem">Discord</small></div>
-    <div class="dbox" style="background:#fff;min-width:7.2rem;padding:.65rem .8rem"><simple-icons-coinbase style="width:1.7rem;height:1.7rem;color:#0052ff" /><small style="font-size:.68rem">Coinbase</small></div>
-    <div class="dbox" style="background:#fff;min-width:7.2rem;padding:.65rem .8rem"><simple-icons-wix style="width:1.7rem;height:1.7rem;color:#0c6efc" /><small style="font-size:.68rem">Wix</small></div>
-    <div class="dbox" style="background:#fff;min-width:7.2rem;padding:.65rem .8rem"><img src="./images/jd.jpg" style="width:1.7rem;height:1.7rem;border-radius:5px;display:inline-block" /><small style="font-size:.68rem">京东 · JDReact</small></div>
-    <div class="dbox" style="background:#fff;min-width:7.2rem;padding:.65rem .8rem"><span style="display:inline-flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;background:#ffd100;border-radius:5px"><simple-icons-meituan style="width:1.2rem;height:1.2rem;color:#222" /></span><small style="font-size:.68rem">美团 · MRN</small></div>
-    <div class="dbox" style="background:#fff;min-width:7.2rem;padding:.65rem .8rem"><simple-icons-tripdotcom style="width:1.7rem;height:1.7rem;color:#287dfa" /><small style="font-size:.68rem">携程 · CRN</small></div>
+  <div class="drow" style="gap:.6rem;align-items:center">
+    <div class="dbox" style="background:#fff;min-width:6.6rem;padding:.6rem .7rem"><simple-icons-wix style="width:1.7rem;height:1.7rem;color:#0c6efc" /><small style="font-size:.66rem">Wix</small></div>
+    <div class="dbox" style="background:#fff;min-width:6.6rem;padding:.6rem .7rem"><simple-icons-tesla style="width:1.7rem;height:1.7rem;color:#cc0000" /><small style="font-size:.66rem">Tesla</small></div>
+    <div class="dbox" style="background:#fff;min-width:6.6rem;padding:.6rem .7rem"><simple-icons-walmart style="width:1.7rem;height:1.7rem;color:#0071ce" /><small style="font-size:.66rem">Walmart</small></div>
+    <div class="dbox" style="background:#fff;min-width:6.6rem;padding:.6rem .7rem"><simple-icons-pinterest style="width:1.7rem;height:1.7rem;color:#bd081c" /><small style="font-size:.66rem">Pinterest</small></div>
+    <div class="dbox" style="background:#fff;min-width:6.6rem;padding:.6rem .7rem"><logos-salesforce style="width:1.7rem;height:1.7rem;" /><small style="font-size:.66rem">Salesforce</small></div>
+    <div class="dbox" style="background:#fff;min-width:6.6rem;padding:.6rem .7rem"><simple-icons-flipkart style="width:1.7rem;height:1.7rem;color:#2874f0" /><small style="font-size:.66rem">Flipkart</small></div>
+  </div>
+  <div class="drow" style="gap:.6rem;align-items:center">
+    <div class="dbox" style="background:#fff;min-width:6.6rem;padding:.6rem .7rem"><img src="./images/jd.jpg" style="width:1.7rem;height:1.7rem;border-radius:5px;display:inline-block" /><small style="font-size:.66rem">京东 · JDReact</small></div>
+    <div class="dbox" style="background:#fff;min-width:6.6rem;padding:.6rem .7rem"><span style="display:inline-flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;background:#ffd100;border-radius:5px"><simple-icons-meituan style="width:1.2rem;height:1.2rem;color:#222" /></span><small style="font-size:.66rem">美团 · MRN</small></div>
+    <div class="dbox" style="background:#fff;min-width:6.6rem;padding:.6rem .7rem"><simple-icons-tripdotcom style="width:1.7rem;height:1.7rem;color:#287dfa" /><small style="font-size:.66rem">携程 · CRN</small></div>
   </div>
 </div>
 
-<p class="dnote">名单来自 React Native 官方 showcase 与各家公开的技术博客<br><b style="color:#17324d">生态成熟：常见问题多已有公开方案</b></p>
-
 <!--
-最后看生态。上面这排是把 RN 用在主力 App 上的：Meta 自己的 Facebook 和 Instagram；微软的 Office、Outlook、Teams，微软同时还维护着 RN 的 Windows 和 macOS 版本；Amazon 的购物、Alexa、Kindle；Shopify 的移动端是整体建在 RN 上的。下面这排，Discord、Coinbase、Wix 都是主 App 在用；国内京东、美团、携程各自做了一套 RN 基建——JDReact、MRN、CRN，愿意投这么重的基建，说明在极端体量下扛得住。这里顺带说清一个问题：他们走自研，是因为存量嵌入加极端体量；像我们这样从零开始的新项目，官方推荐路径就是 Expo，不冲突。生态这件事对我们的实际意义是：遇到坑的时候，大概率别人已经踩过，而且写下来了。
+最后看生态。Meta 自己的 Facebook 和 Instagram；微软的 Office、Outlook、Teams，微软同时还维护着 RN 的 Windows 和 macOS 版本；Amazon 的购物、Alexa、Kindle；Shopify 的移动端整体建在 RN 上。Discord、Coinbase、Wix、Tesla、Walmart、Pinterest、Salesforce、Flipkart 也都在生产环境用过或正在用。国内京东、美团、携程各自做了一套 RN 基建——JDReact、MRN、CRN，愿意投这么重的基建，说明在极端体量下扛得住。顺带说清一个问题：他们走自研是因为存量嵌入加极端体量；像我们这样从零开始的新项目，官方推荐路径就是 Expo，不冲突。生态这件事对我们的实际意义是：遇到坑的时候，大概率别人已经踩过并且写下来了。
 -->
 ---
 layout: center
@@ -1170,11 +1162,6 @@ layout: section
 ---
 
 # 谢谢
-
-<p style="text-align:center;margin-top:1.2rem;font-size:1.02rem;color:#c7d2e5;line-height:1.9">
-一套代码，接近原生的体验，接近 Web 的效率<br>
-<span style="font-size:.9em;opacity:.85">欢迎提问 · 演示和源码都在仓库里</span>
-</p>
 
 <!--
 到这里就讲完了，谢谢大家。演示和这份幻灯片的源码都在仓库里，可以自己跑。有什么问题现在可以问。

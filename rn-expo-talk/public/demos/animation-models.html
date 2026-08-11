@@ -70,7 +70,7 @@
   <div class="lane">
     <div class="lbl">
       <b>写法一：开场交一次</b>
-      <small>把整条曲线一次性交给原生<br><code>useNativeDriver: true</code></small>
+      <small>开场把整条曲线交给原生，之后不再参与</small>
     </div>
     <div class="track"><div class="box top" id="boxTop"></div></div>
     <div class="badge">回 JS 问了<b id="cntTop">×0</b><em id="expTop"></em></div>
@@ -79,7 +79,7 @@
   <div class="lane">
     <div class="lbl">
       <b>写法二：每帧回来问</b>
-      <small>每帧回到 JS 问一次「现在该走到哪了」<br><code>useNativeDriver: false</code></small>
+      <small>每一帧都回到 JS 问一次「现在该走到哪了」</small>
     </div>
     <div class="track"><div class="box bot" id="boxBot"></div></div>
     <div class="badge">回 JS 问了<b id="cntBot">×0</b><em id="expBot"></em></div>
