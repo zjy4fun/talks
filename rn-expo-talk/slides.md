@@ -705,26 +705,17 @@ RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实�
 
 ---
 
-## 视图树是最直接的证据：里面没有一个 div
+## 眼见为实：用系统工具掀开跑着的 App
 
-<div class="dg" style="gap:1.4rem">
-  <div class="dbox" style="text-align:left;font-family:monospace;font-size:.72rem;padding:.7rem 1.1rem;background:#ffffff">
-    UIWindow<br>
-    &nbsp;└ RCTRootView<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;└ RCTViewComponentView<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├ RCTParagraphComponentView<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└ RCTViewComponentView
-  </div>
-  <div class="dcol">
-    <div class="dbox nat" style="padding:.35rem .7rem;font-size:.72rem">全是 UIView 子类</div>
-    <div class="dbox js ghost" style="padding:.35rem .7rem;font-size:.72rem">div：0 个</div>
-  </div>
+<div class="dg" style="gap:2rem">
+  <div class="dbox nat" style="padding:1rem 1.4rem;min-width:15rem"><b>RN 做的 App</b><small>每个元素都是系统控件<br><b style="color:#1d4ed8;font-size:1.05em">div：0 个</b></small></div>
+  <div class="dbox js" style="padding:1rem 1.4rem;min-width:15rem"><b>Hybrid 做的 App</b><small>掀开只有一个大 WebView<br>里面全是网页元素</small></div>
 </div>
 
-<p class="dnote">Xcode View Hierarchy / Android Layout Inspector：直接查看运行中 App 的真实视图层级</p>
+<p class="dnote">Xcode 和 Android Studio 都自带这个功能，能看运行中 App 的真实结构<br><b style="color:#17324d">不用信我，这件事你自己回去两分钟就能验</b></p>
 
 <!--
-两个问题都答完了，验货。（现场演示，控制在两分钟内）Xcode 掀开视图层级：RCTViewComponentView、RCTParagraphComponentView，全是 UIView 子类，找不到一个 div；Hybrid App 掀开就是一个大 WebView 节点。眼见为实。（演示前在自己 demo 里核对类名，老架构显示的是 RCTView、RCTText。）
+两个步骤都讲完了，验货。（现场演示，两分钟以内）Xcode 和 Android Studio 都自带看视图层级的功能，能把一个正在跑的 App 掀开，看它真实的结构。掀开 RN 做的 App：从上到下每一个元素都是系统控件，一个 div 都找不到。作为对照，掀开一个 Hybrid App：里面就是一个大 WebView 节点，网页的东西全在它肚子里。这就是今天开头那句话最直接的证据，不用信我，你回去自己两分钟就能验。（演示前记得在自己 demo 上先跑一遍，确认类名对得上。）
 -->
 
 ---
@@ -749,7 +740,7 @@ RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实�
 
 ---
 
-## 三个根源结算：RN 到底买到了什么
+## 三条根源逐条对一遍：RN 站在哪一边
 
 <table class="mx">
   <thead>
@@ -762,27 +753,27 @@ RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实�
   </thead>
   <tbody>
     <tr>
-      <th>① 抽象层的通用性代价<small>抬高每帧的基础成本</small></th>
-      <td><div class="cell win"><b>赢</b><small>赋值 + 提交 layer tree</small></div></td>
-      <td><div class="cell near"><b>接近</b><small>Yoga 算完直接设 frame<br>绕开 CSS，且跑在独立线程</small></div></td>
-      <td><div class="cell lose"><b>输</b><small>每帧走完整 CSS 管线</small></div></td>
+      <th>① 每帧的基础开销<small>原生直接改，Web 每次都要重算</small></th>
+      <td><div class="cell win"><b>赢</b><small>改一下就完事</small></div></td>
+      <td><div class="cell near"><b>接近</b><small>自己算好位置直接给原生<br>绕开浏览器那一整套，还在单独线程上</small></div></td>
+      <td><div class="cell lose"><b>输</b><small>每一帧都要重算一遍</small></div></td>
     </tr>
     <tr>
-      <th>② 关键路径上的单线程<small>长尾和「偶尔卡一下」的来源</small></th>
-      <td><div class="cell win"><b>赢</b><small>动画在独立进程 / 线程</small></div></td>
-      <td><div class="cell lose"><b>与 H5 同侧</b><small>JSI 大幅改善，但<br>JS 逻辑仍在单线程上</small></div></td>
-      <td><div class="cell lose"><b>输</b><small>JS 与渲染共用主线程</small></div></td>
+      <th>② 会不会被业务代码堵住<small>「偶尔卡一下」的来源</small></th>
+      <td><div class="cell win"><b>赢</b><small>动画在另一条线上跑，卡不着</small></div></td>
+      <td><div class="cell lose"><b>和 H5 一样</b><small>新架构改善很多，但<br>JS 逻辑还是挤在一条线上</small></div></td>
+      <td><div class="cell lose"><b>输</b><small>JS 和渲染挤同一条线</small></div></td>
     </tr>
     <tr>
-      <th>③ 交互物理由谁驱动<small>用户说「感觉不对」的主因</small></th>
-      <td><div class="cell win"><b>赢</b><small>系统拿触摸一手数据</small></div></td>
-      <td><div class="cell near"><b>接近</b><small>FlatList 底下是真的<br>UITableView / RecyclerView</small></div></td>
-      <td><div class="cell lose"><b>输</b><small>JS 只拿到二手数据</small></div></td>
+      <th>③ 滑动的手感谁来做<small>用户说「感觉不对」的主因</small></th>
+      <td><div class="cell win"><b>赢</b><small>系统直接拿手指数据</small></div></td>
+      <td><div class="cell near"><b>接近</b><small>列表底下就是系统自己那套<br>滚动、回弹都是白送的</small></div></td>
+      <td><div class="cell lose"><b>输</b><small>JS 只拿到一部分数据</small></div></td>
     </tr>
   </tbody>
 </table>
 
-<p class="dnote"><b style="color:#17324d">RN 在 ① ③ 上买到了原生的东西，在 ② 上和 H5 同侧</b>——选型逻辑的支点<br>而且只在「每帧都在变」的界面上成立；静态图文页，三者差距基本为零<br><span style="font-size:.82em;opacity:.75">全场帧率 / 内存数字都只是量级判断，随机型、引擎版本、页面复杂度浮动，真做决策请自己压测</span></p>
+<p class="dnote"><b style="color:#17324d">RN 在 ① ③ 上接近原生，在 ② 上和 H5 一样</b><br>而且这三条只在「画面每帧都在动」的界面上才拉得开差距——静态图文页，三者差不多</p>
 
 <!--
 这张表是全场的支点，讲慢一点。第一条，抽象层的租金：RN 用 Yoga 算布局，Yoga 是 flexbox 的一个子集，用 C++ 实现，算完直接给原生 view 设 frame——整条 CSS 管线被绕开了，而且 Yoga 跑在独立线程，不占 JS 线程。所以这一条 RN 接近原生。第三条，交互物理：这条 RN 赢 H5 赢得最干脆——FlatList 底下就是真的 UITableView 和 RecyclerView，滚动的减速曲线、回弹、cell 复用，全部是系统那份实现，白送的，不是模拟的。第二条是关键：RN 没有赢过原生。老架构下手势要过异步桥，注意重点不是「过桥慢」，而是「这条路是异步的」——JS 线程正在跑一段 200 毫秒的数据处理，你的手指移动就得排队等它。新架构 Fabric 加 JSI 大幅改善了，同步调用、不用序列化，但 JS 逻辑本身仍然在一条单线程上。所以结论是这样：RN 花钱买到了①和③，但②没买到——它在②上和 H5 是同一侧的。这句话请记住，因为它决定了后面所有的判断：RN 的平均体验很接近原生，但它和原生一样有下限保证吗？没有。第三章开头我说过原生和 Web 的区别是「有下限保证」对「概率性」，RN 在这一点上是概率性的那一边。最后一行也必须说清楚：这三条根源全部只在「每帧都在变」的界面上成立——列表在滚、手指在拖、转场在放。一个静态图文页，进去就不动了，三者差距基本为零。所以这不是「原生更好」的一刀切，是「什么场景下差距才存在」。表里的措辞我用的是赢/接近/同侧，没写具体倍数——因为具体数字随机型、引擎版本、页面复杂度浮动很大，真做决策要自己压测。
@@ -790,14 +781,14 @@ RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实�
 
 ---
 
-## 差距为什么落在②：两种动画模型
+## 为什么②那格是黄的：同一个动画，你有两种写法
 
 <DemoFrame src="animation-models.html" :height="292" />
 
-<p class="dnote" style="zoom:1.12"><code>useNativeDriver: true</code>、Reanimated worklet 不是「优化」，是<b style="color:#17324d">从「每帧回问」换成「一次提交」</b></p>
+<p class="dnote" style="zoom:1.12">两种写法效果一模一样——直到 JS 线程忙起来<br><b style="color:#17324d">所以 <code>useNativeDriver: true</code> 不是「调优参数」，它换掉的是整个跑法</b></p>
 
 <!--
-（现场演示，两分钟）把第二条根源再挖一层，看这个演示。同一个 0.3 秒的动画，两种做法。上面这条叫「一次提交」，也就是声明式：动画开始的那一刻，把整条曲线——从哪到哪、用什么缓动、放多久——一次性交给合成器，然后应用层就撒手了。看右边跨层通信的计数：1 次，整个动画期间就这一次。下面这条叫「每帧回问」，也就是命令式：每一帧都要回到 JS 问一次「现在该在哪」，通信次数等于帧数，0.3 秒就是十八次。注意，只要线程不忙，这两条路看起来一模一样，所以平时你根本发现不了区别。现在我勾上「让应用线程卡住 200 毫秒」——盯着两个方块：上面那个完全不受影响，照常播完，因为播它的根本不是这条被卡住的线程；下面那个立刻僵住，等线程放开才跳到正确位置。右边的计数也变了：本该十八次，实际只送到六次，中间那十二次全被堵掉了。下面两条时间轴是机制：红色是被阻塞的应用线程，绿色是合成器真正在动的时段——上面那条绿色是连续的，下面那条正好缺了一块，缺口和红色严丝合缝。所以呢？这解释了为什么表里②那一格 RN 是黄的：只要动画每帧还要回 JS 取一次值，它就是「每帧回问」，就吊在那条会被业务代码堵住的单线程上。而 RN 里那两个大家天天写的东西——useNativeDriver 设成 true、Reanimated 的 worklet 把动画代码放到 UI 线程跑——本质都不是「优化参数」，是把这个动画整个从「每帧回问」换成「一次提交」，换的是模型。理解了这一点，你就不用背「什么时候该加 useNativeDriver」这条规则了，你自己能判断：这个动画的每一帧还需要 JS 参与吗？需要，就是脆的。原理讲到这儿完整了。但原理成立到生产可用还差一堆脏活：RN 项目里躺着的两个原生工程谁维护？原生依赖怎么配？答案在 Expo。
+（现场演示，两分钟）把第二条根源再挖一层。先说清楚一件事：接下来这两种写法，不是 H5 和 RN 的区别，也不是架构逼你选的——是同一个 RN 项目里，你自己写代码时的选择，有时候差别就一个参数。看演示：同一个 0.3 秒的动画，两种写法。上面这条是「开场交一次」：动画开始的那一刻，把整条曲线——从哪走到哪、用什么节奏、放多久——一次性交给原生，然后 JS 就撒手不管了。看右边的计数：1 次，整个动画期间就问这一次。下面这条是「每帧回来问」：每一帧都要回到 JS 问一次「现在该走到哪了」，问的次数等于帧数——这个 0.3 秒的动画有几十帧，就得问几十次。（注意：右边这些数字随现场屏幕的刷新率变，别念死，看着屏幕报就行。）只要线程不忙，这两条路看起来一模一样，所以平时你根本发现不了区别。现在我勾上「让应用线程卡住 200 毫秒」——盯着两个方块：上面那个完全不受影响，照常播完，因为播它的根本不是这条被卡住的线程；下面那个立刻僵住，等线程放开才跳到正确位置。右边的计数也变了：真正问到的只剩下一小部分，其余的全被堵掉了——「被堵掉 N 次」就是本该问、但 JS 正忙着根本没问上的帧数。下面两条时间轴是机制：红色是被阻塞的应用线程，绿色是合成器真正在动的时段——上面那条绿色是连续的，下面那条正好缺了一块，缺口和红色严丝合缝。所以呢？这解释了为什么表里②那一格 RN 是黄的：只要动画每帧还要回 JS 取一次值，它就吊在那条会被业务代码堵住的单线程上，这时候 RN 和 H5 是一样的。所以②那格不是「RN 不行」，是「取决于你怎么写」。而 RN 里那两个大家天天写的东西——useNativeDriver 设成 true、Reanimated 的 worklet 把动画代码放到 UI 线程跑——本质都不是「优化参数」，是把这个动画从「每帧回来问」整个换成「开场交一次」。这里有个边界必须说清楚，不然一定有人问「那全设成 true 不就完了」：useNativeDriver 只支持 transform 和 opacity 这类不影响布局的属性，一旦你要动的是宽高或位置这种会触发重新布局的属性，就设不了 true，只能每帧回 JS。这也正是②那格是黄的而不是绿的原因——能设的都该设，但有一类动画物理上设不了。Reanimated 的 worklet 是另一条路，覆盖面更广，代价是引一个第三方库。理解了这个模型，你就不用背规则了，你自己能判断：这个动画的每一帧还需要 JS 参与吗？需要，它就是脆的。原理讲到这儿完整了。但原理成立到生产可用还差一堆脏活：RN 项目里躺着的两个原生工程谁维护？原生依赖怎么配？答案在 Expo。
 -->
 
 ---
@@ -827,19 +818,19 @@ RN 的原理成立了，但要把它用在生产里，还差工程化这一站�
 <div class="dg" style="gap:1.4rem">
   <div class="dbox" style="text-align:left;font-family:monospace;font-size:.72rem;padding:.7rem 1.1rem">
     your-app/<br>
-    &nbsp;├ src/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#047857">← 你想写的</span><br>
+    &nbsp;├ src/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#047857">← 业务代码</span><br>
     &nbsp;├ ios/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#b45309">← Xcode 工程</span><br>
     &nbsp;└ android/&nbsp;&nbsp;<span style="color:#b45309">← Gradle 工程</span>
   </div>
   <div class="dcol">
-    <div class="dbox js" style="padding:.35rem .7rem;font-size:.72rem">装库要改 Podfile / Gradle</div>
-    <div class="dbox js" style="padding:.35rem .7rem;font-size:.72rem">升级要手动 merge 模板 diff</div>
-    <div class="dbox js" style="padding:.35rem .7rem;font-size:.72rem">原生配置要手改工程文件</div>
+    <div class="dbox js" style="padding:.35rem .7rem;font-size:.72rem">引入原生依赖：需改 Podfile / build.gradle</div>
+    <div class="dbox js" style="padding:.35rem .7rem;font-size:.72rem">升级 RN 版本：需手动合并模板差异</div>
+    <div class="dbox js" style="padding:.35rem .7rem;font-size:.72rem">权限、图标、启动屏：需直接编辑工程文件</div>
   </div>
 </div>
 
 <!--
-裸 RN 仓库里躺着完整的 Xcode 和 Gradle 工程，从生成那天起归你养：装库改 Podfile、原生配置手改工程文件、升级对着模板 diff 手动 merge——这活没人想干两遍。我们选 RN 图的就是不养原生团队，矛盾来了。Expo 怎么解？下一页先看全景。
+直接用 RN 初始化出来的仓库里，躺着一套完整的 Xcode 工程和一套完整的 Gradle 工程，从生成那天起就归你维护：引入一个带原生代码的依赖，要改 Podfile 和 build.gradle；配权限、换图标、改启动屏，要直接编辑工程文件；升级 RN 版本，官方给的是新旧模板的差异，得自己一处处合并回来。这三件事都需要原生工程经验——而我们选 RN 的初衷正是不想养原生团队。矛盾就在这里。Expo 怎么解？下一页先看全景。
 -->
 
 ---
@@ -904,31 +895,10 @@ flowchart LR
   D --> E
 ```
 
-<p class="dnote">CNG：原生目录不进仓库、不手改——脏了就删掉重新生成</p>
+<p class="dnote">原生目录不进仓库、也不手改——脏了就删掉重新生成<br><b style="color:#17324d">要加相机权限？在 app.json 里声明 expo-camera，prebuild 时自动写进 Info.plist 和 AndroidManifest</b></p>
 
 <!--
-第二层是 Expo 最核心的设计 CNG：原生工程根本不该由人维护。仓库里只有 JS 和一份 app.json；要原生工程时跑 prebuild 现场生成，地位等同编译产物，脏了删掉重来。升级噩梦直接消失——用新模板重新生成就完了。
--->
-
----
-
-## 改原生配置，也只需要改 app.json
-
-<div class="dg" style="gap:.9rem">
-  <div class="dbox js" style="font-family:monospace;text-align:left;font-size:.72rem">"plugins": [<br>&nbsp;&nbsp;"expo-camera"<br>]</div>
-  <span class="darr">→</span>
-  <div class="dbox rn"><b>prebuild</b><small>插件自动注入</small></div>
-  <span class="darr">→</span>
-  <div class="dcol">
-    <div class="dbox nat" style="padding:.3rem .6rem;font-size:.7rem">Info.plist</div>
-    <div class="dbox nat" style="padding:.3rem .6rem;font-size:.7rem">AndroidManifest</div>
-  </div>
-</div>
-
-<p class="dnote">全程不用打开 Xcode</p>
-
-<!--
-库要改原生配置怎么办？config plugin：库作者把所需的原生改动写成插件，你在 app.json 里声明，prebuild 时自动注入。全程不用打开 Xcode，甚至不用知道 Info.plist 是什么。三层讲完了——还记得第一章有笔账没还吗？
+第二层是 Expo 最核心的设计，叫 CNG：原生工程根本不该由人来维护。仓库里只有 JS 和一份 app.json；需要原生工程的时候跑一次 prebuild 现场生成，它的地位等同于编译产物，脏了删掉重来。升级那个噩梦就直接消失了——换新模板重新生成一遍就完了。第三件麻烦事——库要改原生配置怎么办——用的是同一套机制：库作者把需要的原生改动写成一个 config plugin，你只要在 app.json 里声明一句，比如 expo-camera，prebuild 的时候自动把权限写进 Info.plist 和 AndroidManifest。全程不用打开 Xcode，甚至不用知道 Info.plist 是什么。三层到这儿讲完了——还记得第一章有笔账没还吗？
 -->
 
 ---

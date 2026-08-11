@@ -1,6 +1,6 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>动画模型对比：一次性提交曲线 vs 每帧回问 JS</title>
+<title>同一个动画的两种写法：开场交一次 vs 每帧回来问</title>
 <style>
   :root {
     --paper: #faf9f7;
@@ -69,20 +69,20 @@
 <div class="wrap">
   <div class="lane">
     <div class="lbl">
-      <b>一次提交 · 声明式</b>
-      <small>把整条曲线一次性交给合成器</small>
+      <b>写法一：开场交一次</b>
+      <small>把整条曲线一次性交给原生<br><code>useNativeDriver: true</code></small>
     </div>
     <div class="track"><div class="box top" id="boxTop"></div></div>
-    <div class="badge">跨层通信<b id="cntTop">×0</b><em id="expTop"></em></div>
+    <div class="badge">回 JS 问了<b id="cntTop">×0</b><em id="expTop"></em></div>
   </div>
 
   <div class="lane">
     <div class="lbl">
-      <b>每帧回问 · 命令式</b>
-      <small>每帧回到 JS 问一次「现在该在哪」</small>
+      <b>写法二：每帧回来问</b>
+      <small>每帧回到 JS 问一次「现在该走到哪了」<br><code>useNativeDriver: false</code></small>
     </div>
     <div class="track"><div class="box bot" id="boxBot"></div></div>
-    <div class="badge">跨层通信<b id="cntBot">×0</b><em id="expBot"></em></div>
+    <div class="badge">回 JS 问了<b id="cntBot">×0</b><em id="expBot"></em></div>
   </div>
 
   <canvas id="mech"></canvas>
@@ -233,8 +233,8 @@
       ctx.fillText(v + 'ms', x(v), 8);
     });
 
-    strip(18, '一次提交：曲线交出去之后，不再跨层', [0], [[0, Math.min(ms, DUR)]], true);
-    strip(90, '每帧回问：每一帧都要跨层一次', dotsBot, deliveredBot, false);
+    strip(18, '写法一：曲线交出去之后，JS 再也不参与', [0], [[0, Math.min(ms, DUR)]], true);
+    strip(90, '写法二：每一帧都要回 JS 一次', dotsBot, deliveredBot, false);
 
     // 播放头
     if (ms <= AXIS_MS) {
