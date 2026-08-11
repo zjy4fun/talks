@@ -38,10 +38,10 @@ mdc: true
 
 ---
 
-## 一套业务，要同时进入两个封闭生态
+## 一套业务，要在 iOS 和 Android 上各做一个 App
 
 <div class="dg" style="gap:2.2rem">
-  <div class="dbox rn" style="padding:1.1rem 1.5rem"><b>一套业务</b><small>每周都要往前走</small></div>
+  <div class="dbox rn" style="padding:1.1rem 1.5rem"><b>一套业务</b><small>需求每周都在变</small></div>
   <span class="darr">→</span>
   <div class="dcol" style="gap:.9rem">
     <div class="dbox nat" style="padding:.8rem 1.2rem"><b>iOS 生态</b><small>Objective-C / Swift · App Store</small></div>
@@ -49,10 +49,10 @@ mdc: true
   </div>
 </div>
 
-<p class="dnote">两个生态互不认对方的代码——怎么用最少的人进去，还不拖慢迭代？</p>
+<p class="dnote">两边的代码不能互相复用——怎么用最少的人把两个 App 都做出来，还不拖慢迭代？</p>
 
 <!--
-先看局面：iOS 是 Objective-C/Swift 那套，Android 是 Java/Kotlin 那套，两个生态互不认对方的代码；业务只有一套，还要每周往前走。移动端所有选型都在回答同一个问题：怎么用最少的人，把一套业务塞进两个封闭生态，还不拖慢迭代。这个问题太大，先把它拆成两个具体问题——就是贯穿全场的分析框架。
+先看局面：iOS 用 Objective-C/Swift，上 App Store；Android 用 Java/Kotlin，上各大应用商店。两边的代码不能互相复用，同一个功能得写两遍。可业务只有一套，需求每周都在变。移动端所有选型都在回答同一个问题：怎么用最少的人，把两个平台的 App 都做出来，还不拖慢迭代。这个问题太大，先把它拆成两个具体问题——就是贯穿全场的分析框架。
 -->
 
 ---
