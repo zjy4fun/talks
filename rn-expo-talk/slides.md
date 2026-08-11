@@ -1,6 +1,6 @@
 ---
 theme: seriph
-title: 为什么我们用 React Native + Expo 做移动端
+title: React Native + Expo：移动端 App 技术分享
 titleTemplate: '%s'
 lang: zh-CN
 class: text-center
@@ -8,7 +8,7 @@ transition: slide-left
 mdc: true
 ---
 
-# 为什么我们用 React Native + Expo 做移动端
+# React Native + Expo：移动端 App 技术分享
 
 移动端技术选型：原理与取舍
 
@@ -223,7 +223,7 @@ flowchart LR
 
 ## 一帧的预算只有 16.7 毫秒
 
-浏览器里，JS 和渲染共用一个主线程。
+屏幕每秒连播 60 张画面，留给每张的制作时间只有 1000 ÷ 60 ≈ 16.7 毫秒；浏览器里，JS 和渲染还共用同一个主线程。
 
 <div class="dg">
   <div style="position:relative;width:620px;height:140px">
@@ -246,8 +246,10 @@ flowchart LR
   </div>
 </div>
 
+<p class="dnote">到点没画完，屏幕只能把上一张再放一遍——画面停一拍，肉眼看到的就是「卡」</p>
+
 <!--
-第二个来源：帧预算。屏幕一秒刷六十次，一帧预算十六点七毫秒，超时就丢帧，肉眼看到的就是卡顿。浏览器里 JS 和渲染还挤同一个主线程，JS 一跑久整条管线跟着迟到。手机芯片弱、要省电，这条长管线经常踩线——「网页在手机上卡」是有物理来源的。
+第二个来源：帧预算。屏幕上的画面不是连续动的——它像放电影，每秒连播六十张静态画面，靠快速切换骗过眼睛。倒过来算，留给每张画面的制作时间只有一千毫秒除以六十，约十六点七毫秒。这是条死线：到点屏幕就要取下一张画，画完了就播新的；没画完，屏幕不等人，只能把上一张原样再放一遍——本该动的画面停了一拍，肉眼看到的就是「卡了一下」，这就是丢帧。那为什么会画不完？看图：浏览器里 JS 和渲染挤同一个主线程，一帧之内要先跑 JS、再算布局、绘制、合成，排着队干完才算交卷；队伍里任何一环拖长——最常见的就是 JS 一跑久——后面全体顺延，这一帧就超线了。手机芯片弱、还要省电，这条长队经常踩线——「网页在手机上卡」是有物理来源的。
 -->
 
 ---
@@ -574,8 +576,10 @@ RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实�
   </div>
 </div>
 
+<p class="dnote">与浏览器的关键区别：JS 不和渲染抢线程——JS 忙时，滚动、转场仍由原生驱动</p>
+
 <!--
-进入第二个问题：这份差异清单怎么穿过 JS 和原生的边界，变成真控件？先看 2015 年初代架构的答案。三个线程：JS 线程跑业务和 diff，Shadow 线程算布局，UI 主线程上屏。中间那座桥是唯一通道，规矩很怪：所有数据序列化成 JSON、全异步、攒批发。每次对话都要打包、排队、解包——什么场景会出事？
+进入第二个问题：这份差异清单怎么穿过 JS 和原生的边界，变成真控件？先看 2015 年初代架构的答案。三个线程：JS 线程跑业务和 diff，Shadow 线程算布局，UI 主线程上屏。先记一个和 H5 章呼应的关键区别：浏览器里 JS 和渲染挤同一个主线程，RN 从第一天起就把它们分开——JS 跑久了不劫持渲染，列表滚动、转场动画照样由原生线程驱动，最多是数据更新晚到一拍；H5 章那条 16.7 毫秒的预算线，RN 天生就松得多。但中间那座桥是唯一通道，规矩很怪：所有数据序列化成 JSON、全异步、攒批发。每次对话都要打包、排队、解包——什么场景会出事？
 -->
 
 ---
@@ -618,7 +622,7 @@ RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实�
 <p class="dnote">RN 0.76 起（2024 年 10 月），新架构默认开启</p>
 
 <!--
-手术核心叫 JSI：以前隔桥喊话，现在 JS 直接握着 C++ 对象引用，像调普通函数一样同步调，不序列化不排队。这张图和上一张同构，就是桥换成直通接口。配套 Fabric 新渲染器、TurboModules 按需加载。重点是时间点：0.76 起默认开启，2024 年 10 月——「RN 卡」的老印象，对应的是已经拆掉的那座桥。
+手术核心叫 JSI：以前隔桥喊话，现在 JS 直接握着 C++ 对象引用，像调普通函数一样同步调，不序列化不排队。这张图和上一张同构，就是桥换成直通接口。配套 Fabric 新渲染器、TurboModules 按需加载。重点是时间点：0.76 起默认开启，2024 年 10 月——「RN 卡」的老印象，主要对应的就是这座已经拆掉的桥。
 -->
 
 ---
@@ -711,7 +715,7 @@ Expo 之于 RN，相当于 Next.js 之于 React
 </div>
 
 <!--
-RN 的原理成立了，但要把它用在生产里，还差工程化这一站——这就是演进的第四步：Expo。RN 官网现在的入门指南，裸建已被挪进单独的 Without a Framework 页面，首页开篇就推荐通过框架用 RN，点名 Expo。类比前端：React 只管渲染，工程问题 Next.js 兜底。这一章结构简单：先看裸用的三个麻烦，再看 Expo 一层层怎么解。
+RN 的原理成立了，但要把它用在生产里，还差工程化这一站——这就是演进的第四步：Expo。RN 官网现在的入门指南，裸建已被挪进单独的 Without a Framework 页面，首页开篇就推荐通过框架用 RN，点名 Expo。类比前端：React 只管渲染，工程问题 Next.js 兜底。这一章结构简单：先看裸用的三个麻烦，再看 Expo 一层层怎么解，最后把第一章欠下的那笔发版账收掉。
 -->
 
 ---
@@ -822,7 +826,34 @@ flowchart LR
 <p class="dnote">全程不用打开 Xcode</p>
 
 <!--
-库要改原生配置怎么办？config plugin：库作者把所需的原生改动写成插件，你在 app.json 里声明，prebuild 时自动注入。全程不用打开 Xcode，甚至不用知道 Info.plist 是什么。
+库要改原生配置怎么办？config plugin：库作者把所需的原生改动写成插件，你在 app.json 里声明，prebuild 时自动注入。全程不用打开 Xcode，甚至不用知道 Info.plist 是什么。三层讲完了——还记得第一章有笔账没还吗？
+-->
+
+---
+
+## 改的是 JS，就不用再等商店审核
+
+<div class="dg" style="flex-direction:column;gap:.9rem">
+  <div class="drow" style="align-items:center">
+    <div class="dcap" style="width:5.5rem;margin:0;text-align:right">原生层改动</div>
+    <div class="dbox" style="padding:.35rem .7rem">prebuild 构建</div>
+    <span class="darr">→</span>
+    <div class="dbox nat"><b>商店审核</b><small>新增原生依赖 · 改原生配置</small></div>
+    <span class="darr">→</span>
+    <div class="dbox" style="padding:.35rem .7rem">放量</div>
+  </div>
+  <div class="drow" style="align-items:center">
+    <div class="dcap" style="width:5.5rem;margin:0;text-align:right">JS 层改动</div>
+    <div class="dbox js" style="padding:.35rem .7rem">发布新 JS 包</div>
+    <span class="darr">→</span>
+    <div class="dbox rn"><b>热更新</b><small>下次打开即新版</small></div>
+  </div>
+</div>
+
+<p class="dnote">Expo Updates（我们用 EAS Update）：日常迭代绝大部分在 JS 层；更新协议开放，服务端可自建</p>
+
+<!--
+第一章算过两笔账：人力翻倍，还有一笔——节奏被商店审核锁死——到现在还欠着，这页收账。RN 的业务代码都打在一个 JS 包（bundle）里，而这个包是可以整体替换的：Expo 自带热更新机制，我们用的是官方的 EAS Update 服务——发布新包，用户下次打开 App 就是新版，分钟级触达，不经过商店。回想 H5 章那页「改完部署、打开即新版」：这个优点，RN 在 JS 层拿回来了。诚实的边界也要说：只有 JS 层的改动能这么发；动了原生依赖、原生配置，还是要 prebuild、走商店审核。你会发现发版和渲染走的是同一条分层线——JS 的归 JS，原生的归原生。好在日常迭代——改文案、调逻辑、修 bug——绝大部分落在 JS 层，再也不用为一行代码等三天。补一句：这套更新协议是开放的，服务端可以自建，我们后续也计划切到自建服务，不被托管平台绑死。
 -->
 
 ---
@@ -832,11 +863,11 @@ flowchart LR
 <div class="dg" style="gap:1rem">
   <div class="dbox rn" style="min-width:12rem"><b>RN</b><small>JS 渲染原生 UI</small></div>
   <span style="color:#6b7280;font-weight:700">+</span>
-  <div class="dbox nat" style="min-width:12rem"><b>Expo</b><small>SDK · CNG · Config Plugins</small></div>
+  <div class="dbox nat" style="min-width:12rem"><b>Expo</b><small>SDK · CNG · Config Plugins · 热更新</small></div>
 </div>
 
 <!--
-分工一句话：RN 管「JS 渲染原生 UI」，Expo 管围绕它的工程化——SDK 版本配套、CNG 生成原生工程、插件注入配置。引擎和整车的关系——光有引擎开不上路，官方劝你别裸用就是这个原因。正面论证到此完成，还差最后一块：边界。
+分工一句话：RN 管「JS 渲染原生 UI」，Expo 管围绕它的工程化——SDK 版本配套、CNG 生成原生工程、插件注入配置、热更新兜住发版节奏。引擎和整车的关系——光有引擎开不上路，官方劝你别裸用就是这个原因。正面论证到此完成，还差最后一块：边界。
 -->
 
 ---
@@ -1049,9 +1080,10 @@ class: text-center
   <div class="drow"><div class="dbox" style="min-width:13rem">UI 由谁渲染</div><span class="darr">→</span><div class="dbox nat" style="min-width:13rem">系统原生控件</div></div>
   <div class="drow"><div class="dbox" style="min-width:13rem">逻辑跑在哪个运行时</div><span class="darr">→</span><div class="dbox js" style="min-width:13rem">JS，一套代码</div></div>
   <div class="drow"><div class="dbox" style="min-width:13rem">工程脏活谁兜底</div><span class="darr">→</span><div class="dbox rn" style="min-width:13rem">Expo（SDK · CNG）</div></div>
+  <div class="drow"><div class="dbox" style="min-width:13rem">发版还要不要等审核</div><span class="darr">→</span><div class="dbox rn" style="min-width:13rem">JS 层热更 · 原生层过审</div></div>
   <div class="drow"><div class="dbox" style="min-width:13rem">链路罩不住的地方</div><span class="darr">→</span><div class="dbox rn" style="min-width:13rem">下沉原生，挂回 RN</div></div>
 </div>
 
 <!--
-回到开场那两个问题，也回顾这一路：纯原生都答原生，体验顶但成本翻倍、节奏被审核锁死；H5 都答网页，省钱但撞上体验和能力两个天花板；RN 把问题拆开答：渲染给系统控件，逻辑留 JS，用十年演进把中间那层通信做扎实，Expo 兜住工程化。后两行是一路走下来新加的两问，答案也在图上。一句话收尾：用前端团队驾驭得了的一套代码，交付接近原生的体验，保住接近 Web 的开发效率。谢谢大家。
+回到开场那两个问题，也回顾这一路：纯原生都答原生，体验顶但成本翻倍、节奏被审核锁死；H5 都答网页，省钱但撞上体验和能力两个天花板；RN 把问题拆开答：渲染给系统控件，逻辑留 JS，用十年演进把中间那层通信做扎实，Expo 兜住工程化。后三行是一路走下来新加的问题，答案也在图上——特别是第一章欠的第二笔账：发版节奏，JS 层热更收了回来，原生层才走商店。一句话收尾：用前端团队驾驭得了的一套代码，交付接近原生的体验，保住接近 Web 的开发效率。谢谢大家。
 -->
