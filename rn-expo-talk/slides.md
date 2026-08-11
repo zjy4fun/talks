@@ -63,10 +63,10 @@ mdc: true
   <thead>
     <tr>
       <th></th>
-      <th class="axis" colspan="2">② 逻辑跑在哪个运行时</th>
+      <th class="axis" colspan="2">② 逻辑跑在哪个运行时　→ 看列</th>
     </tr>
     <tr>
-      <th class="corner">① UI 由谁渲染</th>
+      <th class="corner">① UI 由谁渲染　↓ 看行</th>
       <th>JS 运行时<span></span></th>
       <th>原生运行时<span></span></th>
     </tr>
@@ -111,47 +111,63 @@ layout: section
 
 ## 双份代码、双份团队、双份测试，两端还会对不齐
 
-<div class="dg" style="gap:1.4rem">
-  <div class="dbox nat"><b>iOS</b><small>Swift · 团队 A · QA 一遍</small></div>
-  <div class="dcol" style="align-items:center;gap:2px">
-    <div style="font-size:.7rem;color:#6b7280">同一个需求</div>
-    <div class="darr">⇄</div>
-    <div style="font-size:.7rem;color:#b45309">做出来不一样</div>
+<div class="dg" style="flex-direction:column;gap:.55rem;zoom:1.16">
+  <div class="dbox rn" style="padding:.42rem 2.2rem"><b>一个需求</b></div>
+  <div class="darr">↓</div>
+  <div class="dcol" style="gap:.5rem">
+    <div class="drow" style="align-items:center;gap:.5rem">
+      <div class="dbox nat" style="min-width:6.6rem;padding:.42rem .7rem"><b>iOS</b><small>团队 A</small></div>
+      <span class="darr">→</span><div class="dbox" style="padding:.42rem .9rem">排期</div>
+      <span class="darr">→</span><div class="dbox" style="padding:.42rem .9rem">Swift 实现</div>
+      <span class="darr">→</span><div class="dbox" style="padding:.42rem .9rem">自测</div>
+      <span class="darr">→</span><div class="dbox" style="padding:.42rem .9rem">QA 回归</div>
+    </div>
+    <div class="drow" style="align-items:center;gap:.5rem">
+      <div class="dbox nat" style="min-width:6.6rem;padding:.42rem .7rem"><b>Android</b><small>团队 B</small></div>
+      <span class="darr">→</span><div class="dbox" style="padding:.42rem .9rem">排期</div>
+      <span class="darr">→</span><div class="dbox" style="padding:.42rem .9rem">Kotlin 实现</div>
+      <span class="darr">→</span><div class="dbox" style="padding:.42rem .9rem">自测</div>
+      <span class="darr">→</span><div class="dbox" style="padding:.42rem .9rem">QA 回归</div>
+    </div>
   </div>
-  <div class="dbox nat"><b>Android</b><small>Kotlin · 团队 B · QA 再一遍</small></div>
+  <div class="dbox" style="padding:.4rem 1.6rem;background:#fee2e2;border-color:#b91c1c;margin-top:.15rem">两边各自实现　→　做出来还是会不一样</div>
 </div>
 
-<!--
-第一笔账：同一个需求 Swift 写一遍 Kotlin 再写一遍，两拨工程师、两套招聘、QA 各回归一遍。而且两边各自实现，做出来必然有出入：产品某天发现 iOS 有的功能 Android 没有，再补排期。人力乘二，速度除二。
--->
+<p class="dnote">从排期到回归，同一条链路要走两遍<br><b style="color:#17324d">人力 ×2，速度 ÷2</b></p>
 
+<!--
+第一笔账：一个需求进来，iOS 和 Android 各走一条完整的链路——各自排期、各自实现、各自自测、QA 各回归一遍。四个环节，每个都要做两遍。而且因为是两拨人各自实现的，做出来必然有出入：产品某天发现 iOS 上有的功能 Android 没有，或者两边动效不一样，再补一次排期。一句话：人力乘二，速度除二。
+-->
 ---
 
 ## 改一行代码，也要等商店审核
 
-<div class="dg" style="flex-direction:column;gap:.9rem">
-  <div class="drow" style="align-items:center">
-    <div class="dcap" style="width:3.5rem;margin:0;text-align:right">原生</div>
-    <div class="dbox" style="padding:.35rem .7rem">打包</div>
+<div class="dg" style="flex-direction:column;gap:1rem;zoom:1.12">
+  <div class="drow" style="align-items:center;gap:.55rem">
+    <div class="dcap" style="width:4.6rem;margin:0;text-align:right;font-size:.8rem">原生</div>
+    <div class="dbox" style="padding:.55rem 1.1rem">打包</div>
     <span class="darr">→</span>
-    <div class="dbox nat"><b>商店审核</b><small>iOS 通常 1~3 天</small></div>
+    <div class="dbox nat" style="padding:.55rem 1.3rem"><b>提交商店审核</b><small>iOS 通常 1~3 天，被拒要重排</small></div>
     <span class="darr">→</span>
-    <div class="dbox" style="padding:.35rem .7rem">放量</div>
+    <div class="dbox" style="padding:.55rem 1.1rem">分批放量</div>
     <span class="darr">→</span>
-    <div class="dbox" style="padding:.35rem .7rem">等用户升级</div>
+    <div class="dbox" style="padding:.55rem 1.1rem">等用户升级</div>
+    <div class="dbox" style="padding:.4rem .9rem;background:#fee2e2;border-color:#b91c1c;margin-left:.5rem"><b>以「天」计</b></div>
   </div>
-  <div class="drow" style="align-items:center">
-    <div class="dcap" style="width:3.5rem;margin:0;text-align:right">Web</div>
-    <div class="dbox js" style="padding:.35rem .7rem">部署</div>
+  <div class="drow" style="align-items:center;gap:.55rem">
+    <div class="dcap" style="width:4.6rem;margin:0;text-align:right;font-size:.8rem">Web</div>
+    <div class="dbox js" style="padding:.55rem 1.1rem">部署</div>
     <span class="darr">→</span>
-    <div class="dbox rn" style="padding:.35rem .7rem">分钟级全量</div>
+    <div class="dbox rn" style="padding:.55rem 1.3rem"><b>用户刷新即新版</b></div>
+    <div class="dbox rn" style="padding:.4rem .9rem;margin-left:.5rem"><b>以「分钟」计</b></div>
   </div>
 </div>
 
-<!--
-第二笔账：节奏被商店锁死。打包、提审——iOS 通常一到三天，被拒重排——再分批放量、等用户升级。原生团队都攒版本，两周一班车，线上 bug 最快也是天级响应。太贵、太慢，怎么办？行业的第一反应：把已经会的 Web 搬进 App。
--->
+<p class="dnote">所以原生团队都攒版本——两周一班车，线上出问题最快也是天级响应<br><b style="color:#17324d">节奏被商店锁死，这是第二笔账</b></p>
 
+<!--
+第二笔账：节奏被商店锁死。原生这条链路是打包、提审——iOS 通常一到三天，被拒了还要重排——然后分批放量，再等用户自己升级，整条路以「天」计。Web 那条只有两步：部署完，用户下次打开就是新版，以「分钟」计。这个差别的直接后果是：原生团队都攒版本，两周发一班车，线上出了问题最快也是天级响应。太贵、太慢，怎么办？行业的第一反应：把已经会的 Web 搬进 App。
+-->
 ---
 layout: section
 ---
@@ -203,14 +219,14 @@ layout: section
 ## H5 的头上有两个天花板：体验，和能力
 
 <div class="dg" style="gap:2.5rem">
-  <div class="dbox js" style="min-width:16rem;padding:1.1rem 1.3rem"><b>体验天花板</b><small>滑动和动画就是差原生一口气<br>而且不是「再优化优化」能补上的</small></div>
-  <div class="dbox js" style="min-width:16rem;padding:1.1rem 1.3rem"><b>能力天花板</b><small>摄像头、推送这些功能碰不到<br>不是没人做，是浏览器不让</small></div>
+  <div class="dbox js" style="min-width:16rem;padding:1.1rem 1.3rem"><b>体验天花板</b><small>滑动和动画达不到原生水平<br>这个差距不是优化能补上的</small></div>
+  <div class="dbox js" style="min-width:16rem;padding:1.1rem 1.3rem"><b>能力天花板</b><small>摄像头、推送等系统功能调用不到<br>限制来自浏览器，不是实现问题</small></div>
 </div>
 
-<p class="dnote">体验这块分两步：先说清一帧只有多长，再拆三条根源——Web 为什么总是超时<br>能力那块只说一件事：这堵墙是谁砌的</p>
+<p class="dnote">体验：先定义一帧的时间预算，再逐条分析三个原因<br>能力：说明这些限制的来源</p>
 
 <!--
-两个天花板，分开讲，这一章的结构就这两块。体验这块我不打算说一句「H5 慢」就完事——那种结论换个浏览器版本就过期了。我先把「一帧」这件事说清楚：一帧有多长，超时会怎样；再拆三条根源，说清差距到底从哪儿来。提前说明一件事：这三条不是 H5 的罪状清单，是任何界面技术都要过的三道关——今天先用它们量原生和 Web，第三站我们会用同一张表给 RN 打分。能力那块：为什么纯 H5 连很多功能都做不了——两页推到 Hybrid，再算一笔账。最后收一个分工结论。
+两个天花板，分开讲，这一章的结构就这两块。体验这块我不打算只说一句「H5 慢」——那种结论换个浏览器版本就过期了。我先定义一帧的时间预算：一帧有多长，超时会发生什么；再逐条分析三个原因，说清差距的来源。提前说明一件事：这三条不是 H5 的罪状清单，是任何界面技术都要过的三道关——今天先用它们量原生和 Web，第三站我们会用同一张表给 RN 打分。能力那块：为什么纯 H5 连很多功能都做不了——两页推到 Hybrid，再算一笔账。最后收一个分工结论。
 -->
 
 ---
@@ -313,22 +329,22 @@ layout: section
         <div class="dbox js" style="padding:.35rem .7rem"><b>动画跟着停</b><small>JS · 样式计算 · 布局 · 绘制共享这一个线程</small></div>
         <div style="font-size:.66rem;line-height:1.6;color:#6b7280;text-align:left;padding-left:.1rem">
           唯一的例外：纯 transform / opacity 能走合成线程<br>
-          <span style="color:#b91c1c">而只要挂了非 passive 的 touch 监听，或改了触发 layout 的属性，例外立刻失效</span>
+          <span style="color:#b91c1c">但页面一旦监听触摸事件没加 passive 标记，浏览器就得先问过 JS 才敢滚；<br>动的属性会引起重新布局时，也一样得回主线程——例外立刻失效</span>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<p class="dnote">再叠加 GC 停顿：垃圾回收什么时候来、停多久，业务代码说了不算<br><b style="color:#17324d">原生的流畅有下限保证，Web 的流畅是概率性的</b><br>这个区别，比任何一张平均帧率对比表都重要</p>
+<p class="dnote"><b style="color:#17324d">原生的流畅有下限保证，Web 的流畅是概率性的</b><br>这个区别，比任何一张平均帧率对比表都重要</p>
 
 <!--
-第二条根源，三条里最重要的一条：关键路径上，有没有一个会被业务代码堵住的单线程。原生做了一件很关键的事——它把「动画的执行」从「应用的逻辑」里摘出去了。iOS 上 Core Animation 的动画实际是在一个独立的 render server 进程里推进的；Android 从 5.0 起有 RenderThread。所以你的主线程哪怕卡死 500 毫秒，那个动画该怎么播还怎么播完，因为播它的根本不是你这个线程。Web 这边相反：JS、样式计算、布局共享同一个主线程。有人会说浏览器不是有合成线程吗——对，纯 transform 和 opacity 的动画合成线程确实能独立处理，这是真本事。但这条逃生通道很窄：只要页面上挂了非 passive 的 touch 监听，浏览器就必须先问过主线程才敢滚；只要你动的属性会触发 layout，也一样得回主线程。再加上 GC——垃圾回收什么时候来、停多久，业务代码控制不了。所以呢？这就是今天最该记住的一句话：原生的流畅是有下限保证的，Web 的流畅是概率性的。你在自己手机上测一百次都不掉帧，不代表用户那一次不掉——因为它取决于那一刻主线程上恰好有什么。这个区别，比任何一份平均帧率对比表都重要。
+第二条根源，三条里最重要的一条：关键路径上，有没有一个会被业务代码堵住的单线程。原生做了一件很关键的事——它把「动画的执行」从「应用的逻辑」里摘出去了。iOS 上 Core Animation 的动画实际是在一个独立的 render server 进程里推进的；Android 从 5.0 起有 RenderThread。所以你的主线程哪怕卡死 500 毫秒，那个动画该怎么播还怎么播完，因为播它的根本不是你这个线程。Web 这边相反：JS、样式计算、布局共享同一个主线程。有人会说浏览器不是有合成线程吗——对，纯 transform 和 opacity 的动画合成线程确实能独立处理，这是真本事。但这个例外的适用面很窄：页面只要监听了触摸事件而没加 passive 标记，浏览器就必须先问过主线程才敢滚——因为它不知道你会不会拦截这次滚动；你改的属性只要会引起重新布局，也一样得回主线程。所以呢？这就是今天最该记住的一句话：原生的流畅是有下限保证的，Web 的流畅是概率性的。你在自己手机上测一百次都不掉帧，不代表用户那一次不掉——因为它取决于那一刻主线程上恰好有什么。这个区别，比任何一份平均帧率对比表都重要。
 -->
 
 ---
 
-## 根源三：滑动的手感，是系统白送的，还是 JS 自己算的
+## 根源三：滑动的手感，是系统自带的，还是 JS 自己算的
 
 <div class="dg" style="gap:1.6rem;zoom:1.06;align-items:flex-start">
   <div class="dcol" style="gap:.3rem">
@@ -348,12 +364,10 @@ layout: section
   </div>
 </div>
 
-<p class="dnote">甩一下列表，它该滑多远，取决于你松手那一刻的速度<br>系统看得到手指离开前的完整轨迹，能算准；JS 只看得到最后两三个点，只能估<br><b style="color:#17324d">这不是代码写得慢，是能拿到的信息本来就少——所以优化也补不回来</b></p>
-
-<p class="dcap" style="margin-top:.7rem">三条根源到此讲完，体验这个天花板成立——下面换第二个：能力</p>
+<p class="dnote">甩动列表时滑多远，取决于松手瞬间的速度：系统能看到完整轨迹，JS 只有最后两三个点<br><b style="color:#17324d">差距不在算得快慢，在可用的数据量——优化补不回来</b></p>
 
 <!--
-第三条根源最容易被忽略，但用户说「感觉不对」的时候，多半就是它。原生 App 里有很多手感是系统白送的：松手之后列表慢慢停下来、滑到头有个回弹、从屏幕边缘往回滑就能返回上一页、手指按下去立刻变色——这些 App 一行代码都不用写。H5 这边，稍微复杂一点的交互就得 JS 自己写一遍去模仿。为什么模仿不像？很多人以为是算法不够好，其实是两边拿到的信息就不一样多。屏幕记录手指位置的频率很高，每秒两百多次，比画面刷新还快好几倍。系统能拿到这些点的全部；网页里的 JS 只拿到其中一部分，而且还慢一拍。最典型的就是甩动列表：你手指一甩松开，列表该滑多远，取决于松手那一刻的速度。系统看得到手指离开前的完整轨迹，算得准；JS 只看得到最后两三个点，只能估——而人松手的时候手指常常会不自觉往回缩一下，这一下正好被 JS 算进去，甩出去的距离就不对了。所以这不是代码写得慢，是能拿到的信息本来就少，优化补不回来。三条根源讲完：H5 三条全在下风——不是没优化好，是结构决定的。每条我都留了一格空白：RN 站哪儿？第三站回来填这张表。现在换第二个天花板：能力。
+第三条根源最容易被忽略，但用户说「感觉不对」的时候，多半就是它。原生 App 里有很多手感是系统白送的：松手之后列表慢慢停下来、滑到头有个回弹、从屏幕边缘往回滑就能返回上一页、手指按下去立刻变色——这些 App 一行代码都不用写。H5 这边，稍微复杂一点的交互就得 JS 自己写一遍去模仿。为什么模仿不像？很多人以为是算法不够好，其实是两边拿到的信息就不一样多。屏幕记录手指位置的频率很高，每秒两百多次，比画面刷新还快好几倍。系统能拿到这些点的全部；网页里的 JS 只拿到其中一部分，而且还慢一拍。最典型的就是甩动列表：你手指一甩松开，列表该滑多远，取决于松手那一刻的速度。系统看得到手指离开前的完整轨迹，算得准；JS 只看得到最后两三个点，只能估——而人松手的时候手指常常会不自觉往回缩一下，这一下正好被 JS 算进去，甩出去的距离就不对了。所以这不是代码写得慢，是能拿到的信息本来就少，优化补不回来。三条根源讲完：H5 三条全在下风——不是没优化好，是结构决定的。每条我都留了一格空白：RN 站哪儿？第三站回来填这张表。体验这个天花板到这里就论证完了，下面换第二个：能力。
 -->
 
 ---
@@ -371,98 +385,68 @@ layout: section
   </div>
 </div>
 
-<p class="dnote">这堵墙是浏览器出于安全砌的，不是哪家没做好<br><b style="color:#17324d">所以「纯 H5 做的 App」根本不存在——想用这些功能，就得有原生代码在场</b></p>
+<p class="dnote">这是浏览器的安全模型决定的，不是某个厂商没做<br><b style="color:#17324d">所以「纯 H5 做的 App」并不存在——要用这些功能，就必须有原生代码</b></p>
 
 <!--
-能力天花板。浏览器天生不信任网页，把它关在沙箱里——摄像头、推送、蓝牙都碰不到。但正经 App 离不开这些。所以只要一个「H5 App」能扫码、能收推送，它就一定不是纯 H5，原生代码一定在场。这就是 Hybrid。
+能力天花板。浏览器的安全模型不信任网页，把它限制在一个沙箱里——摄像头、推送、蓝牙都调用不到。但一个正经 App 离不开这些。所以只要一个「H5 App」能扫码、能收推送，它就一定不是纯 H5，原生代码一定在场。这就是 Hybrid。
 -->
 
 ---
 
-## 于是所有「H5 App」，外面都套着一层原生——这就是 Hybrid
+## 所以「H5 App」外层一定有原生壳——这就是 Hybrid
 
-<div class="dg">
-  <div class="dbox nat" style="padding:.8rem 1rem">
-    <b style="margin-bottom:.5rem">原生壳</b>
-    <div class="drow" style="margin-top:.5rem;align-items:center">
-      <div class="dbox js"><b>WebView</b><small>H5 页面 + JS</small></div>
-      <div class="dcol" style="align-items:center;gap:2px">
-        <div style="font-size:.66rem;color:#6b7280">JSBridge<br>（网页向原生喊话的通道）</div>
-        <div class="dbox" style="padding:.25rem .5rem;font-size:.66rem;line-height:1.5">喊一句要等回话<br>只能传字符串<br>两边靠口头约定</div>
-        <div class="darr">⇄</div>
-      </div>
-      <div class="dcol">
-        <div class="dbox nat" style="padding:.3rem .6rem">摄像头</div>
-        <div class="dbox nat" style="padding:.3rem .6rem">推送</div>
-        <div class="dbox nat" style="padding:.3rem .6rem">蓝牙</div>
+<div class="dg" style="zoom:1.06">
+  <div class="dbox nat" style="padding:1rem 1.4rem">
+    <b style="display:block;margin-bottom:.75rem;font-size:.92rem">原生壳</b>
+    <div class="drow" style="align-items:center;gap:.75rem">
+      <div class="dbox js" style="padding:.85rem 1.1rem"><b>WebView</b><small>H5 页面 + JS</small></div>
+      <span class="darr">⇄</span>
+      <div class="dbox" style="padding:.6rem .9rem;background:#fff"><b style="font-size:.78rem">JSBridge</b><small style="line-height:1.65;margin-top:.3rem">异步调用，需等待回调<br>参数序列化为字符串<br>无类型约束，靠两端约定</small></div>
+      <span class="darr">⇄</span>
+      <div class="dcol" style="gap:.4rem">
+        <div class="dbox nat" style="padding:.4rem 1.1rem">摄像头</div>
+        <div class="dbox nat" style="padding:.4rem 1.1rem">推送</div>
+        <div class="dbox nat" style="padding:.4rem 1.1rem">蓝牙</div>
       </div>
     </div>
   </div>
 </div>
 
-<!--
-Hybrid：原生壳管系统能力，WebView 跑页面，中间 JSBridge 通道让网页喊话。注意桥上三个标签——异步，要等回调；字符串，参数序列化传；无类型，全靠口头约定，一边改了另一边上线才发现。下一页看这三个标签变成多少工作量。
--->
+<p class="dnote">原生壳持有系统能力，WebView 负责界面，两者之间只有 JSBridge 这一条通道<br><b style="color:#17324d">下一页看这条通道要付出多少额外工作量</b></p>
 
+<!--
+Hybrid 的结构：外层是原生壳，它持有系统能力；里面是 WebView，跑 H5 页面；两者之间只有 JSBridge 这一条通道。注意通道的三个约束：一，异步调用，发出去要等回调，拿不到同步返回值；二，参数要序列化成字符串传，复杂对象得自己编解码；三，没有类型约束，两端只能靠约定，一边改了参数，另一边往往要等上线才发现。下一页看这三个约束落到工作量上是什么样。
+-->
 ---
 
 ## Hybrid 并没有省掉原生开发
 
-<div class="dg" style="flex-direction:column;gap:.7rem">
-  <div class="drow" style="align-items:center">
-    <div class="dbox nat">原生写实现</div>
-    <span class="darr">→</span>
-    <div class="dbox">注册到桥</div>
-    <span class="darr">→</span>
-    <div class="dbox js">JS 封装调用</div>
-    <span class="darr">→</span>
-    <div class="dbox">两端联调</div>
-  </div>
-  <div class="dcap">每加一个能力走一遍；iOS 和 Android 的桥不同，各走一遍</div>
-</div>
-
-<!--
-每加一个原生能力：原生写实现、注册到桥、JS 封装、联调——iOS 和 Android 各来一遍。所以 Hybrid 团队照样要养原生工程师维护壳和桥。原生开发没省掉，只是挪了个位置。Hybrid 是务实折中，但没解决「两个生态两套人」的根本问题。
--->
-
----
-
-## H5 适合嵌入页面，不适合承担 App 主体
-
-<div class="dg">
-  <div class="dbox" style="padding:.8rem 1rem">
-    <b>App</b>
-    <div class="drow" style="margin-top:.5rem">
-      <div class="dbox rn" style="padding:1.1rem 1rem"><b>主体验</b><small>首页 · 核心流程 · 高频交互</small></div>
-      <div class="dcol">
-        <div class="dbox js" style="padding:.3rem .6rem;font-size:.7rem">运营页 H5</div>
-        <div class="dbox js" style="padding:.3rem .6rem;font-size:.7rem">活动页 H5</div>
-        <div class="dbox js" style="padding:.3rem .6rem;font-size:.7rem">帮助中心 H5</div>
-      </div>
+<div class="dg" style="flex-direction:column;gap:.6rem;zoom:1.1">
+  <div class="dbox rn" style="padding:.45rem 1.6rem"><b>每加一个系统能力</b><small>扫码 · 支付 · 定位 · 分享 ……</small></div>
+  <div class="darr">↓</div>
+  <div class="dcol" style="gap:.45rem">
+    <div class="drow" style="align-items:center;gap:.45rem">
+      <div class="dbox nat" style="min-width:5.6rem;padding:.4rem .7rem"><b>iOS</b></div>
+      <span class="darr">→</span><div class="dbox" style="padding:.4rem .85rem">原生写实现</div>
+      <span class="darr">→</span><div class="dbox" style="padding:.4rem .85rem">注册到 JSBridge</div>
+      <span class="darr">→</span><div class="dbox js" style="padding:.4rem .85rem">JS 封装调用</div>
+      <span class="darr">→</span><div class="dbox" style="padding:.4rem .85rem">两端联调</div>
+    </div>
+    <div class="drow" style="align-items:center;gap:.45rem">
+      <div class="dbox nat" style="min-width:5.6rem;padding:.4rem .7rem"><b>Android</b></div>
+      <span class="darr">→</span><div class="dbox" style="padding:.4rem .85rem">原生写实现</div>
+      <span class="darr">→</span><div class="dbox" style="padding:.4rem .85rem">注册到 JSBridge</div>
+      <span class="darr">→</span><div class="dbox js" style="padding:.4rem .85rem">JS 封装调用</div>
+      <span class="darr">→</span><div class="dbox" style="padding:.4rem .85rem">两端联调</div>
     </div>
   </div>
+  <div class="dcap" style="margin-top:.2rem">两端的 JSBridge 接口不同，实现必须各写一遍</div>
 </div>
 
-<!--
-两个天花板都到底了，结论是分工：低频、重展示、天天改的页面给 H5，发版优势用在刀刃上；主体验——首页、核心流程、高频交互——被体验和能力两个天花板压着，不该是 H5。行业在这条路上摸了好几年，最大的一跤是 Facebook 摔的，这个故事马上讲。
--->
-
----
-
-## 我们想要的是：原生的体验，Web 的开发效率
-
-<div class="dg" style="gap:.8rem">
-  <div class="dbox nat">原生的体验</div>
-  <span style="color:#6b7280;font-weight:700">+</span>
-  <div class="dbox js">一套 JS 代码</div>
-  <span style="color:#6b7280;font-weight:700">+</span>
-  <div class="dbox rn">Web 的开发效率</div>
-  <span class="darr">→</span>
-  <div class="dbox ghost"><b>React Native？</b></div>
-</div>
+<p class="dnote"><b style="color:#17324d">省掉的是界面开发，没省掉原生开发</b>——原生壳和 JSBridge 仍然要原生工程师维护<br>H5 依然适合运营页、活动页这类嵌入场景，但不适合承担 App 主体</p>
 
 <!--
-把两章的账合起来，需求清单自己浮出来：原生的体验、一套 JS 代码、尽量保住 Web 的开发效率——说白了，就是要填上开场坐标系里那个空角。听着像既要又要——2015 年，Facebook 交出了一份答卷。
+每加一个系统能力，比如扫码、支付、定位，流程是固定的：原生写实现、注册到 JSBridge、JS 这边封装成接口、两端联调。而且 iOS 和 Android 的 JSBridge 接口不同，这一整套要各走一遍。所以 Hybrid 团队照样要养原生工程师去维护原生壳和 JSBridge——省掉的是界面开发，没省掉原生开发，只是把原生的工作量挪了个位置。公平地说，H5 这条路并没有被否定：运营页、活动页、帮助中心这类嵌入场景，它依然是最优解，发版优势用在这里最划算。但让它承担 App 主体，前面两个天花板压着，不合适。那我们真正想要的是什么？原生的体验，加上 Web 的开发效率——这两件事能不能同时拿到？这就是下一站，React Native。
 -->
 
 ---
@@ -490,16 +474,16 @@ class: text-center
 
 ## RN 用 JS 描述界面，渲染出来的是<span style="color:#047857">真原生控件</span>
 
-<div class="dg" style="gap:.8rem;margin-top:2.2rem">
-  <div class="dbox js"><b>JS</b><small>描述界面</small></div>
-  <span class="darr">→</span>
-  <div class="dbox rn"><b>React Native</b></div>
-  <span class="darr">→</span>
-  <div class="dbox nat"><b>原生控件</b><small>系统渲染</small></div>
+<div class="dg" style="gap:1.5rem;margin-top:2.6rem;zoom:1.75">
+  <div class="dbox js" style="padding:.9rem 1.6rem"><b>JS</b><small>描述界面</small></div>
+  <span class="darr" style="font-size:1.3rem">→</span>
+  <div class="dbox rn" style="padding:.9rem 1.6rem"><b>React Native</b></div>
+  <span class="darr" style="font-size:1.3rem">→</span>
+  <div class="dbox nat" style="padding:.9rem 1.6rem"><b>原生控件</b><small>由系统渲染</small></div>
 </div>
 
 <!--
-RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实的原生控件——开场坐标系里那个空角，它站进去了。注意，没有网页、没有套壳，屏幕上每个按钮都是系统亲手画的，JS 只是发号施令的人。这句话现在还是个断言，这一章把它拆开证明，最后用系统工具现场验货。
+RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实的原生控件——开场那张表里空着的左上格，它填进去了。注意，没有网页、没有套壳，屏幕上每个按钮都是系统亲手画的，JS 只是发号施令的人。这句话现在还是个断言，这一章把它拆开证明，最后用系统工具现场验货。
 -->
 
 ---
@@ -520,7 +504,7 @@ RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实�
   <div class="tl-node" v-click="2">
     <div class="tl-year">2018</div>
     <div class="tl-dot"><carbon-tools style="width:1.8rem;height:1.8rem;color:#6b7280" /></div>
-    <div class="tl-label">启动架构重写<small>拆掉那座异步桥</small></div>
+    <div class="tl-label">启动架构重写<small>移除异步 Bridge</small></div>
   </div>
   <div class="tl-node" v-click="3">
     <div class="tl-year">2019</div>
@@ -542,7 +526,7 @@ RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实�
 <p class="dnote">十年里架构重写了一遍，引擎也换成自己造的，现在还在往前走——不是新玩具</p>
 
 <!--
-上一章说行业在 H5 上摔的最大一跤：2012 年扎克伯格公开承认「押注 HTML5 是我们犯过的最大错误」，Facebook App 全线退回原生。但成本问题还在，2013 年内部 Hackathon 里长出一个实验：用 JS 指挥原生控件——2015 年开源，就是 React Native。之后是一部架构自我革命史：2018 年启动重写，把那座异步桥拆掉；2019 年自研 Hermes 引擎，专为手机做的 JS 引擎；2024 年 10 月起，Fabric 加 JSI 的新架构成为默认。最后一格是路线图，还没落地所以用虚线：Static Hermes 是 Hermes 的下一步，把带类型标注的 JS 提前编译成原生机器码，而不是像现在这样编译成字节码再解释执行，目标是把解释器开销整个去掉；旁边还有 React Compiler，自动做记忆化，省掉手写 useMemo 那一堆。这两个都还没成为默认，但方向很清楚。一句话：它不是新玩具，是演进了十年、还在活跃进化的成熟技术。
+上一章说行业在 H5 上摔的最大一跤：2012 年扎克伯格公开承认「押注 HTML5 是我们犯过的最大错误」，Facebook App 全线退回原生。但成本问题还在，2013 年内部 Hackathon 里长出一个实验：用 JS 指挥原生控件——2015 年开源，就是 React Native。之后是一部架构自我革命史：2018 年启动重写，移除异步 Bridge；2019 年自研 Hermes 引擎，专为手机做的 JS 引擎；2024 年 10 月起，Fabric 加 JSI 的新架构成为默认。最后一格是路线图，还没落地所以用虚线：Static Hermes 是 Hermes 的下一步，把带类型标注的 JS 提前编译成原生机器码，而不是像现在这样编译成字节码再解释执行，目标是把解释器开销整个去掉；旁边还有 React Compiler，自动做记忆化，省掉手写 useMemo 那一堆。这两个都还没成为默认，但方向很清楚。一句话：它不是新玩具，是演进了十年、还在活跃进化的成熟技术。
 -->
 
 ---
@@ -554,11 +538,11 @@ RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实�
     <div class="dbox js" style="min-width:14rem;padding:.9rem 1rem"><b>第一步　算</b><small>界面哪里变了，JS 这边先算出来</small></div>
     <div class="dbox nat" style="min-width:14rem;padding:.9rem 1rem"><b>第二步　交</b><small>把结果交给原生，变成真控件</small></div>
   </div>
-  <div class="dbox rn ghost" style="padding:.4rem .9rem;font-size:.74rem">最后拿系统工具验一下：视图树里有没有 div</div>
+  <div class="dbox rn ghost" style="padding:.45rem 1.1rem;font-size:.74rem">两步讲完后，用系统自带工具验证一次</div>
 </div>
 
 <!--
-上一页那句话——用 JS 写界面，出来的是真原生控件——听着有点反直觉，这一章就是拆开它。其实就两步：第一步，界面哪里变了，这件事在 JS 这边算；第二步，算完的结果怎么交到原生那边，变成屏幕上真正的控件。先讲第一步，再讲第二步，最后我们用系统自带的工具打开真机验一下，看看视图树里到底有没有 div。
+上一页那句话——用 JS 写界面，出来的是真原生控件——听着有点反直觉，这一章就是拆开它。其实就两步：第一步，界面哪里变了，这件事在 JS 这边算；第二步，算完的结果怎么交到原生那边，变成屏幕上真正的控件。先讲第一步，再讲第二步，两步都讲完之后，我们用系统自带的工具打开真机，验证一次。
 -->
 
 ---
@@ -633,27 +617,27 @@ RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实�
 
 ---
 
-## 第二步的老办法（2015–2024）：中间隔着一座「桥」
+## 第二步的老办法（2015–2024）：中间隔着一层 Bridge
 
 <div class="dg" style="gap:1.2rem">
   <div class="dbox js"><b>JS 这边</b><small>算出哪里变了</small></div>
   <div class="dcol" style="align-items:center;gap:3px">
     <span class="darr">⇄</span>
-    <div class="dbox" style="border-radius:999px;padding:.3rem .9rem;font-size:.7rem">桥：要打包、要排队、不能立刻回话</div>
+    <div class="dbox" style="border-radius:999px;padding:.35rem 1rem;font-size:.72rem"><b style="font-size:.76rem">Bridge</b><small style="margin-top:.15rem">调用需打包、排队，无法同步拿到返回值</small></div>
     <div style="font-size:.7rem;color:#b45309">手指拖着东西走时，每秒几十个来回</div>
   </div>
   <div class="dbox nat"><b>原生这边</b><small>算位置 · 创建控件 · 上屏</small></div>
 </div>
 
-<p class="dnote">桥一堵，画面就跟不上手指——早年「RN 卡」的印象，说的就是这座桥<br><span style="font-size:.9em">（有一点它从第一天就赢了 H5：JS 和渲染不抢线程，JS 忙的时候，已经交给系统的滚动和转场照样在动）</span></p>
+<p class="dnote"><b style="color:#17324d">Bridge 一旦拥塞，画面就跟不上手指——早年「RN 卡」的印象说的就是它</b><br>但 RN 从第一天就赢了 H5 一点：JS 和渲染不共用线程，JS 忙时已交给系统的滚动、转场照常进行</p>
 
 <!--
-第二步：算完的清单，怎么交到原生那边去？先说老办法，一句话带过就行，因为它已经是历史了。2015 年那套架构，JS 和原生中间隔着一座「桥」：JS 要跟原生说话，得先把内容打包，排进队列，等对方慢慢处理，没法立刻拿到回话。平时看不出问题，一到高频交互就露馅——比如手指拖着一个东西走，触摸事件要过桥送给 JS，JS 算完新位置再过桥送回来，每秒几十个来回，每次都要打包排队。桥一堵，画面就跟不上手指。早年「RN 卡」这个印象，说的基本就是这座桥。顺便说一件 RN 从第一天就做对的事：JS 和渲染不抢同一条线程——JS 跑久了不会劫持渲染，已经交给系统的列表滚动、转场动画照样在动，最多是数据晚到一拍。这一条它对 H5 是实打实地赢。那这座桥后来怎么了？2018 年 Meta 直接把它拆了。
+第二步：算完的清单，怎么交到原生那边去？先说老办法，一句话带过就行，因为它已经是历史了。2015 年那套架构，JS 和原生中间隔着一层 Bridge：JS 要调用原生，得先把参数打包，排进队列，等对方处理完再回调，拿不到同步返回值。平时看不出问题，一到高频交互就露馅——比如手指拖着一个东西走，触摸事件要经 Bridge 送给 JS，JS 算完新位置再经 Bridge 送回来，每秒几十个来回，每次都要打包排队。Bridge 一旦拥塞，画面就跟不上手指。早年「RN 卡」这个印象，说的基本就是它。顺便说一件 RN 从第一天就做对的事：JS 和渲染不抢同一条线程——JS 跑久了不会劫持渲染，已经交给系统的列表滚动、转场动画照样在动，最多是数据晚到一拍。这一条它对 H5 是实打实地赢。那这层 Bridge 后来怎么了？2018 年 Meta 直接把它移除了。
 -->
 
 ---
 
-## 新架构移除了桥，换成直通的 JSI
+## 新架构移除了 Bridge，换成直通的 JSI
 
 <div class="dg" style="gap:1.2rem">
   <div class="dbox js" style="align-self:center"><b>JS 线程</b><small>业务代码 · diff</small></div>
@@ -671,38 +655,33 @@ RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实�
 <p class="dnote">RN 0.76 起（2024 年 10 月），新架构默认开启</p>
 
 <!--
-手术核心叫 JSI：以前隔桥喊话，现在 JS 直接握着 C++ 对象引用，像调普通函数一样同步调，不序列化不排队。这张图和上一张同构，就是桥换成直通接口。配套 Fabric 新渲染器、TurboModules 按需加载。重点是时间点：0.76 起默认开启，2024 年 10 月——「RN 卡」的老印象，主要对应的就是这座已经拆掉的桥。
+重写的核心叫 JSI：以前所有调用都要经过 Bridge 打包排队，现在 JS 直接持有 C++ 对象引用，像调普通函数一样同步调用，不打包也不排队。这张图和上一张结构相同，只是 Bridge 换成了直通接口。配套 Fabric 新渲染器、TurboModules 按需加载。重点是时间点：0.76 起默认开启，2024 年 10 月——「RN 卡」的老印象，对应的就是这层已经被移除的 Bridge。
 -->
 
 ---
 
 ## Hermes（今天的默认）：JS 提前编译成字节码，装进安装包
 
-<div class="dg" style="flex-direction:column;gap:.8rem">
-  <div class="drow" style="align-items:center">
-    <div class="dcap" style="width:5.5rem;margin:0;text-align:right">普通引擎</div>
-    <div class="dbox" style="padding:.3rem .6rem">启动</div>
+<div class="dg" style="flex-direction:column;gap:1rem;zoom:1.14;align-items:stretch">
+  <div class="drow" style="align-items:center;gap:.6rem">
+    <div class="dcap" style="width:5.2rem;margin:0;text-align:right;font-size:.78rem">普通引擎</div>
+    <div class="dbox" style="min-width:6rem;padding:.55rem 1rem">启动</div>
     <span class="darr">→</span>
-    <div class="dbox js"><b>现场解析 + 编译</b><small>白屏时间</small></div>
+    <div class="dbox js" style="min-width:12rem;padding:.55rem 1.2rem"><b>启动时解析 + 编译</b><small>这段时间用户看到的是白屏</small></div>
     <span class="darr">→</span>
-    <div class="dbox" style="padding:.3rem .6rem">执行</div>
+    <div class="dbox" style="min-width:6rem;padding:.55rem 1rem">执行</div>
   </div>
-  <div class="drow" style="align-items:center">
-    <div class="dcap" style="width:5.5rem;margin:0;text-align:right">Hermes</div>
-    <div class="dbox rn"><b>构建时已编译</b><small>字节码打进安装包</small></div>
+  <div class="drow" style="align-items:center;gap:.6rem">
+    <div class="dcap" style="width:5.2rem;margin:0;text-align:right;font-size:.78rem">Hermes</div>
+    <div class="dbox rn" style="min-width:12rem;padding:.55rem 1.2rem"><b>构建时就编译完</b><small>字节码直接打进安装包</small></div>
     <span class="darr">→</span>
-    <div class="dbox" style="padding:.3rem .6rem">启动</div>
+    <div class="dbox" style="min-width:6rem;padding:.55rem 1rem">启动</div>
     <span class="darr">→</span>
-    <div class="dbox" style="padding:.3rem .6rem">直接执行</div>
+    <div class="dbox" style="min-width:6rem;padding:.55rem 1rem">直接执行</div>
   </div>
 </div>
 
-<p class="dnote">启动快，内存省</p>
-
-<!--
-第二个问题还剩一块配套：JS 本身在哪跑？这就是时间线上 2019 年那格。一般引擎在用户打开 App 那刻现场解析编译，白屏就耗在这。Hermes 把编译挪到构建时，字节码直接打进包，启动加载即执行——启动快、内存省。RN 的运行时是为手机量身做的，不是把网页那套搬过来凑合。
--->
-
+<p class="dnote">编译这一步从「每次启动时做」挪到了「构建时做一次」<br><b style="color:#17324d">启动更快，内存占用也更低</b></p>
 ---
 
 ## 眼见为实：用系统工具掀开跑着的 App
@@ -776,7 +755,7 @@ RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实�
 <p class="dnote"><b style="color:#17324d">RN 在 ① ③ 上接近原生，在 ② 上和 H5 一样</b><br>而且这三条只在「画面每帧都在动」的界面上才拉得开差距——静态图文页，三者差不多</p>
 
 <!--
-这张表是全场的支点，讲慢一点。第一条，抽象层的租金：RN 用 Yoga 算布局，Yoga 是 flexbox 的一个子集，用 C++ 实现，算完直接给原生 view 设 frame——整条 CSS 管线被绕开了，而且 Yoga 跑在独立线程，不占 JS 线程。所以这一条 RN 接近原生。第三条，交互物理：这条 RN 赢 H5 赢得最干脆——FlatList 底下就是真的 UITableView 和 RecyclerView，滚动的减速曲线、回弹、cell 复用，全部是系统那份实现，白送的，不是模拟的。第二条是关键：RN 没有赢过原生。老架构下手势要过异步桥，注意重点不是「过桥慢」，而是「这条路是异步的」——JS 线程正在跑一段 200 毫秒的数据处理，你的手指移动就得排队等它。新架构 Fabric 加 JSI 大幅改善了，同步调用、不用序列化，但 JS 逻辑本身仍然在一条单线程上。所以结论是这样：RN 花钱买到了①和③，但②没买到——它在②上和 H5 是同一侧的。这句话请记住，因为它决定了后面所有的判断：RN 的平均体验很接近原生，但它和原生一样有下限保证吗？没有。第三章开头我说过原生和 Web 的区别是「有下限保证」对「概率性」，RN 在这一点上是概率性的那一边。最后一行也必须说清楚：这三条根源全部只在「每帧都在变」的界面上成立——列表在滚、手指在拖、转场在放。一个静态图文页，进去就不动了，三者差距基本为零。所以这不是「原生更好」的一刀切，是「什么场景下差距才存在」。表里的措辞我用的是赢/接近/同侧，没写具体倍数——因为具体数字随机型、引擎版本、页面复杂度浮动很大，真做决策要自己压测。
+这张表是全场的支点，讲慢一点。第一条，抽象层的租金：RN 用 Yoga 算布局，Yoga 是 flexbox 的一个子集，用 C++ 实现，算完直接给原生 view 设 frame——整条 CSS 管线被绕开了，而且 Yoga 跑在独立线程，不占 JS 线程。所以这一条 RN 接近原生。第三条，交互物理：这条 RN 赢 H5 赢得最干脆——FlatList 底下就是真的 UITableView 和 RecyclerView，滚动的减速曲线、回弹、cell 复用，全部是系统那份实现，白送的，不是模拟的。第二条是关键：RN 没有赢过原生。老架构下手势要经过异步 Bridge，注意重点不是「Bridge 慢」，而是「这条路是异步的」——JS 线程正在跑一段 200 毫秒的数据处理，你的手指移动就得排队等它。新架构 Fabric 加 JSI 大幅改善了，同步调用、不用序列化，但 JS 逻辑本身仍然在一条单线程上。所以结论是这样：RN 花钱买到了①和③，但②没买到——它在②上和 H5 是同一侧的。这句话请记住，因为它决定了后面所有的判断：RN 的平均体验很接近原生，但它和原生一样有下限保证吗？没有。第三章开头我说过原生和 Web 的区别是「有下限保证」对「概率性」，RN 在这一点上是概率性的那一边。最后一行也必须说清楚：这三条根源全部只在「每帧都在变」的界面上成立——列表在滚、手指在拖、转场在放。一个静态图文页，进去就不动了，三者差距基本为零。所以这不是「原生更好」的一刀切，是「什么场景下差距才存在」。表里的措辞我用的是赢/接近/同侧，没写具体倍数——因为具体数字随机型、引擎版本、页面复杂度浮动很大，真做决策要自己压测。
 -->
 
 ---
