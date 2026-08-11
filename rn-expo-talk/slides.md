@@ -658,8 +658,8 @@ RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实�
 <div class="dg" style="gap:1.2rem">
   <div class="dbox js" style="align-self:center"><b>JS 线程</b><small>业务代码 · diff</small></div>
   <div class="dcol" style="align-items:center;gap:2px">
-    <div class="dbox rn" style="border-radius:999px;padding:.3rem .9rem"><b style="font-size:.78rem">JSI</b><small>同步调用 · 零序列化</small></div>
-    <div style="font-size:.7rem;color:#6b7280">JS 直接持有 C++ 对象引用</div>
+    <div class="dbox rn" style="border-radius:999px;padding:.3rem .9rem"><b style="font-size:.78rem">JSI</b><small>直接调用，不用打包排队</small></div>
+    <div style="font-size:.7rem;color:#6b7280">JS 像调普通函数一样直接调原生</div>
   </div>
   <div class="dcol">
     <div class="dbox rn"><b>Fabric</b><small>新渲染器</small></div>
@@ -851,7 +851,7 @@ RN 的原理成立了，但要把它用在生产里，还差工程化这一站�
   <div class="drow" style="align-items:center">
     <div class="dbox js" style="min-width:13rem">原生配置，要手改</div>
     <span class="darr">→</span>
-    <div class="dbox rn" style="min-width:13rem"><b>Config Plugins</b><small>声明式自动注入</small></div>
+    <div class="dbox rn" style="min-width:13rem"><b>Config Plugins</b><small>在 app.json 里声明，自动注入</small></div>
   </div>
 </div>
 
@@ -929,24 +929,10 @@ flowchart LR
 -->
 
 ---
-
-## 小结：RN 负责渲染，Expo 负责其余的工程化
-
-<div class="dg" style="gap:1rem">
-  <div class="dbox rn" style="min-width:12rem"><b>RN</b><small>JS 渲染原生 UI</small></div>
-  <span style="color:#6b7280;font-weight:700">+</span>
-  <div class="dbox nat" style="min-width:12rem"><b>Expo</b><small>SDK · CNG · Config Plugins · 热更新</small></div>
-</div>
-
-<!--
-分工一句话：RN 管「JS 渲染原生 UI」，Expo 管围绕它的工程化——SDK 版本配套、CNG 生成原生工程、插件注入配置、热更新兜住发版节奏。引擎和整车的关系——光有引擎开不上路，官方劝你别裸用就是这个原因。正面论证到此完成，还差最后一块：边界。
--->
-
----
 layout: section
 ---
 
-# 既然 RN 渲染原生控件，为什么有些功能仍要用原生写？
+# RN 有两条边界：一条在性能上，一条在能力上
 
 <div class="evo">
   <span class="estep done">原生</span><span class="earr">→</span>
@@ -956,25 +942,30 @@ layout: section
   <span class="estep now">边界与结论</span>
 </div>
 
+<p style="text-align:center;margin-top:1.6rem;font-size:.92rem;color:#c7d2e5;line-height:2">
+性能边界：上一页表里②那格是黄的——它在真实产品里意味着什么、怎么测、怎么验收<br>
+能力边界：有几类功能，物理上就轮不到 RN
+</p>
+
 <!--
-演进走完了，最后一站：边界，也是选型汇报最重要的一块。边界有两种，这一章按这两种走。第一种是性能上的：上一章那张表里，②那一格 RN 是黄的——它在真实产品里到底意味着什么、怎么测、怎么验收，先讲这个。第二种是能力上的：有几类功能物理上就轮不到 RN。先剧透：两种边界都不是 RN 的缺陷，而是它设计里就包含的分工。
+演进走完了，最后一站：边界，也是选型汇报最重要的一块。边界有两种，这一章就按这两种走。第一种是性能上的：上一章那张表里，②那一格 RN 是黄的，和 H5 同一侧——那格黄色落到真实产品里到底意味着什么、怎么测、怎么验收，先讲这个，一共五页。第二种是能力上的：有几类功能物理上就轮不到 RN。先剧透：两种边界都不是 RN 的缺陷，而是它设计里就包含的分工。
 -->
 
 ---
 
-## 卡顿感不是平均帧率，是帧时间的方差
+## ②那格的黄，用户是这样感觉到的
 
 <DemoFrame src="frame-variance.html" :height="292" />
 
-<p class="dnote" style="zoom:1.12">左边每一帧都是 33.3ms；右边平均帧率高出七成，P99 却是左边的六倍以上<br><b style="color:#17324d">平均值更好的是右边，看着更糟的也是右边</b></p>
+<p class="dnote" style="zoom:1.12">左边每一帧都是 33.3ms；右边平均帧率高得多，但每隔一两秒卡一下<br><b style="color:#17324d">平均值更好的是右边，看着更糟的也是右边</b><br><span style="font-size:.9em">RN 在②上和 H5 同侧，意思就是：它可能出现的，正是右边这种情况</span></p>
 
 <!--
-（现场演示，让它跑 20 秒，先别解释）请大家盯着方块看，别看数字。左边是稳定 30fps，每一帧都是 33.3 毫秒，方差趋近于零。右边大部分帧只花 16.7 毫秒，但每一两秒会有一帧花掉 200 毫秒。现在看下面的柱状图：左边是一堵完全平整的墙，右边是一片矮草丛偶尔戳出一根红柱子。再看数字——右边平均帧率高一大截。但你们的眼睛已经投票了：右边看着更卡。这就是这一页要说的全部：人眼对帧时间的方差极其敏感，对绝对值反而相当宽容。稳定的 30fps，大脑会解读成「这个动画就是慢」，能接受；平均 58fps 里藏一帧 200 毫秒，大脑解读成「这 App 有问题」。为什么？回到第二章那条悬崖——那一帧不是慢了，是整整十二个刷新周期什么都没发生，画面硬生生冻住了五分之一秒。所以呢？下一页说它对我们的工作意味着什么。
+（现场演示，让它跑 20 秒，先别解释）请大家盯着方块看，别看数字。左边是稳定 30fps，每一帧都是 33.3 毫秒，没有一帧例外。右边大部分帧只花 16.7 毫秒，但每一两秒会有一帧花掉 200 毫秒。现在看下面的柱状图：左边是一堵完全平整的墙，右边是一片矮草丛偶尔戳出一根红柱子。再看数字——右边平均帧率高一大截。但你们的眼睛已经投票了：右边看着更卡。这就是这一页要说的全部：人眼对「忽快忽慢」极其敏感，对「一直慢」反而相当宽容。稳定的 30fps，大脑会解读成「这个动画就是慢」，能接受；平均 58fps 里藏一帧 200 毫秒，大脑解读成「这 App 有问题」。为什么？回到第二章那条悬崖——那一帧不是慢了，是整整十二个刷新周期什么都没发生，画面硬生生冻住了五分之一秒。所以呢？下一页说它对我们的工作意味着什么。
 -->
 
 ---
 
-## 所以优化目标是消灭长尾，不是提高平均值
+## 所以要消灭的是那几次卡顿，不是去拉高平均值
 
 <div class="dg" style="gap:2rem;zoom:1.06;align-items:stretch">
   <div class="dcol" style="gap:.4rem;justify-content:center">
@@ -985,26 +976,26 @@ layout: section
   </div>
   <div style="width:2px;align-self:stretch;background:#e5e7eb"></div>
   <div class="dcol" style="gap:.4rem;justify-content:center;align-items:flex-start">
-    <div class="dcap" style="margin:0;align-self:center">长尾从哪来</div>
+    <div class="dcap" style="margin:0;align-self:center">这几次卡顿从哪来</div>
     <div class="drow" style="align-items:center">
       <div class="dbox js" style="padding:.28rem .6rem;font-size:.72rem;min-width:5rem">根源 ①</div>
-      <div class="dbox" style="padding:.28rem .6rem;font-size:.72rem">抬高平均帧时间、吃掉余量<small>让你更容易撞线</small></div>
+      <div class="dbox" style="padding:.28rem .6rem;font-size:.72rem">让每一帧的余量变少<small>更容易超时，但不制造尖峰</small></div>
     </div>
     <div class="drow" style="align-items:center">
       <div class="dbox" style="padding:.28rem .6rem;font-size:.72rem;min-width:5rem;background:#fee2e2;border-color:#b91c1c">根源 ②</div>
-      <div class="dbox" style="padding:.28rem .6rem;font-size:.72rem">直接制造长尾<small>P99 的主要来源</small></div>
+      <div class="dbox" style="padding:.28rem .6rem;font-size:.72rem">直接制造长时间停顿<small>P99 的主要来源</small></div>
     </div>
     <div class="drow" style="align-items:center">
       <div class="dbox js" style="padding:.28rem .6rem;font-size:.72rem;min-width:5rem">GC 停顿</div>
-      <div class="dbox" style="padding:.28rem .6rem;font-size:.72rem">典型的方差制造者<small>什么时候来，业务代码说了不算</small></div>
+      <div class="dbox" style="padding:.28rem .6rem;font-size:.72rem">最典型的停顿制造者<small>什么时候来，业务代码说了不算</small></div>
     </div>
   </div>
 </div>
 
-<p class="dnote">把这条和三个根源对上：<b style="color:#17324d">①决定你离悬崖边有多远，②决定你会不会被推下去</b></p>
+<p class="dnote">和三条根源对上：<b style="color:#17324d">① 让每一帧的余量变少，② 直接制造那几次长时间的停顿</b><br>所以「平均帧率提上去了，用户还是说卡」——动的是 ①，问题在 ②</p>
 
 <!--
-上一页的体感，落到工作方式上就是两件事。第一件：换指标。平均 FPS 基本没有诊断价值——它的定义就是把最该看的那一帧平摊掉。真正要看的是 P95、P99 的帧时间，加上掉帧次数和最长帧。一个 P99 是 200 毫秒的页面，平均 FPS 可能很好看，但它就是卡。第二件：知道该去哪儿找问题。把三条根源和方差对上——根源一，通用性的租金，它抬高的是平均帧时间、吃掉余量，让你离截止线更近，但它本身是均匀的，不制造尖峰；根源二，被业务代码堵住的单线程，它才是长尾的直接来源，P99 基本都是从这儿来的；GC 停顿是根源二里最典型的一个方差制造者，因为它什么时候来、停多久，你的业务代码说了不算。一句话记：①决定你离悬崖边有多远，②决定你会不会被推下去。这也解释了一件让很多人困惑的事——为什么有些页面「优化了半天平均帧率上去了，用户还是说卡」。因为动的是①，问题在②。
+上一页的体感，落到工作方式上就是两件事。第一件：换指标。平均 FPS 基本没有诊断价值——它的定义就是把最该看的那一帧平摊掉。真正要看的是 P95、P99 的帧时间，加上掉帧次数和最长帧。一个 P99 是 200 毫秒的页面，平均 FPS 可能很好看，但它就是卡。第二件：知道该去哪儿找问题。把三条根源对上——根源一，每帧的基础开销，它抬高的是平均帧时间、吃掉余量，让你离截止线更近，但它本身是均匀的，不制造尖峰；根源二，被业务代码堵住的单线程，它才是那几次长停顿的直接来源，P99 基本都是从这儿来的；GC 停顿是根源二里最典型的一个，因为它什么时候来、停多久，业务代码说了不算。一句话记：①让每一帧的余量变少，②直接制造那几次长时间的停顿。这也解释了一件让很多人困惑的事——为什么有些页面「优化了半天平均帧率上去了，用户还是说卡」。因为动的是①，问题在②。
 -->
 
 ---
@@ -1042,7 +1033,7 @@ layout: section
     </div>
     <div class="drow" style="align-items:center;gap:.7rem">
       <div class="dbox rn" style="min-width:5.2rem;padding:.3rem .6rem"><b>RN</b><small>压力陡增</small></div>
-      <div class="dbox" style="padding:.34rem .7rem;text-align:left;font-size:.72rem">8.3ms 里塞进「序列化 → JS 处理 → 序列化回来」基本不可能<small><code>useNativeDriver: true</code> 从「建议」变成「必须」；Reanimated worklet 的价值被放大</small></div>
+      <div class="dbox" style="padding:.34rem .7rem;text-align:left;font-size:.72rem">8.3ms 里还要回一趟 JS 算出新值，基本不可能<small><code>useNativeDriver: true</code> 从「建议」变成「必须」；Reanimated worklet 的价值被放大</small></div>
     </div>
     <div class="drow" style="align-items:center;gap:.7rem">
       <div class="dbox nat" style="min-width:5.2rem;padding:.3rem .6rem"><b>原生</b><small>优势放大</small></div>
@@ -1054,7 +1045,7 @@ layout: section
 <p class="dnote"><b style="color:#17324d">任何没有脱离 JS 线程的动画，在高刷设备上会比 60Hz 表现更差</b><br>高刷不是「同样的代码更顺」——它会先把你的结构问题放大</p>
 
 <!--
-预算砍半这件事，落到三条线上后果完全不同。H5 最尴尬，而且尴尬得很特别：iOS 的 WKWebView 长期锁在 60Hz。所以在一台 120Hz 的手机上，旁边的原生页面丝滑，用户点进 H5 页立刻感觉「重了一档」——注意，这跟你把这个 H5 优化得多好完全无关，是天花板本身被压低了。RN 是压力陡增：8.3 毫秒的预算里，要塞进「序列化、JS 处理、序列化回来」这一整套，基本不可能。所以在高刷设备上，useNativeDriver 设成 true 从一条「建议」变成了「必须」，Reanimated 那种把动画代码搬到 UI 线程跑的 worklet，价值被放大——这正好呼应刚才那个演示：高刷逼着你从下路搬到上路。反过来说这句话更值得记：任何没有脱离 JS 线程的动画，在高刷设备上会比在 60Hz 上表现更差。原生则相反，优势被放大：Core Animation 在独立进程里跑，8.3 毫秒的预算跟你主线程在干什么无关——根源二那份红利，在高刷下加倍兑现。所以高刷不是「同样的代码更顺」，它是一台放大器，先放大你的结构问题。
+预算砍半这件事，落到三条线上后果完全不同。H5 最尴尬，而且尴尬得很特别：iOS 的 WKWebView 长期锁在 60Hz。所以在一台 120Hz 的手机上，旁边的原生页面丝滑，用户点进 H5 页立刻感觉「重了一档」——注意，这跟你把这个 H5 优化得多好完全无关，是天花板本身被压低了。RN 是压力陡增：8.3 毫秒的预算里，还要回一趟 JS 把新值算出来，基本不可能。所以在高刷设备上，useNativeDriver 设成 true 从一条「建议」变成了「必须」，Reanimated 那种把动画代码搬到 UI 线程跑的 worklet，价值被放大——这正好呼应刚才那个演示：高刷逼着你从下路搬到上路。反过来说这句话更值得记：任何没有脱离 JS 线程的动画，在高刷设备上会比在 60Hz 上表现更差。原生则相反，优势被放大：Core Animation 在独立进程里跑，8.3 毫秒的预算跟你主线程在干什么无关——根源二那份红利，在高刷下加倍兑现。所以高刷不是「同样的代码更顺」，它是一台放大器，先放大你的结构问题。
 -->
 
 ---
@@ -1071,12 +1062,12 @@ layout: section
     <div class="drow" style="align-items:center;gap:.8rem">
       <div class="dbox" style="min-width:8rem;padding:.34rem .7rem"><b>验收</b><small>高刷旗舰</small></div>
       <span class="darr">→</span>
-      <div class="dbox nat" style="padding:.34rem .7rem">暴露 JS 线程 / 异步链路的结构性问题<small>根源② 那一类：长尾</small></div>
+      <div class="dbox nat" style="padding:.34rem .7rem">暴露 JS 线程 / 异步链路的结构性问题<small>根源② 那一类：偶发的长停顿</small></div>
     </div>
   </div>
 </div>
 
-<p class="dnote">只测一端一定会漏——两类 bug 的表现和修法完全不同<br><b style="color:#17324d">别为了高刷做微优化</b>：60Hz 上就有 P99 长尾，堵的是关键路径，不是预算不够</p>
+<p class="dnote">只测一端一定会漏——两类 bug 的表现和修法完全不同<br><b style="color:#17324d">别为了高刷做微优化</b>：60Hz 上就已经有 P99 长停顿的，堵的是那条单线程，不是预算不够</p>
 
 <!--
 这一页是可以直接带回去用的。测试放在中低端的 60Hz 机上做，它暴露的是平均性能问题——根源一那一类，余量本来就不够。验收放在高刷旗舰上做，它暴露的是 JS 线程和异步链路的结构性问题——根源二那一类，长尾。这两类 bug 的表现、定位方法、修法完全不同，只测一端一定会漏：只测低端机，你会以为自己没问题，结果旗舰用户抱怨最凶；只测旗舰，你会漏掉一大批用户根本跑不动的页面。最后提醒一句，避免走偏：别为了高刷去做微优化。如果你在 60Hz 上就已经有 P99 长尾，那不是预算不够，是有东西堵在关键路径上——多榨那两毫秒没用，得去找那个堵住线程的东西。高刷只是把它照得更清楚而已。性能这条边界讲完了，换第二种边界：能力。
@@ -1084,138 +1075,47 @@ layout: section
 
 ---
 
-## 「用原生控件渲染」不等于「原生开发」
+## 有三类东西，必须用原生写
 
-<div class="dg" style="flex-direction:column;gap:.8rem">
-  <div class="drow" style="align-items:center">
-    <div class="dcap" style="width:5rem;margin:0;text-align:right">原生开发</div>
-    <div class="dbox nat" style="min-width:8rem">代码</div>
-    <span class="darr">→</span>
-    <div class="dbox nat" style="min-width:8rem">系统</div>
+<div class="dg" style="flex-direction:column;gap:.65rem;align-items:stretch;zoom:1.04">
+  <div class="drow" style="align-items:center;gap:1rem">
+    <div class="dbox nat" style="min-width:11rem;padding:.5rem .8rem"><b>压根不在你的 App 里跑</b></div>
+    <div class="dbox" style="padding:.5rem .9rem;text-align:left;font-size:.74rem;flex:1">桌面小组件 · 灵动岛 · 推送扩展 · 手表 App<small>系统单独把它们拉起来，你的 JS 不在场，没有「用 RN 写」这个选项</small></div>
   </div>
-  <div class="drow" style="align-items:center">
-    <div class="dcap" style="width:5rem;margin:0;text-align:right">RN</div>
-    <div class="dbox js" style="min-width:8rem">JS 运行时</div>
-    <span class="darr">→</span>
-    <div class="dbox rn" style="padding:.3rem .6rem;font-size:.72rem">通信层</div>
-    <span class="darr">→</span>
-    <div class="dbox nat" style="min-width:8rem">系统</div>
+  <div class="drow" style="align-items:center;gap:1rem">
+    <div class="dbox nat" style="min-width:11rem;padding:.5rem .8rem"><b>每秒几十次贴着硬件算</b></div>
+    <div class="dbox" style="padding:.5rem .9rem;text-align:left;font-size:.74rem;flex:1">相机滤镜 · 音视频 · AR · 地图<small>这种计算量放进 JS 跑不动；热点下沉原生，界面骨架仍然是 RN</small></div>
+  </div>
+  <div class="drow" style="align-items:center;gap:1rem">
+    <div class="dbox nat" style="min-width:11rem;padding:.5rem .8rem"><b>启动最前段，和存量老 App</b></div>
+    <div class="dbox" style="padding:.5rem .9rem;text-align:left;font-size:.74rem;flex:1">点图标到 JS 就绪之间那一段 · 成熟原生 App 里嵌 RN 页<small>美团 MRN、携程 CRN 都是这种嵌入形态</small></div>
   </div>
 </div>
 
-<p class="dnote">链路罩不住的地方，就是原生的领地</p>
+<p class="dnote">共同点：RN 靠的是「JS → 通信层 → 系统」这条链路<br><b style="color:#17324d">这条链路够不着的地方，就归原生</b></p>
 
 <!--
-先摆正认知：渲染用原生控件，不等于等价于原生开发。原生是代码直接跑在系统上；RN 是逻辑在 JS 运行时里，隔着一层通信。链路罩得住的地方 RN 都好使，罩不住的就是原生的领地——接下来三类。
+能力边界，一共三类，记住这三类就够了。第一类，压根不在你的 App 进程里跑：桌面小组件、灵动岛、推送扩展、手表 App——这些是系统单独拉起来的，你的 JS 引擎根本不在场，所以不存在「用 RN 写」这个选项，不是难写，是没这个选项。第二类，每秒要算几十次、而且贴着硬件的：相机滤镜、音视频处理、AR、地图渲染——这种量级放进 JS 里跑不动，做法是把这块热点下沉成原生模块，界面骨架仍然是 RN。第三类，启动的最前段和存量老 App：从点图标到 JS 引擎就绪之间那一段，只能是原生代码；而一个已经很成熟的原生 App 想用 RN，通常是挑几个页面嵌进去，美团的 MRN、携程的 CRN 都是这种形态。这三类的共同点是什么？RN 靠的是「JS 到通信层再到系统」这一条链路，凡是这条链路够不着的地方，就归原生。
 -->
 
 ---
 
-## 有些功能不运行在你的 App 进程里
+## 下沉不是妥协，是 RN 设计好的通道
 
-<div class="dg" style="gap:1.6rem;align-items:stretch">
-  <div class="dbox" style="padding:.7rem .9rem">
-    <b>你的 App 进程</b>
-    <div class="dcol" style="margin-top:.4rem">
-      <div class="dbox js" style="padding:.3rem .6rem">JS 引擎 + bundle</div>
-      <div class="dbox rn" style="padding:.3rem .6rem">RN 界面</div>
-    </div>
-  </div>
-  <div class="dcol">
-    <div class="dbox nat" style="padding:.35rem .7rem">Widget · 灵动岛<small>独立进程</small></div>
-    <div class="dbox nat" style="padding:.35rem .7rem">推送扩展<small>独立进程</small></div>
-    <div class="dbox nat" style="padding:.35rem .7rem">手表 App<small>独立进程</small></div>
+<div class="dg" style="flex-direction:column;gap:.5rem">
+  <div class="dbox rn" style="padding:.7rem 1.2rem;min-width:26rem"><b>业务界面用 JS / RN 写</b><small>列表 · 表单 · 详情 · 流程——绝大部分工作量在这里</small></div>
+  <div class="darr">↑ 原生模块挂回来 ↑</div>
+  <div class="drow" style="gap:.8rem">
+    <div class="dbox nat" style="padding:.45rem .8rem;font-size:.74rem">相机滤镜 · 音视频 · 地图</div>
+    <div class="dbox" style="padding:.45rem .8rem;font-size:.74rem">小组件 · 推送扩展<small>独立进程，不经过 RN</small></div>
   </div>
 </div>
 
-<p class="dnote">右边由系统单独拉起——你的 JS 不在场，不存在「用 RN 写」这个选项</p>
+<p class="dnote">RN 官方就是这么设计的：写原生模块、挂回 JS 用<br><b style="color:#17324d">所以「有些地方要写原生」不是 RN 的短板，是它本来的分工</b></p>
 
 <!--
-最绝对的一类：Widget、灵动岛、推送扩展、手表 App，在系统眼里是独立小程序，由系统单独拉起。你的进程、JS 引擎、bundle 统统不在场——不是支持好不好，是物理上没有跑 JS 的地方。另外系统新 API 永远原生先能用。
+所以要不要因此否定 RN？不。RN 官方从一开始就留了这条通道：你写一个原生模块，把它挂回 JS 那边当普通接口用。绝大部分工作量——列表、表单、详情页、业务流程——仍然在 JS 这一侧；真正需要下沉的是那几块热点。所以「有些地方还得写原生」不是 RN 的短板，是它设计里本来就有的分工。这一点在汇报里很关键：你不是在说「RN 不行所以要补原生」，你是在说「RN 的边界在哪里，边界外该怎么接」。
 -->
-
----
-
-## 逐帧计算的场景，不适合放在 JS 里
-
-<div class="dg" style="gap:1rem">
-  <div class="dbox js"><b>JS / RN</b><small>下指令：开滤镜</small></div>
-  <span class="darr">→</span>
-  <div class="dbox nat" style="padding:.8rem 1rem">
-    <b>原生模块</b>
-    <div class="drow" style="margin-top:.4rem">
-      <div class="dbox" style="padding:.25rem .5rem;font-size:.68rem">采集</div>
-      <span class="darr">→</span>
-      <div class="dbox" style="padding:.25rem .5rem;font-size:.68rem">计算</div>
-      <span class="darr">→</span>
-      <div class="dbox" style="padding:.25rem .5rem;font-size:.68rem">渲染</div>
-    </div>
-    <small>每秒 60 次，贴着硬件跑</small>
-  </div>
-</div>
-
-<p class="dnote">相机滤镜 · 音视频 · AR · 地图——热点下沉原生，界面骨架仍是 RN</p>
-
-<!--
-性能热点：相机滤镜每秒几十帧逐帧算图像，这种活要贴着硬件写，JS 加跨语言通信不划算；地图 SDK 清一色原生，同理。注意姿势：不是不能用 RN，而是热点写成原生模块挂回 RN——骨架还是 RN 的，滤镜内部原生在算。
--->
-
----
-
-## 存量架构与启动路径，天然属于原生
-
-<div class="dg" style="gap:2.2rem">
-  <div class="dcol" style="align-items:center">
-    <div class="dbox" style="padding:.6rem .8rem">
-      <b>成熟原生 App</b>
-      <div class="drow" style="margin-top:.4rem;flex-wrap:wrap;max-width:11rem">
-        <div class="dbox nat" style="padding:.25rem .5rem;font-size:.68rem">原生页</div>
-        <div class="dbox rn" style="padding:.25rem .5rem;font-size:.68rem">RN 页</div>
-        <div class="dbox rn" style="padding:.25rem .5rem;font-size:.68rem">RN 页</div>
-        <div class="dbox nat" style="padding:.25rem .5rem;font-size:.68rem">原生页</div>
-      </div>
-    </div>
-    <div class="dcap">嵌入形态：美团 MRN · 携程 CRN</div>
-  </div>
-  <div class="dcol" style="align-items:center">
-    <div class="drow" style="align-items:center">
-      <div class="dbox nat" style="padding:.3rem .6rem;font-size:.7rem">点图标</div>
-      <span class="darr">→</span>
-      <div class="dbox nat" style="padding:.3rem .6rem;font-size:.7rem">进程创建 · 壳初始化</div>
-      <span class="darr">→</span>
-      <div class="dbox js" style="padding:.3rem .6rem;font-size:.7rem">JS 就绪</div>
-    </div>
-    <div class="dcap">启动前段只能是原生代码</div>
-  </div>
-</div>
-
-<!--
-历史和物理。已有成熟原生 App 的团队不会推倒重写，RN 是嵌进去的：这几页 RN、旁边那页原生，美团 MRN、携程 CRN 都是这个形态——所以「某公司还养着原生团队」说明的是存量结构，不是 RN 不行。物理：点图标到 JS 就绪之间只能是原生代码在跑，极致的启动优化最终都在原生层。
--->
-
----
-
-## 下沉不是妥协，是 RN 官方设计的通道
-
-<div class="dg" style="gap:1.5rem;align-items:stretch">
-  <div class="dbox" style="padding:.7rem .9rem;width:23rem">
-    <b style="margin-bottom:.4rem">你的 App</b>
-    <div class="dbox rn" style="margin-top:.4rem;padding:1.3rem .8rem"><b>业务界面（JS / RN）</b><small>列表 · 表单 · 详情 · 流程——绝大部分</small></div>
-    <div style="font-size:.66rem;color:#047857;margin:.3rem 0 2px">↑ Native Module / Component 挂回 ↑</div>
-    <div class="drow">
-      <div class="dbox nat" style="padding:.3rem .5rem;font-size:.68rem">相机滤镜</div>
-      <div class="dbox nat" style="padding:.3rem .5rem;font-size:.68rem">音视频</div>
-      <div class="dbox nat" style="padding:.3rem .5rem;font-size:.68rem">地图</div>
-    </div>
-  </div>
-  <div class="dbox" style="align-self:center;padding:.6rem .8rem"><b>系统扩展</b><small>Widget · 推送扩展<br>独立进程，不经过 RN</small></div>
-</div>
-
-<!--
-把三页翻转过来——本章最重要的一页。看面积：绝大部分是业务界面，RN 主场；少数热点下沉成原生模块再挂回来；系统扩展在进程外。关键是下沉通道 Native Modules、Native Components 是官方一等公民机制。「有些功能用原生写」不是失败案例，是标准用法：默认 JS，热点下沉，挂回来继续跑。RN 设计的是分工，不是取代。
--->
-
----
 
 ## 有几类 App，从一开始就不该选 RN
 
@@ -1243,41 +1143,60 @@ layout: section
 
 ---
 
-## 这些公司正在生产环境使用 RN
+## RN 的社区生态：从大厂主力 App 到国内自研基建
 
-<div class="dg" style="flex-direction:column;gap:.9rem">
-  <div class="drow" style="gap:.9rem">
-    <div class="dbox" style="background:#fff;min-width:8rem;padding:.8rem .9rem"><logos-shopify style="width:1.9rem;height:1.9rem" /><small style="font-size:.72rem">Shopify</small></div>
-    <div class="dbox" style="background:#fff;min-width:8rem;padding:.8rem .9rem"><logos-discord-icon style="width:1.9rem;height:1.9rem" /><small style="font-size:.72rem">Discord</small></div>
-    <div class="dbox" style="background:#fff;min-width:8rem;padding:.8rem .9rem"><simple-icons-coinbase style="width:1.9rem;height:1.9rem;color:#0052ff" /><small style="font-size:.72rem">Coinbase</small></div>
-    <div class="dbox" style="background:#fff;min-width:8rem;padding:.8rem .9rem"><logos-microsoft-icon style="width:1.9rem;height:1.9rem" /><small style="font-size:.72rem">微软 Office · Outlook</small></div>
+<div class="dg" style="flex-direction:column;gap:.7rem;zoom:.96">
+  <div class="drow" style="gap:.7rem;align-items:center">
+    <div class="dbox" style="background:#fff;min-width:7.2rem;padding:.65rem .8rem"><logos-facebook style="width:1.7rem;height:1.7rem" /><small style="font-size:.68rem">Meta<br>Facebook · Instagram</small></div>
+    <div class="dbox" style="background:#fff;min-width:7.2rem;padding:.65rem .8rem"><logos-microsoft-icon style="width:1.7rem;height:1.7rem" /><small style="font-size:.68rem">微软<br>Office · Outlook · Teams</small></div>
+    <div class="dbox" style="background:#fff;min-width:7.2rem;padding:.65rem .8rem"><simple-icons-amazon style="width:1.7rem;height:1.7rem;color:#ff9900" /><small style="font-size:.68rem">Amazon<br>Shopping · Alexa · Kindle</small></div>
+    <div class="dbox" style="background:#fff;min-width:7.2rem;padding:.65rem .8rem"><logos-shopify style="width:1.7rem;height:1.7rem" /><small style="font-size:.68rem">Shopify<br>移动端整体</small></div>
   </div>
-  <div class="drow" style="gap:.9rem">
-    <div class="dbox" style="background:#fff;min-width:8rem;padding:.8rem .9rem"><img src="./images/jd.jpg" style="width:1.9rem;height:1.9rem;border-radius:6px;display:inline-block" /><small style="font-size:.72rem">京东 · JDReact</small></div>
-    <div class="dbox" style="background:#fff;min-width:8rem;padding:.8rem .9rem"><span style="display:inline-flex;align-items:center;justify-content:center;width:1.9rem;height:1.9rem;background:#ffd100;border-radius:6px"><simple-icons-meituan style="width:1.35rem;height:1.35rem;color:#222222" /></span><small style="font-size:.72rem">美团 · MRN</small></div>
-    <div class="dbox" style="background:#fff;min-width:8rem;padding:.8rem .9rem"><simple-icons-tripdotcom style="width:1.9rem;height:1.9rem;color:#287dfa" /><small style="font-size:.72rem">携程 · CRN</small></div>
+  <div class="drow" style="gap:.7rem;align-items:center">
+    <div class="dbox" style="background:#fff;min-width:7.2rem;padding:.65rem .8rem"><logos-discord-icon style="width:1.7rem;height:1.7rem" /><small style="font-size:.68rem">Discord</small></div>
+    <div class="dbox" style="background:#fff;min-width:7.2rem;padding:.65rem .8rem"><simple-icons-coinbase style="width:1.7rem;height:1.7rem;color:#0052ff" /><small style="font-size:.68rem">Coinbase</small></div>
+    <div class="dbox" style="background:#fff;min-width:7.2rem;padding:.65rem .8rem"><simple-icons-wix style="width:1.7rem;height:1.7rem;color:#0c6efc" /><small style="font-size:.68rem">Wix</small></div>
+    <div class="dbox" style="background:#fff;min-width:7.2rem;padding:.65rem .8rem"><img src="./images/jd.jpg" style="width:1.7rem;height:1.7rem;border-radius:5px;display:inline-block" /><small style="font-size:.68rem">京东 · JDReact</small></div>
+    <div class="dbox" style="background:#fff;min-width:7.2rem;padding:.65rem .8rem"><span style="display:inline-flex;align-items:center;justify-content:center;width:1.7rem;height:1.7rem;background:#ffd100;border-radius:5px"><simple-icons-meituan style="width:1.2rem;height:1.2rem;color:#222" /></span><small style="font-size:.68rem">美团 · MRN</small></div>
+    <div class="dbox" style="background:#fff;min-width:7.2rem;padding:.65rem .8rem"><simple-icons-tripdotcom style="width:1.7rem;height:1.7rem;color:#287dfa" /><small style="font-size:.68rem">携程 · CRN</small></div>
   </div>
 </div>
 
-<!--
-谁在用：Shopify 的移动端整体构建在 RN 上；Discord、Coinbase 的主 App；微软的 Office、Outlook 移动端大量使用 RN，还维护着 RN 的 Windows/macOS 版本。国内京东、美团、携程各有自研 RN 基建——JDReact、MRN、CRN，愿意投基建说明极端体量下扛得住。顺带说清一个问题：他们走自研，是因为存量嵌入加极端体量；像我们这样从零开始的新项目，官方推荐路径就是 Expo，不冲突。共同画像：业务界面占大头、迭代压力大，跟我们一样。
--->
+<p class="dnote">名单来自 React Native 官方 showcase 与各家公开的技术博客<br><b style="color:#17324d">生态足够厚：遇到问题，大概率别人已经踩过并写下来了</b></p>
 
+<!--
+最后看生态。上面这排是把 RN 用在主力 App 上的：Meta 自己的 Facebook 和 Instagram；微软的 Office、Outlook、Teams，微软同时还维护着 RN 的 Windows 和 macOS 版本；Amazon 的购物、Alexa、Kindle；Shopify 的移动端是整体建在 RN 上的。下面这排，Discord、Coinbase、Wix 都是主 App 在用；国内京东、美团、携程各自做了一套 RN 基建——JDReact、MRN、CRN，愿意投这么重的基建，说明在极端体量下扛得住。这里顺带说清一个问题：他们走自研，是因为存量嵌入加极端体量；像我们这样从零开始的新项目，官方推荐路径就是 Expo，不冲突。生态这件事对我们的实际意义是：遇到坑的时候，大概率别人已经踩过，而且写下来了。
+-->
 ---
 layout: center
 class: text-center
 ---
 
-## 开头那两个问题，现在有答案了
+## 小结：这套方案，一句话说清每一层
 
-<div class="dg" style="flex-direction:column;gap:.6rem;margin-top:1.6rem;font-size:.82rem">
-  <div class="drow"><div class="dbox" style="min-width:13rem">UI 由谁渲染</div><span class="darr">→</span><div class="dbox nat" style="min-width:13rem">系统原生控件</div></div>
-  <div class="drow"><div class="dbox" style="min-width:13rem">逻辑跑在哪个运行时</div><span class="darr">→</span><div class="dbox js" style="min-width:13rem">JS，一套代码</div></div>
-  <div class="drow"><div class="dbox" style="min-width:13rem">工程脏活谁兜底</div><span class="darr">→</span><div class="dbox rn" style="min-width:13rem">Expo（SDK · CNG）</div></div>
-  <div class="drow"><div class="dbox" style="min-width:13rem">发版还要不要等审核</div><span class="darr">→</span><div class="dbox rn" style="min-width:13rem">JS 层热更 · 原生层过审</div></div>
-  <div class="drow"><div class="dbox" style="min-width:13rem">链路罩不住的地方</div><span class="darr">→</span><div class="dbox rn" style="min-width:13rem">下沉原生，挂回 RN</div></div>
+<div class="dg" style="flex-direction:column;gap:.6rem;margin-top:1.4rem;font-size:.82rem">
+  <div class="drow" style="align-items:center"><div class="dbox" style="min-width:13rem">界面由谁画</div><span class="darr" style="display:flex;align-items:center">→</span><div class="dbox nat" style="min-width:14rem">系统原生控件</div></div>
+  <div class="drow" style="align-items:center"><div class="dbox" style="min-width:13rem">业务逻辑写在哪</div><span class="darr" style="display:flex;align-items:center">→</span><div class="dbox js" style="min-width:14rem">JS，两端一套代码</div></div>
+  <div class="drow" style="align-items:center"><div class="dbox" style="min-width:13rem">两个原生工程谁维护</div><span class="darr" style="display:flex;align-items:center">→</span><div class="dbox rn" style="min-width:14rem">Expo 生成，不用人养</div></div>
+  <div class="drow" style="align-items:center"><div class="dbox" style="min-width:13rem">发版还要不要等审核</div><span class="darr" style="display:flex;align-items:center">→</span><div class="dbox rn" style="min-width:14rem">改 JS 热更，改原生才过审</div></div>
+  <div class="drow" style="align-items:center"><div class="dbox" style="min-width:13rem">RN 够不着的地方</div><span class="darr" style="display:flex;align-items:center">→</span><div class="dbox rn" style="min-width:14rem">下沉原生，再挂回来用</div></div>
 </div>
 
 <!--
-回到开场那两个问题，也回顾这一路：纯原生都答原生，体验顶但成本翻倍、节奏被审核锁死；H5 都答网页，省钱但撞上体验和能力两个天花板；RN 把问题拆开答：渲染给系统控件，逻辑留 JS，用十年演进把中间那层通信做扎实，Expo 兜住工程化。后三行是一路走下来新加的问题，答案也在图上——特别是第一章欠的第二笔账：发版节奏，JS 层热更收了回来，原生层才走商店。一句话收尾：用前端团队驾驭得了的一套代码，交付接近原生的体验，保住接近 Web 的开发效率。谢谢大家。
+最后把整套方案捋一遍，五行。界面由谁画——系统原生控件，不是网页。业务逻辑写在哪——JS，两端共用一套代码。两个原生工程谁维护——Expo 按配置生成，不用人养。发版还要不要等审核——改 JS 的部分热更就行，只有动了原生才走商店，第一章欠的那笔节奏账，在这里还上了一半。RN 够不着的地方怎么办——下沉成原生模块，再挂回来当普通接口用，这不是妥协，是它设计里就有的分工。一句话收尾：用一支前端团队驾驭得了的一套代码，交付接近原生的体验，同时保住接近 Web 的开发效率。
+-->
+
+---
+layout: section
+---
+
+# 谢谢
+
+<p style="text-align:center;margin-top:1.2rem;font-size:1.02rem;color:#c7d2e5;line-height:1.9">
+一套代码，接近原生的体验，接近 Web 的效率<br>
+<span style="font-size:.9em;opacity:.85">欢迎提问 · 演示和源码都在仓库里</span>
+</p>
+
+<!--
+到这里就讲完了，谢谢大家。演示和这份幻灯片的源码都在仓库里，可以自己跑。有什么问题现在可以问。
 -->
