@@ -203,17 +203,19 @@ layout: section
 ## H5 的头上有两个天花板：体验，和能力
 
 <div class="dg" style="gap:2.5rem">
-  <div class="dbox js" style="min-width:13rem;padding:.9rem 1rem"><b>体验天花板</b><small>一条标尺 · 三条根源</small></div>
-  <div class="dbox nat" style="min-width:13rem;padding:.9rem 1rem"><b>能力天花板</b><small>沙箱隔离 · 依赖原生救场</small></div>
+  <div class="dbox js" style="min-width:16rem;padding:1.1rem 1.3rem"><b>体验天花板</b><small>滑动和动画就是差原生一口气<br>而且不是「再优化优化」能补上的</small></div>
+  <div class="dbox js" style="min-width:16rem;padding:1.1rem 1.3rem"><b>能力天花板</b><small>摄像头、推送这些功能碰不到<br>不是没人做，是浏览器不让</small></div>
 </div>
 
+<p class="dnote">体验这块分两步：先说清一帧只有多长，再拆三条根源——Web 为什么总是超时<br>能力那块只说一件事：这堵墙是谁砌的</p>
+
 <!--
-两个天花板，分开论证，这一章的结构就这两块。体验这块我不打算说「H5 慢」就完事——那种结论换个引擎版本就过期了。我先立一条标尺：「帧」到底是什么，超时会怎样；再拆三条根源，说清差距从哪儿来。提前说明一件事：这三条不是 H5 的罪状清单，是任何界面技术都要过的三道关——今天先用它们量原生和 Web，第三站我们会用同一张表给 RN 打分。能力那块：为什么纯 H5 连很多功能都做不了——两页推到 Hybrid，再算一笔账。最后收一个分工结论。
+两个天花板，分开讲，这一章的结构就这两块。体验这块我不打算说一句「H5 慢」就完事——那种结论换个浏览器版本就过期了。我先把「一帧」这件事说清楚：一帧有多长，超时会怎样；再拆三条根源，说清差距到底从哪儿来。提前说明一件事：这三条不是 H5 的罪状清单，是任何界面技术都要过的三道关——今天先用它们量原生和 Web，第三站我们会用同一张表给 RN 打分。能力那块：为什么纯 H5 连很多功能都做不了——两页推到 Hybrid，再算一笔账。最后收一个分工结论。
 -->
 
 ---
 
-## 先立标尺：一帧要么准时，要么整帧作废
+## 一帧只有 16.7ms：要么准时，要么整帧作废
 
 <div class="dg" style="zoom:.92">
   <div style="position:relative;width:800px;height:246px;font-size:.7rem;color:#374151">
@@ -252,51 +254,43 @@ layout: section
   </div>
 </div>
 
-<p class="dnote">掉一帧的代价不是「晚一点」，是延迟翻倍——这是悬崖，不是斜坡</p>
+<p class="dnote">超时 1.3ms，延迟从 16.7ms 变成 33.3ms——代价不是「晚一点」，是翻倍<br><b style="color:#17324d">接下来三条根源，回答的都是同一个问题：Web 为什么更容易超过这条线</b></p>
 
 <!--
-先立标尺，后面三条根源都用它计价。屏幕不是连续在动的，它像放电影：每隔固定时间取一张画面播出去，这个节拍叫 VSync，60Hz 就是每 16.7 毫秒一次。看上半部分：这一帧 15 毫秒干完了活，赶在截止点之前交卷，准时上屏，用户感知到的延迟就是 16.7 毫秒。看下半部分：同样的工作量，只因为 JS 多花了 3 毫秒，总耗时 18 毫秒——注意，它只超了 1.3 毫秒。关键在这儿：屏幕不会「晚 1.3 毫秒」等你，它到点就取画，你没交卷，它只能把上一帧原样再放一遍；你这一帧不是迟到，是彻底作废，要等下一个刷新周期才有机会上屏。所以超时 1.3 毫秒的实际代价是延迟从 16.7 跳到 33.3——翻倍。这就是「悬崖，不是斜坡」：性能在截止点两侧不是连续变化的，差一点点和差很多，用户感受完全一样。也正是因为这个，「偶尔卡一下」的观感永远比平均帧率的数字难看得多——这条线我们最后一章还会回来算账。最下面那条是 120Hz 的刻度，先留个印象：同一段时间要卡 4 次点，每次只有 8.3 毫秒，上面那条「准时」的帧到这儿直接变成掉帧。
+先把这条 16.7 毫秒的截止线说清楚，后面三条根源都用它计价。屏幕不是连续在动的，它像放电影：每隔固定时间取一张画面播出去，这个节拍叫 VSync，60Hz 就是每 16.7 毫秒一次。看上半部分：这一帧 15 毫秒干完了活，赶在截止点之前交卷，准时上屏，用户感知到的延迟就是 16.7 毫秒。看下半部分：同样的工作量，只因为 JS 多花了 3 毫秒，总耗时 18 毫秒——注意，它只超了 1.3 毫秒。关键在这儿：屏幕不会「晚 1.3 毫秒」等你，它到点就取画，你没交卷，它只能把上一帧原样再放一遍；你这一帧不是迟到，是彻底作废，要等下一个刷新周期才有机会上屏。所以超时 1.3 毫秒的实际代价是延迟从 16.7 跳到 33.3——翻倍。这就是我后面会反复提到的那道悬崖：在截止点两侧，性能不是平滑变化的——差一点点和差很多，用户感受完全一样。也正是因为这个，「偶尔卡一下」的观感永远比平均帧率的数字难看得多——这条线我们最后一章还会回来算账。最下面那条是 120Hz 的刻度，先留个印象：同一段时间要卡 4 次点，每次只有 8.3 毫秒，上面那条「准时」的帧到这儿直接变成掉帧。
 -->
 
 ---
 
-## 根源一：通用性的租金，每一帧都要交
+## 根源一：原生是直接改，Web 是每次都要重算一遍
 
-<div class="dg" style="zoom:1.18">
-  <div class="dcol" style="gap:.6rem;align-items:flex-start">
+<div class="dg" style="zoom:1.1">
+  <div class="dcol" style="gap:.75rem;align-items:flex-start">
     <div class="drow" style="align-items:center">
       <div class="dcap" style="width:3.2rem;margin:0;text-align:right">原生</div>
-      <div class="dbox nat" style="padding:.3rem .65rem">给字段赋值<small>view.frame = …</small></div>
+      <div class="dbox nat" style="padding:.32rem .7rem">把新位置写进去</div>
       <span class="darr">→</span>
-      <div class="dbox nat" style="padding:.3rem .65rem">提交 layer tree</div>
-      <span class="darr">→</span>
-      <div class="dbox" style="padding:.3rem .65rem">上屏</div>
+      <div class="dbox" style="padding:.32rem .7rem">交给系统显示</div>
+      <div class="dcap" style="margin:0 0 0 1rem;text-align:left">界面再复杂，这两步的代价都一样</div>
     </div>
     <div class="drow" style="align-items:center">
       <div class="dcap" style="width:3.2rem;margin:0;text-align:right">Web</div>
-      <div class="dbox js" style="padding:.3rem .55rem;font-size:.72rem">DOM</div>
+      <div class="dbox js" style="padding:.32rem .6rem;font-size:.74rem">算样式<small>哪些规则落在这个元素上</small></div>
       <span class="darr">→</span>
-      <div class="dbox js" style="padding:.3rem .55rem;font-size:.72rem">Style<small>选择器匹配 · 级联 · 继承</small></div>
+      <div class="dbox js" style="padding:.32rem .6rem;font-size:.74rem">算位置<small>每个元素排在哪</small></div>
       <span class="darr">→</span>
-      <div class="dbox js" style="padding:.3rem .55rem;font-size:.72rem">Layout</div>
+      <div class="dbox js" style="padding:.32rem .6rem;font-size:.74rem">画出来</div>
       <span class="darr">→</span>
-      <div class="dbox js" style="padding:.3rem .55rem;font-size:.72rem">Paint</div>
-      <span class="darr">→</span>
-      <div class="dbox js" style="padding:.3rem .55rem;font-size:.72rem">Composite</div>
+      <div class="dbox js" style="padding:.32rem .6rem;font-size:.74rem">合成显示</div>
     </div>
+    <div class="dcap" style="margin:-.3rem 0 0 4.3rem;text-align:left;color:#b45309">元素越多、样式规则越多，这一遍就越贵</div>
   </div>
 </div>
 
-<div class="dg" style="gap:1.1rem;margin-top:1.1rem;zoom:1.18">
-  <div class="dbox nat" style="padding:.35rem .8rem"><b>一个 UIView</b><small>≈ 一个对象</small></div>
-  <span style="color:#6b7280;font-weight:700">vs</span>
-  <div class="dbox js" style="padding:.35rem .8rem"><b>一个 &lt;div&gt;</b><small>≈ Node + LayoutObject + PaintLayer …</small></div>
-</div>
-
-<p class="dnote">CSS 是一个通用约束求解器：它能表达的，远超你这个界面实际需要的<br>这份通用性不是启动时付一次，是<b style="color:#17324d">每一帧都在收租</b></p>
+<p class="dnote">浏览器不知道你要做的是什么界面，只能每次都按最通用的方式重算一遍<br><b style="color:#17324d">这笔开销不是打开页面时付一次，是每一帧都要付——直接从那 16.7ms 里扣</b></p>
 
 <!--
-第一条根源：抽象层的通用性代价。原生这边，更新一个视图基本等于给结构体字段赋个值，然后把 layer tree 提交给系统——就这么两步。Web 这边，同样一件事要从 DOM 出发，先算样式：选择器要匹配、要级联、要处理继承；再算布局、绘制、合成。为什么这么长？因为浏览器不知道你要渲染什么。CSS 本质上是一个通用约束求解器，它必须能表达任意网页——文档流、浮动、表格、绝对定位、层叠上下文全都得支持。你这个界面可能只用到十分之一，但求解器不会因此变简单。这就是通用性的租金，而且它不是启动时付一次，是每一帧都在收。内存这边也是同一回事：一个 UIView 差不多就是一个对象；一个 div 背后是 Node、LayoutObject、PaintLayer 一串对象。所以呢？回到刚才那条 16.7 毫秒的线——这条根源不直接制造卡顿尖峰，它抬高的是你每一帧的基础成本，把余量吃掉，让你更容易撞线。这是三条里最容易被优化手段缓解的一条，也是最不致命的一条。至于 RN 在这条上站哪儿，先留个空——第三站回来填。
+第一条根源，说的是「同样一件事，两边要干的活不一样多」。原生这边，把一个按钮挪个位置，基本就是把新位置写进去，然后交给系统显示——两步，完事。而且界面再复杂，这两步的代价也是那么多。Web 这边，同样挪一下，浏览器要重新算一遍：先算样式，看看写的那些规则到底哪些落在这个元素上；再算位置，因为它一动，旁边的元素可能都得跟着挪；然后画出来、合成显示。为什么要绕这么大一圈？因为浏览器根本不知道你要做的是什么界面。它必须能显示任何一个网页，所以只能按最通用的方式，每次都从头推一遍。你这个页面可能只用到其中一小部分能力，但这一遍不会因此变短。关键在于：元素越多、样式规则越多，这一遍就越贵——原生那两步是固定的，Web 这一遍是跟着界面规模涨的。而且这笔钱不是打开页面时付一次，是每一帧都要付。所以呢？回到刚才那条 16.7 毫秒的线——这条根源不直接制造卡顿尖峰，它抬高的是每一帧的起步成本，把余量吃掉，让你更容易撞线。这是三条里最容易靠优化缓解的一条，也是最不致命的一条。至于 RN 在这条上站哪儿，先留个空——第三站回来填。
 -->
 
 ---
@@ -311,58 +305,63 @@ layout: section
       <span class="darr">→</span>
       <div class="dbox nat" style="padding:.35rem .7rem"><b>动画照样跑完</b><small>iOS：Core Animation 在独立的 render server 进程<br>Android：5.0 起有 RenderThread</small></div>
     </div>
-    <div class="drow" style="align-items:center;gap:.7rem">
-      <div class="dcap" style="width:3rem;margin:0;text-align:right">Web</div>
-      <div class="dbox js" style="padding:.35rem .7rem">JS · 样式计算 · 布局<small>共享同一个主线程</small></div>
-      <span class="darr">→</span>
-      <div class="dbox" style="padding:.35rem .7rem">纯 transform / opacity<small>合成线程能独立跑</small></div>
-      <span class="darr">→</span>
-      <div class="dbox" style="padding:.35rem .7rem;background:#fee2e2;border-color:#b91c1c">但只要有非 passive 的<br>touch 监听，或动了触发<br>layout 的属性<small>全部回到主线程</small></div>
+    <div class="drow" style="align-items:flex-start;gap:.7rem">
+      <div class="dcap" style="width:3rem;margin:0;text-align:right;padding-top:.5rem">Web</div>
+      <div class="dbox" style="padding:.35rem .7rem;background:#fee2e2;border-color:#b91c1c;margin-top:.15rem">同样卡死 500ms</div>
+      <span class="darr" style="padding-top:.5rem">→</span>
+      <div class="dcol" style="gap:.35rem;align-items:flex-start">
+        <div class="dbox js" style="padding:.35rem .7rem"><b>动画跟着停</b><small>JS · 样式计算 · 布局 · 绘制共享这一个线程</small></div>
+        <div style="font-size:.66rem;line-height:1.6;color:#6b7280;text-align:left;padding-left:.1rem">
+          唯一的例外：纯 transform / opacity 能走合成线程<br>
+          <span style="color:#b91c1c">而只要挂了非 passive 的 touch 监听，或改了触发 layout 的属性，例外立刻失效</span>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
-<p class="dnote">再叠加 GC 停顿：垃圾回收什么时候来，你的业务代码说了不算<br><b style="color:#17324d">原生的流畅有下限保证，Web 的流畅是概率性的</b><br>这个区别，比任何一张平均帧率对比表都重要</p>
+<p class="dnote">再叠加 GC 停顿：垃圾回收什么时候来、停多久，业务代码说了不算<br><b style="color:#17324d">原生的流畅有下限保证，Web 的流畅是概率性的</b><br>这个区别，比任何一张平均帧率对比表都重要</p>
 
 <!--
-第二条根源，三条里最重要的一条：关键路径上，有没有一个会被业务代码堵住的单线程。原生做了一件很关键的事——它把「动画的执行」从「应用的逻辑」里摘出去了。iOS 上 Core Animation 的动画实际是在一个独立的 render server 进程里推进的；Android 从 5.0 起有 RenderThread。所以你的主线程哪怕卡死 500 毫秒，那个动画该怎么播还怎么播完，因为播它的根本不是你这个线程。Web 这边相反：JS、样式计算、布局共享同一个主线程。有人会说浏览器不是有合成线程吗——对，纯 transform 和 opacity 的动画合成线程确实能独立处理，这是真本事。但这条逃生通道很窄：只要页面上挂了非 passive 的 touch 监听，浏览器就必须先问过主线程才敢滚；只要你动的属性会触发 layout，也一样得回主线程。再加上 GC——垃圾回收什么时候来、停多久，你的业务代码控制不了。所以呢？这就是今天最该记住的一句话：原生的流畅是有下限保证的，Web 的流畅是概率性的。你在自己手机上测一百次都不掉帧，不代表用户那一次不掉——因为它取决于那一刻主线程上恰好有什么。这个区别，比任何一份平均帧率对比表都重要。
+第二条根源，三条里最重要的一条：关键路径上，有没有一个会被业务代码堵住的单线程。原生做了一件很关键的事——它把「动画的执行」从「应用的逻辑」里摘出去了。iOS 上 Core Animation 的动画实际是在一个独立的 render server 进程里推进的；Android 从 5.0 起有 RenderThread。所以你的主线程哪怕卡死 500 毫秒，那个动画该怎么播还怎么播完，因为播它的根本不是你这个线程。Web 这边相反：JS、样式计算、布局共享同一个主线程。有人会说浏览器不是有合成线程吗——对，纯 transform 和 opacity 的动画合成线程确实能独立处理，这是真本事。但这条逃生通道很窄：只要页面上挂了非 passive 的 touch 监听，浏览器就必须先问过主线程才敢滚；只要你动的属性会触发 layout，也一样得回主线程。再加上 GC——垃圾回收什么时候来、停多久，业务代码控制不了。所以呢？这就是今天最该记住的一句话：原生的流畅是有下限保证的，Web 的流畅是概率性的。你在自己手机上测一百次都不掉帧，不代表用户那一次不掉——因为它取决于那一刻主线程上恰好有什么。这个区别，比任何一份平均帧率对比表都重要。
 -->
 
 ---
 
-## 根源三：交互的物理，是系统在驱动，还是你在模拟
+## 根源三：滑动的手感，是系统白送的，还是 JS 自己算的
 
-<div class="dg" style="gap:1rem;zoom:1.06">
+<div class="dg" style="gap:1.6rem;zoom:1.06;align-items:flex-start">
   <div class="dcol" style="gap:.3rem">
-    <div class="dbox nat" style="padding:.28rem .65rem;font-size:.72rem">滚动减速曲线 · 边界回弹</div>
-    <div class="dbox nat" style="padding:.28rem .65rem;font-size:.72rem">嵌套滚动的仲裁</div>
-    <div class="dbox nat" style="padding:.28rem .65rem;font-size:.72rem">侧滑返回的手势优先级</div>
-    <div class="dbox nat" style="padding:.28rem .65rem;font-size:.72rem">点击的即时高亮</div>
-    <div class="dcap" style="margin-top:.15rem">系统在合成线程 / 事件层直接驱动</div>
+    <div class="dbox nat" style="padding:.28rem .65rem;font-size:.72rem">松手之后慢慢停下来</div>
+    <div class="dbox nat" style="padding:.28rem .65rem;font-size:.72rem">滑到头会回弹一下</div>
+    <div class="dbox nat" style="padding:.28rem .65rem;font-size:.72rem">从边缘往回滑就返回上一页</div>
+    <div class="dbox nat" style="padding:.28rem .65rem;font-size:.72rem">手指按下去立刻变色</div>
+    <div class="dcap" style="margin-top:.15rem">原生 App 一行代码都不用写</div>
   </div>
-  <span class="darr">←</span>
   <div class="dcol" style="align-items:center;gap:.35rem">
-    <div class="dbox" style="padding:.4rem .8rem"><b>触摸屏原始采样</b><small>常见 240Hz，是刷新率的 2~4 倍<br>带硬件时间戳 · 能看见 VSync 信号本身</small></div>
+    <div class="dbox" style="padding:.4rem .8rem"><b>屏幕记录手指位置</b><small>每秒两百多次，比画面刷新快好几倍</small></div>
     <div class="darr">↓</div>
     <div class="drow" style="gap:.7rem">
-      <div class="dbox nat" style="padding:.32rem .7rem"><b>系统</b><small>拿到一手数据</small></div>
-      <div class="dbox js" style="padding:.32rem .7rem"><b>JS 层</b><small>打包 · 降采样 · 加过延迟</small></div>
+      <div class="dbox nat" style="padding:.32rem .7rem"><b>系统</b><small>这些点全都拿得到</small></div>
+      <div class="dbox js" style="padding:.32rem .7rem"><b>网页里的 JS</b><small>只拿到一部分，还慢一拍</small></div>
     </div>
   </div>
 </div>
 
-<p class="dnote">最典型的一处：抬手瞬间的甩动速度——系统用抬手前一小段高频采样做加权拟合，还要滤掉手指离开时不自觉的回缩；JS 只能拿最后两三个稀疏事件点做差分<br><b style="color:#17324d">这不是算得慢，是输入数据的精度就不够——优化不掉，因为差距在信息层面</b></p>
+<p class="dnote">甩一下列表，它该滑多远，取决于你松手那一刻的速度<br>系统看得到手指离开前的完整轨迹，能算准；JS 只看得到最后两三个点，只能估<br><b style="color:#17324d">这不是代码写得慢，是能拿到的信息本来就少——所以优化也补不回来</b></p>
+
+<p class="dcap" style="margin-top:.7rem">三条根源到此讲完，体验这个天花板成立——下面换第二个：能力</p>
 
 <!--
-第三条根源最容易被忽略，却是用户说「感觉不对」时的主因：交互的物理由谁驱动。原生的滚动减速曲线、边界回弹、跟手性、两层列表同时能滚时谁该响应、侧滑返回和横向滚动打架时谁优先、手指按下去那一瞬间的高亮——这些全部是系统在合成线程和事件层直接驱动的，App 一行代码都不用写。H5 这边，稍微复杂一点的交互就得 JS 自己模拟。为什么模拟不像？很多人以为是算法不够好，其实更深一层是信息不对称。看右边：触摸屏的原始采样率常见 240 赫兹，是刷新率的两到四倍，每个点还带硬件级时间戳，系统还能直接看到 VSync 信号本身。而 JS 拿到的是什么？是已经被打包、降采样、还加过一段延迟的二手数据。最典型的例子是抬手那一瞬间的甩动速度估计：系统用抬手前一小段高频采样点做加权拟合，还要专门滤掉手指离开屏幕时不自觉的回缩；JS 只能拿最后两三个稀疏事件点做差分——手指回缩那一下正好被算进去，甩出来的速度就偏了。所以呢？这不是算得慢，是输入数据的精度就不够。这条优化不掉，因为差距在信息层面，不在计算层面。三条根源讲完：H5 三条全在下风——不是没优化好，是结构性的。注意每条我都留了一格空白：RN 站哪儿？第三站回来填这张表。现在换第二个天花板：能力。
+第三条根源最容易被忽略，但用户说「感觉不对」的时候，多半就是它。原生 App 里有很多手感是系统白送的：松手之后列表慢慢停下来、滑到头有个回弹、从屏幕边缘往回滑就能返回上一页、手指按下去立刻变色——这些 App 一行代码都不用写。H5 这边，稍微复杂一点的交互就得 JS 自己写一遍去模仿。为什么模仿不像？很多人以为是算法不够好，其实是两边拿到的信息就不一样多。屏幕记录手指位置的频率很高，每秒两百多次，比画面刷新还快好几倍。系统能拿到这些点的全部；网页里的 JS 只拿到其中一部分，而且还慢一拍。最典型的就是甩动列表：你手指一甩松开，列表该滑多远，取决于松手那一刻的速度。系统看得到手指离开前的完整轨迹，算得准；JS 只看得到最后两三个点，只能估——而人松手的时候手指常常会不自觉往回缩一下，这一下正好被 JS 算进去，甩出去的距离就不对了。所以这不是代码写得慢，是能拿到的信息本来就少，优化补不回来。三条根源讲完：H5 三条全在下风——不是没优化好，是结构决定的。每条我都留了一格空白：RN 站哪儿？第三站回来填这张表。现在换第二个天花板：能力。
 -->
 
 ---
 
-## WebView 是一个沙箱，系统能力都在沙箱之外
+## 第二个天花板：手机上的功能，网页大多碰不到
 
 <div class="dg" style="gap:0">
-  <div class="dbox js" style="padding:1rem 1.3rem"><b>WebView 沙箱</b><small>网页 JS 被关在这里</small></div>
+  <div class="dbox js" style="padding:1rem 1.3rem"><b>网页只能待在这个框里</b><small>H5 页面和它的 JS</small></div>
   <div style="width:12px;height:6rem;background:repeating-linear-gradient(45deg,#9ca3af,#9ca3af 6px,#e5e7eb 6px,#e5e7eb 12px);border-radius:3px;margin:0 1.2rem"></div>
   <div class="drow">
     <div class="dbox nat">摄像头</div>
@@ -372,7 +371,7 @@ layout: section
   </div>
 </div>
 
-<p class="dnote">墙是浏览器安全模型砌的——所以纯 H5 的 App 并不存在</p>
+<p class="dnote">这堵墙是浏览器出于安全砌的，不是哪家没做好<br><b style="color:#17324d">所以「纯 H5 做的 App」根本不存在——想用这些功能，就得有原生代码在场</b></p>
 
 <!--
 能力天花板。浏览器天生不信任网页，把它关在沙箱里——摄像头、推送、蓝牙都碰不到。但正经 App 离不开这些。所以只要一个「H5 App」能扫码、能收推送，它就一定不是纯 H5，原生代码一定在场。这就是 Hybrid。
@@ -380,7 +379,7 @@ layout: section
 
 ---
 
-## 所谓的「H5 App」，实际都是 Hybrid
+## 于是所有「H5 App」，外面都套着一层原生——这就是 Hybrid
 
 <div class="dg">
   <div class="dbox nat" style="padding:.8rem 1rem">
@@ -388,8 +387,8 @@ layout: section
     <div class="drow" style="margin-top:.5rem;align-items:center">
       <div class="dbox js"><b>WebView</b><small>H5 页面 + JS</small></div>
       <div class="dcol" style="align-items:center;gap:2px">
-        <div style="font-size:.66rem;color:#6b7280">JSBridge</div>
-        <div class="dbox" style="padding:.25rem .5rem;font-size:.66rem">异步 · 字符串 · 无类型</div>
+        <div style="font-size:.66rem;color:#6b7280">JSBridge<br>（网页向原生喊话的通道）</div>
+        <div class="dbox" style="padding:.25rem .5rem;font-size:.66rem;line-height:1.5">喊一句要等回话<br>只能传字符串<br>两边靠口头约定</div>
         <div class="darr">⇄</div>
       </div>
       <div class="dcol">
@@ -536,11 +535,11 @@ RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实�
   <div class="tl-node" v-click="5">
     <div class="tl-year">未来</div>
     <div class="tl-dot ghost"><carbon-rocket style="width:1.8rem;height:1.8rem;color:#6b7280" /></div>
-    <div class="tl-label">Static Hermes<small>JS 编译成机器码<br>React Compiler 等</small></div>
+    <div class="tl-label">Static Hermes<small>在字节码基础上再进一步<br>直接编译成机器码 · 还没落地</small></div>
   </div>
 </div>
 
-<p class="dnote">十年、四次架构级演进，由 Meta、微软、Expo 多方共建——不是新玩具</p>
+<p class="dnote">十年里架构重写了一遍，引擎也换成自己造的，现在还在往前走——不是新玩具</p>
 
 <!--
 上一章说行业在 H5 上摔的最大一跤：2012 年扎克伯格公开承认「押注 HTML5 是我们犯过的最大错误」，Facebook App 全线退回原生。但成本问题还在，2013 年内部 Hackathon 里长出一个实验：用 JS 指挥原生控件——2015 年开源，就是 React Native。之后是一部架构自我革命史：2018 年启动重写，把那座异步桥拆掉；2019 年自研 Hermes 引擎，专为手机做的 JS 引擎；2024 年 10 月起，Fabric 加 JSI 的新架构成为默认。最后一格是路线图，还没落地所以用虚线：Static Hermes 是 Hermes 的下一步，把带类型标注的 JS 提前编译成原生机器码，而不是像现在这样编译成字节码再解释执行，目标是把解释器开销整个去掉；旁边还有 React Compiler，自动做记忆化，省掉手写 useMemo 那一堆。这两个都还没成为默认，但方向很清楚。一句话：它不是新玩具，是演进了十年、还在活跃进化的成熟技术。
@@ -548,23 +547,23 @@ RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实�
 
 ---
 
-## 锚点句拆开，是两个要回答的问题
+## 「用 JS 写，出来是真原生控件」——这怎么做到的
 
 <div class="dg" style="flex-direction:column;gap:.9rem">
   <div class="drow" style="gap:1.6rem">
-    <div class="dbox js" style="min-width:14rem;padding:.9rem 1rem"><b>① 界面的变化，由谁计算</b><small>React 的 diff · Yoga 布局</small></div>
-    <div class="dbox nat" style="min-width:14rem;padding:.9rem 1rem"><b>② 计算结果，如何成为控件</b><small>从桥到 JSI · Hermes</small></div>
+    <div class="dbox js" style="min-width:14rem;padding:.9rem 1rem"><b>第一步　算</b><small>界面哪里变了，JS 这边先算出来</small></div>
+    <div class="dbox nat" style="min-width:14rem;padding:.9rem 1rem"><b>第二步　交</b><small>把结果交给原生，变成真控件</small></div>
   </div>
-  <div class="dbox rn ghost" style="padding:.4rem .9rem;font-size:.74rem">最后验货：视图树里没有一个 div</div>
+  <div class="dbox rn ghost" style="padding:.4rem .9rem;font-size:.74rem">最后拿系统工具验一下：视图树里有没有 div</div>
 </div>
 
 <!--
-回到锚点句——RN 用 JS 描述界面，渲染出来的是真原生控件。把它拆开，其实就两个问题：第一，界面的变化由谁计算；第二，计算结果怎么穿过 JS 和原生的边界、成为屏幕上的真控件。这一章就按这两个问题走，最后用系统工具验货。
+上一页那句话——用 JS 写界面，出来的是真原生控件——听着有点反直觉，这一章就是拆开它。其实就两步：第一步，界面哪里变了，这件事在 JS 这边算；第二步，算完的结果怎么交到原生那边，变成屏幕上真正的控件。先讲第一步，再讲第二步，最后我们用系统自带的工具打开真机验一下，看看视图树里到底有没有 div。
 -->
 
 ---
 
-## React 的输出不是画面，是一份最小差异清单
+## 第一步：React 算出来的不是画面，是一张「哪里变了」的清单
 
 <div class="dg" style="gap:1.1rem">
   <div class="dcol">
@@ -577,10 +576,10 @@ RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实�
   <div class="dbox rn"><b>最小差异清单</b><small>这行文字变了<br>那个按钮没变</small></div>
 </div>
 
-<p class="dnote">到这为止全是内存计算——真正「画」，是下游渲染后端的事</p>
+<p class="dnote">到这一步为止全是内存里的计算，一个像素都还没画<br><b style="color:#17324d">而「谁来画」是可以整个换掉的——这就是 React Native 能成立的地方</b></p>
 
 <!--
-第一个问题开拆：界面的变化由谁计算？答案是 React，非前端同学给我一分钟。它是描述界面的库：你声明数据长这样时界面该长那样；数据一变，它把新旧描述一比，算出最小差异清单。关键：到这为止全是内存计算，一个像素没画。画是下游「渲染后端」的事——而渲染后端，是可以整个换掉的。这就是 RN 的钥匙。
+第一步：界面哪里变了，谁来算？答案是 React。不写前端的同学给我一分钟，一句话就够：你告诉它「数据长这样的时候，界面该长这样」；数据一变，它拿新旧两份描述一比，算出一张清单——这行文字变了，那个按钮没变。关键在最后一句：到这里为止全是内存里的计算，一个像素都还没画。真正画出来，是后面那一段的事。而那一段，是可以整个换掉的——换成浏览器，就是我们熟悉的网页；换成原生，就是 React Native。所以这一页看着在讲 React，其实讲的是 RN 为什么可能：上面这套算法根本不关心你最后画到哪儿。
 -->
 
 ---
@@ -634,48 +633,22 @@ RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实�
 
 ---
 
-## 老架构里，三个线程隔着一座异步桥
+## 第二步的老办法（2015–2024）：中间隔着一座「桥」
 
 <div class="dg" style="gap:1.2rem">
-  <div class="dbox js" style="align-self:center"><b>JS 线程</b><small>业务代码 · diff</small></div>
-  <div class="dcol" style="align-items:center;gap:2px">
-    <div class="dbox" style="border-radius:999px;padding:.3rem .8rem;font-size:.68rem">JSON 序列化 · 异步 · 攒批发送</div>
-    <div class="drow" style="gap:2.2rem">
-      <div style="width:6px;height:14px;background:#9ca3af;border-radius:2px"></div>
-      <div style="width:6px;height:14px;background:#9ca3af;border-radius:2px"></div>
-    </div>
-    <div style="font-size:.7rem;color:#6b7280">桥（Bridge）</div>
-  </div>
-  <div class="dcol">
-    <div class="dbox"><b>Shadow 线程</b><small>Yoga 算布局</small></div>
-    <div class="dbox nat"><b>UI 主线程</b><small>创建控件 · 上屏</small></div>
-  </div>
-</div>
-
-<p class="dnote">与浏览器不同：JS 不和渲染抢线程——JS 忙时，已交给系统的滚动、转场仍由原生驱动<br>但每帧还要回 JS 取值的动画，依然挂在这条单线程上</p>
-
-<!--
-进入第二个问题：这份差异清单怎么穿过 JS 和原生的边界，变成真控件？先看 2015 年初代架构的答案。三个线程：JS 线程跑业务和 diff，Shadow 线程算布局，UI 主线程上屏。这里先兑现根源二的一半：浏览器里 JS 和渲染挤同一个主线程，RN 从第一天起就把它们分开——JS 跑久了不劫持渲染，已经交给系统的列表滚动、转场动画照样由原生线程驱动，最多是数据更新晚到一拍。这条 RN 对 H5 是实打实的赢。但别急着给它打满分：只要一个动画每帧还要回 JS 要一次数值，它就仍然吊在 JS 这条单线程上——根源二那一格 RN 到底算赢算输，这一章结束时用一张表结算。回到图上：中间那座桥是唯一通道，规矩很怪——所有数据序列化成 JSON、全异步、攒批发。每次对话都要打包、排队、解包——什么场景会出事？
--->
-
----
-
-## 桥上全是序列化消息，高频交互会拥堵
-
-<div class="dg" style="gap:1rem">
-  <div class="dbox nat"><b>触摸事件</b><small>原生侧产生</small></div>
-  <div class="dcol" style="align-items:center;gap:2px">
+  <div class="dbox js"><b>JS 这边</b><small>算出哪里变了</small></div>
+  <div class="dcol" style="align-items:center;gap:3px">
     <span class="darr">⇄</span>
-    <div class="dbox" style="padding:.25rem .55rem;font-size:.66rem">桥：序列化 · 排队</div>
-    <div style="font-size:.68rem;color:#b45309">每秒几十个来回</div>
+    <div class="dbox" style="border-radius:999px;padding:.3rem .9rem;font-size:.7rem">桥：要打包、要排队、不能立刻回话</div>
+    <div style="font-size:.7rem;color:#b45309">手指拖着东西走时，每秒几十个来回</div>
   </div>
-  <div class="dbox js"><b>JS 算新位置</b></div>
+  <div class="dbox nat"><b>原生这边</b><small>算位置 · 创建控件 · 上屏</small></div>
 </div>
 
-<p class="dnote">桥一堵，画面跟不上手指——老 RN「卡」的技术根源</p>
+<p class="dnote">桥一堵，画面就跟不上手指——早年「RN 卡」的印象，说的就是这座桥<br><span style="font-size:.9em">（有一点它从第一天就赢了 H5：JS 和渲染不抢线程，JS 忙的时候，已经交给系统的滚动和转场照样在动）</span></p>
 
 <!--
-高频交互。手指拖拽：触摸事件过桥给 JS，JS 算完过桥回原生，每秒几十个来回，每次都序列化排队。桥一堵画面跟不上手指——早年「RN 卡」的传闻就是这座桥。这也是时间线上 2018 年那次手术的动机：Meta 直接把桥拆了。
+第二步：算完的清单，怎么交到原生那边去？先说老办法，一句话带过就行，因为它已经是历史了。2015 年那套架构，JS 和原生中间隔着一座「桥」：JS 要跟原生说话，得先把内容打包，排进队列，等对方慢慢处理，没法立刻拿到回话。平时看不出问题，一到高频交互就露馅——比如手指拖着一个东西走，触摸事件要过桥送给 JS，JS 算完新位置再过桥送回来，每秒几十个来回，每次都要打包排队。桥一堵，画面就跟不上手指。早年「RN 卡」这个印象，说的基本就是这座桥。顺便说一件 RN 从第一天就做对的事：JS 和渲染不抢同一条线程——JS 跑久了不会劫持渲染，已经交给系统的列表滚动、转场动画照样在动，最多是数据晚到一拍。这一条它对 H5 是实打实地赢。那这座桥后来怎么了？2018 年 Meta 直接把它拆了。
 -->
 
 ---
@@ -703,7 +676,7 @@ RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实�
 
 ---
 
-## Hermes 把 JS 提前编译成字节码
+## Hermes（今天的默认）：JS 提前编译成字节码，装进安装包
 
 <div class="dg" style="flex-direction:column;gap:.8rem">
   <div class="drow" style="align-items:center">
