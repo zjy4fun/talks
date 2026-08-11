@@ -75,7 +75,7 @@ mdc: true
     <tr>
       <th>系统控件</th>
       <td><div class="cell c-gap"><b>？</b><small>长期空着</small></div></td>
-      <td><div class="cell c-nat"><b>纯原生</b><small>体验顶格，代价下一章算</small></div></td>
+      <td><div class="cell c-nat"><b>纯原生</b><small>体验最好，代价下一章算</small></div></td>
     </tr>
     <tr>
       <th>网页引擎</th>
@@ -684,17 +684,17 @@ RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实�
 <p class="dnote">编译这一步从「每次启动时做」挪到了「构建时做一次」<br><b style="color:#17324d">启动更快，内存占用也更低</b></p>
 ---
 
-## 眼见为实：用系统工具掀开跑着的 App
+## 用系统工具查看运行中 App 的视图层级
 
 <div class="dg" style="gap:2rem">
   <div class="dbox nat" style="padding:1rem 1.4rem;min-width:15rem"><b>RN 做的 App</b><small>每个元素都是系统控件<br><b style="color:#1d4ed8;font-size:1.05em">div：0 个</b></small></div>
-  <div class="dbox js" style="padding:1rem 1.4rem;min-width:15rem"><b>Hybrid 做的 App</b><small>掀开只有一个大 WebView<br>里面全是网页元素</small></div>
+  <div class="dbox js" style="padding:1rem 1.4rem;min-width:15rem"><b>Hybrid 做的 App</b><small>整个界面只有一个 WebView 节点<br>内容全是网页元素</small></div>
 </div>
 
-<p class="dnote">Xcode 和 Android Studio 都自带这个功能，能看运行中 App 的真实结构<br><b style="color:#17324d">不用信我，这件事你自己回去两分钟就能验</b></p>
+<p class="dnote">Xcode View Hierarchy 与 Android Studio Layout Inspector，两端官方自带<br><b style="color:#17324d">RN 的视图层级里没有任何网页元素——开场那句结论到此得证</b></p>
 
 <!--
-两个步骤都讲完了，验货。（现场演示，两分钟以内）Xcode 和 Android Studio 都自带看视图层级的功能，能把一个正在跑的 App 掀开，看它真实的结构。掀开 RN 做的 App：从上到下每一个元素都是系统控件，一个 div 都找不到。作为对照，掀开一个 Hybrid App：里面就是一个大 WebView 节点，网页的东西全在它肚子里。这就是今天开头那句话最直接的证据，不用信我，你回去自己两分钟就能验。（演示前记得在自己 demo 上先跑一遍，确认类名对得上。）
+两个步骤都讲完了，现在验证。（现场演示，两分钟以内）Xcode 和 Android Studio 都自带查看视图层级的功能，可以打开一个正在运行的 App，看它真实的结构。先看 RN 做的 App：从上到下每一个节点都是系统控件，没有任何网页元素。作为对照，再看一个 Hybrid App：整个界面就是一个 WebView 节点，网页内容全在它内部。这就是开场那句结论最直接的证据。（演示前在自己的 demo 上先跑一遍，确认类名对得上。）
 -->
 
 ---
@@ -733,20 +733,20 @@ RN 的答案就这一句：用 JS 描述界面，渲染出来的是货真价实�
   <tbody>
     <tr>
       <th>① 每帧的基础开销<small>原生直接改，Web 每次都要重算</small></th>
-      <td><div class="cell win"><b>赢</b><small>改一下就完事</small></div></td>
+      <td><div class="cell win"><b>赢</b><small>直接改，两步完成</small></div></td>
       <td><div class="cell near"><b>接近</b><small>自己算好位置直接给原生<br>绕开浏览器那一整套，还在单独线程上</small></div></td>
       <td><div class="cell lose"><b>输</b><small>每一帧都要重算一遍</small></div></td>
     </tr>
     <tr>
       <th>② 会不会被业务代码堵住<small>「偶尔卡一下」的来源</small></th>
-      <td><div class="cell win"><b>赢</b><small>动画在另一条线上跑，卡不着</small></div></td>
+      <td><div class="cell win"><b>赢</b><small>动画在独立线程执行，不受影响</small></div></td>
       <td><div class="cell lose"><b>和 H5 一样</b><small>新架构改善很多，但<br>JS 逻辑还是挤在一条线上</small></div></td>
       <td><div class="cell lose"><b>输</b><small>JS 和渲染挤同一条线</small></div></td>
     </tr>
     <tr>
       <th>③ 滑动的手感谁来做<small>用户说「感觉不对」的主因</small></th>
       <td><div class="cell win"><b>赢</b><small>系统直接拿手指数据</small></div></td>
-      <td><div class="cell near"><b>接近</b><small>列表底下就是系统自己那套<br>滚动、回弹都是白送的</small></div></td>
+      <td><div class="cell near"><b>接近</b><small>列表底层就是系统的列表控件<br>滚动、回弹由系统提供</small></div></td>
       <td><div class="cell lose"><b>输</b><small>JS 只拿到一部分数据</small></div></td>
     </tr>
   </tbody>
@@ -823,7 +823,7 @@ RN 的原理成立了，但要把它用在生产里，还差工程化这一站�
     <div class="dbox rn" style="min-width:13rem"><b>Expo SDK</b><small>模块与 RN 版本配套测试</small></div>
   </div>
   <div class="drow" style="align-items:center">
-    <div class="dbox js" style="min-width:13rem">两个原生工程，要人养</div>
+    <div class="dbox js" style="min-width:13rem">两个原生工程，需要人维护</div>
     <span class="darr">→</span>
     <div class="dbox rn" style="min-width:13rem"><b>CNG</b><small>原生工程按配置生成</small></div>
   </div>
@@ -1141,7 +1141,7 @@ layout: section
   </div>
 </div>
 
-<p class="dnote">名单来自 React Native 官方 showcase 与各家公开的技术博客<br><b style="color:#17324d">生态足够厚：遇到问题，大概率别人已经踩过并写下来了</b></p>
+<p class="dnote">名单来自 React Native 官方 showcase 与各家公开的技术博客<br><b style="color:#17324d">生态成熟：常见问题多已有公开方案</b></p>
 
 <!--
 最后看生态。上面这排是把 RN 用在主力 App 上的：Meta 自己的 Facebook 和 Instagram；微软的 Office、Outlook、Teams，微软同时还维护着 RN 的 Windows 和 macOS 版本；Amazon 的购物、Alexa、Kindle；Shopify 的移动端是整体建在 RN 上的。下面这排，Discord、Coinbase、Wix 都是主 App 在用；国内京东、美团、携程各自做了一套 RN 基建——JDReact、MRN、CRN，愿意投这么重的基建，说明在极端体量下扛得住。这里顺带说清一个问题：他们走自研，是因为存量嵌入加极端体量；像我们这样从零开始的新项目，官方推荐路径就是 Expo，不冲突。生态这件事对我们的实际意义是：遇到坑的时候，大概率别人已经踩过，而且写下来了。
@@ -1156,9 +1156,9 @@ class: text-center
 <div class="dg" style="flex-direction:column;gap:.6rem;margin-top:1.4rem;font-size:.82rem">
   <div class="drow" style="align-items:center"><div class="dbox" style="min-width:13rem">界面由谁画</div><span class="darr" style="display:flex;align-items:center">→</span><div class="dbox nat" style="min-width:14rem">系统原生控件</div></div>
   <div class="drow" style="align-items:center"><div class="dbox" style="min-width:13rem">业务逻辑写在哪</div><span class="darr" style="display:flex;align-items:center">→</span><div class="dbox js" style="min-width:14rem">JS，两端一套代码</div></div>
-  <div class="drow" style="align-items:center"><div class="dbox" style="min-width:13rem">两个原生工程谁维护</div><span class="darr" style="display:flex;align-items:center">→</span><div class="dbox rn" style="min-width:14rem">Expo 生成，不用人养</div></div>
+  <div class="drow" style="align-items:center"><div class="dbox" style="min-width:13rem">两个原生工程谁维护</div><span class="darr" style="display:flex;align-items:center">→</span><div class="dbox rn" style="min-width:14rem">Expo 按配置生成，不需维护</div></div>
   <div class="drow" style="align-items:center"><div class="dbox" style="min-width:13rem">发版还要不要等审核</div><span class="darr" style="display:flex;align-items:center">→</span><div class="dbox rn" style="min-width:14rem">改 JS 热更，改原生才过审</div></div>
-  <div class="drow" style="align-items:center"><div class="dbox" style="min-width:13rem">RN 够不着的地方</div><span class="darr" style="display:flex;align-items:center">→</span><div class="dbox rn" style="min-width:14rem">下沉原生，再挂回来用</div></div>
+  <div class="drow" style="align-items:center"><div class="dbox" style="min-width:13rem">RN 覆盖不到的部分</div><span class="darr" style="display:flex;align-items:center">→</span><div class="dbox rn" style="min-width:14rem">下沉为原生模块，挂回 JS 调用</div></div>
 </div>
 
 <!--
