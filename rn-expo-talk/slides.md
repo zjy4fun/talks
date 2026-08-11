@@ -1031,8 +1031,8 @@ layout: section
     <div class="dbox rn" style="padding:.32rem .7rem"><b>P95 / P99 帧时间</b><small>掉帧次数 · 最长帧</small></div>
   </div>
   <div style="width:2px;align-self:stretch;background:#e5e7eb"></div>
-  <div class="dcol" style="gap:.4rem;justify-content:center">
-    <div class="dcap" style="margin:0">长尾从哪来</div>
+  <div class="dcol" style="gap:.4rem;justify-content:center;align-items:flex-start">
+    <div class="dcap" style="margin:0;align-self:center">长尾从哪来</div>
     <div class="drow" style="align-items:center">
       <div class="dbox js" style="padding:.28rem .6rem;font-size:.72rem;min-width:5rem">根源 ①</div>
       <div class="dbox" style="padding:.28rem .6rem;font-size:.72rem">抬高平均帧时间、吃掉余量<small>让你更容易撞线</small></div>
@@ -1071,7 +1071,7 @@ layout: section
   </div>
 </div>
 
-<p class="dnote">现代高刷基本是可变刷新率（ProMotion 支持 10–120Hz）：掉帧不一定直接掉到 60，台阶更细<br>反而是老式固定 60Hz 屏，一掉就是 30——落差更大</p>
+<p class="dnote">现代高刷基本是可变刷新率（ProMotion 10–120Hz）<br>掉帧不一定直接掉到 60，台阶更细；反而老式固定 60Hz 屏一掉就是 30，落差更大</p>
 
 <!--
 回到第二章那条标尺最下面的 120Hz 刻度，现在结算。高刷是双刃剑，两面都要说。坏消息：预算砍半，从 16.7 毫秒变成 8.3 毫秒。这意味着你在 60Hz 上稳稳跑 12 毫秒一帧的代码，换到 120Hz 屏上是稳定掉帧——同一份代码，同一台更贵的手机，表现更差。硬件更好了，软件的容错空间反而更小，这一点很反直觉。好消息也是真的：延迟的下限降低了。即使你的页面同样只能跑 60fps，在 120Hz 屏上帧的呈现时机能对齐得更早，加上高刷设备的触摸采样率通常也更高，跟手性是真的会变好，不是心理作用。还有一个缓冲：现在的高刷基本都是可变刷新率，比如 ProMotion 支持 10 到 120Hz，掉帧不一定直接对折到 60，台阶更细。真正难受的反而是老式固定 60Hz 屏——一掉就是 30，落差更大。
@@ -1081,18 +1081,20 @@ layout: section
 
 ## 落到三条技术线上：高刷会先惩罚结构问题
 
-<div class="dg" style="flex-direction:column;gap:.5rem;zoom:1.04">
-  <div class="drow" style="align-items:center;gap:.7rem">
-    <div class="dbox js" style="min-width:5.2rem;padding:.3rem .6rem"><b>H5</b><small>最尴尬</small></div>
-    <div class="dbox" style="padding:.34rem .7rem;text-align:left;font-size:.72rem">iOS WKWebView 长期锁 60Hz：旁边原生页 120Hz 丝滑，切进 H5 立刻「重了一档」<small>而且跟你优化得多好完全无关</small></div>
-  </div>
-  <div class="drow" style="align-items:center;gap:.7rem">
-    <div class="dbox rn" style="min-width:5.2rem;padding:.3rem .6rem"><b>RN</b><small>压力陡增</small></div>
-    <div class="dbox" style="padding:.34rem .7rem;text-align:left;font-size:.72rem">8.3ms 里塞进「序列化 → JS 处理 → 序列化回来」基本不可能<small><code>useNativeDriver: true</code> 从「建议」变成「必须」；Reanimated worklet 的价值被放大</small></div>
-  </div>
-  <div class="drow" style="align-items:center;gap:.7rem">
-    <div class="dbox nat" style="min-width:5.2rem;padding:.3rem .6rem"><b>原生</b><small>优势放大</small></div>
-    <div class="dbox" style="padding:.34rem .7rem;text-align:left;font-size:.72rem">Core Animation 跑在独立进程，8.3ms 的预算跟主线程在干什么无关<small>根源② 的红利，在高刷下加倍兑现</small></div>
+<div class="dg" style="zoom:1.04">
+  <div class="dcol" style="gap:.5rem;align-items:flex-start">
+    <div class="drow" style="align-items:center;gap:.7rem">
+      <div class="dbox js" style="min-width:5.2rem;padding:.3rem .6rem"><b>H5</b><small>最尴尬</small></div>
+      <div class="dbox" style="padding:.34rem .7rem;text-align:left;font-size:.72rem">iOS WKWebView 长期锁 60Hz：旁边原生页 120Hz 丝滑，切进 H5 立刻「重了一档」<small>而且跟你优化得多好完全无关</small></div>
+    </div>
+    <div class="drow" style="align-items:center;gap:.7rem">
+      <div class="dbox rn" style="min-width:5.2rem;padding:.3rem .6rem"><b>RN</b><small>压力陡增</small></div>
+      <div class="dbox" style="padding:.34rem .7rem;text-align:left;font-size:.72rem">8.3ms 里塞进「序列化 → JS 处理 → 序列化回来」基本不可能<small><code>useNativeDriver: true</code> 从「建议」变成「必须」；Reanimated worklet 的价值被放大</small></div>
+    </div>
+    <div class="drow" style="align-items:center;gap:.7rem">
+      <div class="dbox nat" style="min-width:5.2rem;padding:.3rem .6rem"><b>原生</b><small>优势放大</small></div>
+      <div class="dbox" style="padding:.34rem .7rem;text-align:left;font-size:.72rem">Core Animation 跑在独立进程，8.3ms 的预算跟主线程在干什么无关<small>根源② 的红利，在高刷下加倍兑现</small></div>
+    </div>
   </div>
 </div>
 
@@ -1106,20 +1108,22 @@ layout: section
 
 ## 怎么测、怎么验收：两端都要，两类 bug 完全不同
 
-<div class="dg" style="flex-direction:column;gap:.7rem;zoom:1.12">
-  <div class="drow" style="align-items:center;gap:.8rem">
-    <div class="dbox" style="min-width:8rem;padding:.34rem .7rem"><b>测试</b><small>中低端 60Hz 机</small></div>
-    <span class="darr">→</span>
-    <div class="dbox js" style="padding:.34rem .7rem">暴露平均性能问题<small>根源① 那一类：余量本来就不够</small></div>
-  </div>
-  <div class="drow" style="align-items:center;gap:.8rem">
-    <div class="dbox" style="min-width:8rem;padding:.34rem .7rem"><b>验收</b><small>高刷旗舰</small></div>
-    <span class="darr">→</span>
-    <div class="dbox nat" style="padding:.34rem .7rem">暴露 JS 线程 / 异步链路的结构性问题<small>根源② 那一类：长尾</small></div>
+<div class="dg" style="zoom:1.12">
+  <div class="dcol" style="gap:.7rem;align-items:flex-start">
+    <div class="drow" style="align-items:center;gap:.8rem">
+      <div class="dbox" style="min-width:8rem;padding:.34rem .7rem"><b>测试</b><small>中低端 60Hz 机</small></div>
+      <span class="darr">→</span>
+      <div class="dbox js" style="padding:.34rem .7rem">暴露平均性能问题<small>根源① 那一类：余量本来就不够</small></div>
+    </div>
+    <div class="drow" style="align-items:center;gap:.8rem">
+      <div class="dbox" style="min-width:8rem;padding:.34rem .7rem"><b>验收</b><small>高刷旗舰</small></div>
+      <span class="darr">→</span>
+      <div class="dbox nat" style="padding:.34rem .7rem">暴露 JS 线程 / 异步链路的结构性问题<small>根源② 那一类：长尾</small></div>
+    </div>
   </div>
 </div>
 
-<p class="dnote">只测一端一定会漏——两类 bug 完全不同<br><b style="color:#17324d">别为了高刷做微优化</b>：60Hz 上就有 P99 长尾，说明不是预算不够，是有东西堵在关键路径上；高刷只是把它照得更清楚</p>
+<p class="dnote">只测一端一定会漏——两类 bug 的表现和修法完全不同<br><b style="color:#17324d">别为了高刷做微优化</b>：60Hz 上就有 P99 长尾，堵的是关键路径，不是预算不够</p>
 
 <!--
 这一页是可以直接带回去用的。测试放在中低端的 60Hz 机上做，它暴露的是平均性能问题——根源一那一类，余量本来就不够。验收放在高刷旗舰上做，它暴露的是 JS 线程和异步链路的结构性问题——根源二那一类，长尾。这两类 bug 的表现、定位方法、修法完全不同，只测一端一定会漏：只测低端机，你会以为自己没问题，结果旗舰用户抱怨最凶；只测旗舰，你会漏掉一大批用户根本跑不动的页面。最后提醒一句，避免走偏：别为了高刷去做微优化。如果你在 60Hz 上就已经有 P99 长尾，那不是预算不够，是有东西堵在关键路径上——多榨那两毫秒没用，得去找那个堵住线程的东西。高刷只是把它照得更清楚而已。性能这条边界讲完了，换第二种边界：能力。
