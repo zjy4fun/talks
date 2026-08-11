@@ -262,5 +262,39 @@
 .mx .near { border-color: var(--dg-green); background: var(--dg-green-bg); border-style: dashed; }
 .mx .lose { border-color: var(--dg-amber); background: var(--dg-amber-bg); }
 
+/* ===== 两个问题 × 两个答案：开场定位矩阵（复用 .mx） ===== */
+/* 父级是 flex column，.mx 的 margin:auto 会被覆盖，用 align-self 居中 */
+.q2 {
+  zoom: 1.26;
+  align-self: center;
+}
+.q2 thead th.axis {
+  color: var(--dg-ink);
+  font-size: 0.66rem;
+  padding-bottom: 0.45rem;
+}
+.q2 thead th.corner {
+  text-align: right;
+  color: var(--dg-ink);
+  font-size: 0.66rem;
+  padding-right: 0.85rem;
+  vertical-align: bottom;
+}
+.q2 tbody th {
+  text-align: right;
+  font-size: 0.78rem;
+  padding-right: 0.85rem;
+}
+.q2 .cell { min-width: 9.5rem; padding: 0.55rem 0.7rem; }
+.q2 .c-nat { border-color: var(--dg-blue); background: var(--dg-blue-bg); }
+.q2 .c-js { border-color: var(--dg-amber); background: var(--dg-amber-bg); }
+.q2 .c-gap { border-style: dashed; background: transparent; }
+.q2 .c-none {
+  border-style: dashed;
+  border-color: #d1d5db;
+  background: transparent;
+  color: var(--dg-gray);
+}
+
 /* 正文行距稍紧，给图留空间 */
 .slidev-layout p { line-height: 1.65; }

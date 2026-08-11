@@ -49,41 +49,51 @@ mdc: true
   </div>
 </div>
 
-<p class="dnote">两边的代码不能互相复用——怎么用最少的人把两个 App 都做出来，还不拖慢迭代？</p>
+<p class="dnote">两边的代码不能互相复用——怎么用最少的人做出两个 App，还不拖慢迭代？</p>
 
 <!--
-先看局面：iOS 用 Objective-C/Swift，上 App Store；Android 用 Java/Kotlin，上各大应用商店。两边的代码不能互相复用，同一个功能得写两遍。可业务只有一套，需求每周都在变。移动端所有选型都在回答同一个问题：怎么用最少的人，把两个平台的 App 都做出来，还不拖慢迭代。这个问题太大，先把它拆成两个具体问题——就是贯穿全场的分析框架。
+先看局面：iOS 用 Objective-C/Swift，上 App Store；Android 用 Java/Kotlin，上各大应用商店。两边的代码不能互相复用。可业务只有一套，需求每周都在变。移动端所有选型都在回答同一个问题：怎么用最少的人，把两个平台的 App 都做出来，还不拖慢迭代。这个问题太大，先把它拆成两个具体问题——就是贯穿全场的分析框架。
 -->
 
 ---
 
 ## 所有界面技术都在回答同样两个问题
 
-<div class="dg">
-  <div style="position:relative;width:590px;height:320px">
-    <div style="position:absolute;left:100px;top:6px;bottom:34px;border-left:2px solid #9ca3af"></div>
-    <div style="position:absolute;left:100px;right:6px;bottom:34px;border-bottom:2px solid #9ca3af"></div>
-    <div style="position:absolute;left:0;top:2px;width:94px;text-align:right;font-size:.7rem;color:#374151;font-weight:700">① UI 由谁渲染</div>
-    <div style="position:absolute;left:0;top:44px;width:94px;text-align:right;font-size:.68rem;color:#6b7280">系统控件</div>
-    <div style="position:absolute;left:0;bottom:64px;width:94px;text-align:right;font-size:.68rem;color:#6b7280">网页引擎</div>
-    <div style="position:absolute;right:6px;bottom:0;font-size:.7rem;color:#374151;font-weight:700">② 逻辑跑在哪个运行时</div>
-    <div style="position:absolute;left:120px;bottom:0;font-size:.68rem;color:#6b7280">JS 运行时</div>
-    <div style="position:absolute;right:190px;bottom:0;font-size:.68rem;color:#6b7280">原生运行时</div>
-    <div class="dbox ghost" style="position:absolute;left:140px;top:30px"><b>？</b><small>系统控件 · JS 逻辑</small></div>
-    <div class="dbox nat" style="position:absolute;right:30px;top:30px"><b>纯原生</b><small>系统控件 · 原生逻辑</small></div>
-    <div class="dbox js" style="position:absolute;left:140px;bottom:64px"><b>H5 / WebView</b><small>网页引擎 · JS 逻辑</small></div>
-  </div>
-</div>
+<table class="mx q2">
+  <thead>
+    <tr>
+      <th></th>
+      <th class="axis" colspan="2">② 逻辑跑在哪个运行时</th>
+    </tr>
+    <tr>
+      <th class="corner">① UI 由谁渲染</th>
+      <th>JS 运行时<span></span></th>
+      <th>原生运行时<span></span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>系统控件</th>
+      <td><div class="cell c-gap"><b>？</b><small>长期空着</small></div></td>
+      <td><div class="cell c-nat"><b>纯原生</b><small>体验顶格，代价下一章算</small></div></td>
+    </tr>
+    <tr>
+      <th>网页引擎</th>
+      <td><div class="cell c-js"><b>H5 / WebView</b><small>成本最低，天花板第三章推导</small></div></td>
+      <td><div class="cell c-none"><b>—</b><small>没有代表性方案</small></div></td>
+    </tr>
+  </tbody>
+</table>
 
 <!--
-界面技术五花八门，剥开壳都在回答两个问题：屏幕上的按钮是谁画的——系统控件还是网页引擎；业务逻辑跑在哪——原生运行时还是 JS 引擎。两个问题就是这张图的两条轴，答案一组合，所有方案都能放进图里，全场都用它定位。右上角是纯原生：两个答案都选原生，体验顶格，代价下一章算。左下角是 H5：都选网页，成本最低，天花板第三章推导。注意左上角：系统控件的体验，配 JS 的逻辑——这个组合长期没人真正做到，一直空着。记住这个空角，故事讲到一半它会被填上。
+界面技术五花八门，剥开壳都在回答两个问题：屏幕上的按钮是谁画的——系统控件还是网页引擎；业务逻辑跑在哪——原生运行时还是 JS 引擎。两个问题就是这张表的行和列，答案一组合，每个方案都落进一个格子，全场都用它定位。右上角是纯原生：两个答案都选原生，体验顶格，代价下一章算。左下角是 H5：都选网页，成本最低，天花板第三章推导。右下角空着不用管——已经有原生运行时了，没人再回头用网页引擎画界面。真正要盯的是左上角：系统控件的体验，配 JS 的逻辑——这个组合长期没人真正做到。记住这个空格子，故事讲到一半它会被填上。
 -->
 
 ---
 layout: section
 ---
 
-# 同一个功能，永远要写两遍
+# 原生这条路，贵在哪、慢在哪
 
 <div class="evo">
   <span class="estep now">原生</span><span class="earr">→</span>
