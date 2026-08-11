@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Talks · 技术分享</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --fg: #1f2328;
+      --fg-dim: #6a737d;
+      --bg: #ffffff;
+      --card: #f6f8fa;
+      --accent: #0969da;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --fg: #e6edf3;
+        --fg-dim: #8b949e;
+        --bg: #0d1117;
+        --card: #161b22;
+        --accent: #58a6ff;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+      color: var(--fg);
+      background: var(--bg);
+      max-width: 42rem;
+      margin: 0 auto;
+      padding: 4rem 1.5rem;
+      line-height: 1.6;
+    }
+    h1 { font-size: 1.6rem; margin-bottom: .4rem; }
+    p.sub { color: var(--fg-dim); margin-bottom: 2.5rem; }
+    ul { list-style: none; }
+    li { margin-bottom: 1rem; }
+    li a {
+      display: block;
+      padding: 1rem 1.25rem;
+      background: var(--card);
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--fg);
+      transition: transform .12s ease;
+    }
+    li a:hover { transform: translateY(-2px); }
+    .title { display: block; font-weight: 600; color: var(--accent); }
+    .slug { display: block; font-size: .82rem; color: var(--fg-dim); margin-top: .2rem; }
+  </style>
+</head>
+<body>
+  <h1>Talks</h1>
+  <p class="sub">技术分享与演讲存档，用 Slidev 制作。</p>
+  <ul>
+      <li>
+        <a href="./rn-expo-talk/">
+          <span class="title">React Native + Expo：移动端 App 技术分享</span>
+          <span class="slug">rn-expo-talk</span>
+        </a>
+      </li>
+  </ul>
+</body>
+</html>
